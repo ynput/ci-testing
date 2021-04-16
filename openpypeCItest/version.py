@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 """Package declaring version."""
-__version__ = "0.33.23"
+__version__ = "3.25.2"
