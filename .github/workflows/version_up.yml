@@ -16,7 +16,7 @@ jobs:
 
     - name: 🆙 Find next version
       id: next_version
-      uses: zwaldowski/semver-release-action@v2
+      uses: pypeclub/semver-release-action@master
       with:
         prefix: nightly/
         dry_run: true
@@ -43,7 +43,7 @@ jobs:
         echo ::set-output name=sha::$(git rev-parse HEAD)
         
     - name: 🚀 Tag and Release
-      uses: zwaldowski/semver-release-action@v2
+      uses: pypeclub/semver-release-action@master
       with:
         prefix: nightly/
         bump: ${{ steps.next_version.outputs.match }}
