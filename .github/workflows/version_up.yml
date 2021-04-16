@@ -14,19 +14,24 @@ jobs:
     - name: 🚛 Checkout Code
       uses: actions/checkout@v2
 
-    - id: next_version
+    - name: 🆙 Find next version
+      id: next_version
       uses: zwaldowski/semver-release-action@v2
       with:
         dry_run: true
         bump: minor
         github_token: ${{ secrets.GITHUB_TOKEN }}
     # Do something to modify the repo using `${{ steps.next_version.outputs.version }}`.
-    
-    - id: git_commit
-      run: echo "${{ steps.next_version.outputs.version }}"
+
+    - name: ✍ Update version.py
+      id: update_version
       run: |
+        echo "${{ steps.next_version.outputs.version }}"
         version_regex="(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?"
         sed -i -E "s/$version_regex/${{ steps.next_version.outputs.version }}/g" ./openpypeCItest/version.py
+    
+    - name: 💾 Commit changes
+      id: git_commit
       run: |
         git config user.email ${{ secrets.CI_EMAIL }}
         git config user.name ${{ secrets.CI_USER }}
@@ -36,7 +41,8 @@ jobs:
         
         echo ::set-output name=sha::$(git rev-parse HEAD)
         
-    - uses: zwaldowski/semver-release-action@v2
+    - name: 🚀 Tag and Release
+      uses: zwaldowski/semver-release-action@v2
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         sha: ${{ steps.git_commit.outputs.sha }}
