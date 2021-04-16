@@ -14,7 +14,7 @@ jobs:
     - name: 🚛 Checkout Code
       uses: actions/checkout@v2
 
-    - name: 🆙 Find next version
+    - name: 🔎 Find next version
       id: next_version
       uses: pypeclub/semver-release-action@master
       with:
@@ -28,8 +28,9 @@ jobs:
       with:
         python-version: 3.7
 
-    - run: python ./tools/prepare_release.py $VERSION
-    
+    - name: 💉 Inject new version into files
+      run: python ./tools/prepare_release.py $VERSION
+
     - name: 💾 Commit changes
       id: git_commit
       run: |
@@ -41,7 +42,8 @@ jobs:
         
         echo ::set-output name=sha::$(git rev-parse HEAD)
 
-    - uses: everlytic/branch-merge@1.1.0
+    - name: 🔨 Merge main back to develop    
+      uses: everlytic/branch-merge@1.1.0
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         source_ref: 'main'
