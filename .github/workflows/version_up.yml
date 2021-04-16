@@ -28,9 +28,13 @@ jobs:
       id: update_version
       run: |
         echo "${{ steps.next_version.outputs.version }}"
-        version_regex="(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?"
-        sed -i -E "s/$version_regex/${{ steps.next_version.outputs.version }}/g" ./openpypeCItest/version.py
-    
+
+        python_version_regex="(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?"
+        sed -i -E "s/$python_version_regex/${{ steps.next_version.outputs.version }}/g" ./openpypeCItest/version.py
+        
+        pyproject_version_regex="version \= \"(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?\" \# OpenPype"
+        sed -i -E "s/$pyproject_version_regex/version \= \"${{ steps.next_version.outputs.version }}\" \# OpenPype/g" ./pyproject.toml
+
     - name: 💾 Commit changes
       id: git_commit
       run: |
