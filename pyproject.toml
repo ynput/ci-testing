@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "OpenPype"
-version = "0.3.11" # OpenPype version
+version = "0.3.13" # OpenPype version
 description = "Multi-platform open-source pipeline built around the Avalon platform, expanding it with extra features and integrations."
 authors = ["OpenPype Team <info@openpype.io>"]
 license = "MIT License"
@@ -18,8 +18,6 @@ pack2 = "1.17.0"
 pack3 = "1.17.0"
 versioning = "1.17.0"
 pack2 = "1.17.0"
-version = "1.0.0-something"
-
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/pypeclub/openpype/issues"
 "Discussions" = "https://github.com/pypeclub/openpype/discussions"
