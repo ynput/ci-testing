@@ -52,6 +52,7 @@ jobs:
         git fetch
         git checkout develop
         git branch
+        git merge main
 
     - name: 🚀 Tag and Release
       uses: pypeclub/semver-release-action@master
