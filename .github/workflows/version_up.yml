@@ -46,13 +46,12 @@ jobs:
         
         echo ::set-output name=sha::$(git rev-parse HEAD)
 
-    - name: 💾 Commit changes dev 
-      id: git_commit2
-      run: |
-        git fetch
-        git checkout develop
-        git branch
-        git merge main --allow-unrelated-histories
+    - uses: everlytic/branch-merge@1.1.0
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        source_ref: 'main'
+        target_branch: 'develop'
+        commit_message_template: '[Automated] Merged {source_ref} into target {target_branch}'
 
     - name: 🚀 Tag and Release
       uses: pypeclub/semver-release-action@master
