@@ -23,7 +23,7 @@ jobs:
     # Do something to modify the repo using `${{ steps.next_version.outputs.version }}`.
     - run: echo "${{ steps.next_version.outputs.version }}"
     - run: |
-        git config user.email ${{ secrets.CI_MAIL }}
+        git config user.email ${{ secrets.CI_EMAIL }}
         git config user.name ${{ secrets.CI_USER }}
         git add .
         git commit -m "Bump version"
