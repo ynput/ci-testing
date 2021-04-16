@@ -28,7 +28,7 @@ jobs:
       with:
         python-version: 3.7
 
-    - run: python ./tools/prepare_release.py ${{ steps.next_version.outputs.match }}
+    - run: python ./tools/prepare_release.py ${{steps.next_version.outputs.match}}
 
     - name: 💾 Commit changes
       id: git_commit
