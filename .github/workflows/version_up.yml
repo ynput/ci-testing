@@ -46,7 +46,7 @@ jobs:
         
         echo ::set-output name=sha::$(git rev-parse HEAD)
 
-    - name: 💾 Commit changes 2
+    - name: 💾 Commit changes dev
       id: git_commit2
       run: |
         git fetch
