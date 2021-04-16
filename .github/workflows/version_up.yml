@@ -45,7 +45,14 @@ jobs:
         git push
         
         echo ::set-output name=sha::$(git rev-parse HEAD)
-        
+
+    - name: 💾 Commit changes 2
+      id: git_commit2
+      run: |
+        git fetch
+        git checkout develop
+        git branch
+
     - name: 🚀 Tag and Release
       uses: pypeclub/semver-release-action@master
       with:
