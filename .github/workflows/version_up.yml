@@ -29,14 +29,14 @@ jobs:
       with:
         find: '(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?'
         replace: ${{ steps.next_version.outputs.version }}
-        include: './openpypCItes/version.py'
+        include: './openpypeCItest/version.py'
 
     - name: Find and Replace 2
       uses: jacobtomlinson/gha-find-replace@master
       with:
         find: 'version \= \"(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?\" \# OpenPype'
         replace: 'version = \"${{ steps.next_version.outputs.version }}\" # OpenPype'
-        include: "./openpypCItes/version.py"
+        include: "./pyproject.toml"
 
     - name: 💾 Commit changes
       id: git_commit
