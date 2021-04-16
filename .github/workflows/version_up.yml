@@ -43,7 +43,7 @@ jobs:
         echo ::set-output name=sha::$(git rev-parse HEAD)
 
     - name: 🔨 Merge main back to develop    
-    - uses: everlytic/branch-merge@1.1.0
+      uses: everlytic/branch-merge@1.1.0
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         source_ref: 'main'
