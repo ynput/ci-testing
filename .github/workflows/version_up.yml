@@ -15,7 +15,7 @@ jobs:
       uses: actions/checkout@v2
 
     - id: next_version
-      uses: zwaldowski/semver-release-action@v1
+      uses: zwaldowski/semver-release-action@v2
       with:
         dry_run: true
         bump: minor
@@ -27,7 +27,7 @@ jobs:
         git commit -m "Bump version"
         git push
         echo ::set-output name=sha::$(git rev-parse HEAD)
-    - uses: zwaldowski/semver-release-action@v1
+    - uses: zwaldowski/semver-release-action@v2
       with:
         github_token: ${{ secrets.TOKEN }}
         sha: ${{ steps.git_commit.outputs.sha }}
