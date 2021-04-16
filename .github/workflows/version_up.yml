@@ -24,7 +24,7 @@ jobs:
     - run: echo "${{ steps.next_version.outputs.version }}"
     - run: |
         version_regex="(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?"
-        sed -i -E "s/$version_regex/0.1.3/g" ./openpypeCItest/version.py
+        sed -i -E "s/$version_regex/${{ steps.next_version.outputs.version }}/g" ./openpypeCItest/version.py
     - run: |
         git config user.email ${{ secrets.CI_EMAIL }}
         git config user.name ${{ secrets.CI_USER }}
