@@ -24,16 +24,19 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
     # Do something to modify the repo using `${{ steps.next_version.outputs.version }}`.
 
-    - name: ✍ Update version.py
-      id: update_version
-      run: |
-        echo "${{ steps.next_version.outputs.version }}"
+    - name: Find and Replace
+      uses: jacobtomlinson/gha-find-replace@master
+      with:
+        find: "(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?"
+        replace: "${{ steps.next_version.outputs.version }}"
+        include: ./openpypCItes/version.py
 
-        python_version_regex="(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?"
-        sed -i -E "s/$python_version_regex/${{ steps.next_version.outputs.version }}/g" ./openpypeCItest/version.py
-        
-        pyproject_version_regex="version \= \"(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?\" \# OpenPype"
-        sed -i -E "s/$pyproject_version_regex/version \= \"${{ steps.next_version.outputs.version }}\" \# OpenPype/g" ./pyproject.toml
+    - name: Find and Replace 2
+      uses: jacobtomlinson/gha-find-replace@master
+      with:
+        find: "version \= \"(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?\" \# OpenPype"
+        replace: "version = \"${{ steps.next_version.outputs.version }}\" # OpenPype"
+        include: ./openpypCItes/version.py
 
     - name: 💾 Commit changes
       id: git_commit
