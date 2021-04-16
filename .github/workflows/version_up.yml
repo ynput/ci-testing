@@ -18,8 +18,9 @@ jobs:
       id: next_version
       uses: zwaldowski/semver-release-action@v2
       with:
+        prefix: nightly/
         dry_run: true
-        bump: minor
+        bump: path
         github_token: ${{ secrets.GITHUB_TOKEN }}
     # Do something to modify the repo using `${{ steps.next_version.outputs.version }}`.
 
@@ -44,5 +45,7 @@ jobs:
     - name: 🚀 Tag and Release
       uses: zwaldowski/semver-release-action@v2
       with:
+        prefix: nightly/
+        bump: ${{ steps.next_version.outputs.match }}
         github_token: ${{ secrets.GITHUB_TOKEN }}
         sha: ${{ steps.git_commit.outputs.sha }}
