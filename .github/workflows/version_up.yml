@@ -22,21 +22,13 @@ jobs:
         dry_run: true
         bump: patch
         github_token: ${{ secrets.GITHUB_TOKEN }}
-    # Do something to modify the repo using `${{ steps.next_version.outputs.version }}`.
 
-    - name: Find and Replace
-      uses: jacobtomlinson/gha-find-replace@master
+    - name: Set up Python
+      uses: actions/setup-python@v2
       with:
-        find: '(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?'
-        replace: ${{ steps.next_version.outputs.version }}
-        include: './openpypeCItest/version.py'
+        python-version: 3.7
 
-    - name: Find and Replace 2
-      uses: jacobtomlinson/gha-find-replace@master
-      with:
-        find: 'version \= \"(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?\" \# OpenPype'
-        replace: 'version = \"${{ steps.next_version.outputs.version }}\" # OpenPype'
-        include: "./pyproject.toml"
+    - run: python ci_version.py
 
     - name: 💾 Commit changes
       id: git_commit
