@@ -19,7 +19,7 @@ jobs:
       with:
         dry_run: true
         bump: minor
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.TOKEN }}
     # Do something to modify the repo using `${{ steps.next_version.outputs.version }}`.
     - run: echo "${{ steps.next_version.outputs.version }}"
     - run: |
@@ -29,5 +29,5 @@ jobs:
         echo ::set-output name=sha::$(git rev-parse HEAD)
     - uses: zwaldowski/semver-release-action@v1
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.TOKEN }}
         sha: ${{ steps.git_commit.outputs.sha }}
