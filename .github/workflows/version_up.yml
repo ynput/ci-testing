@@ -41,7 +41,7 @@ jobs:
         git config user.email ${{ secrets.CI_EMAIL }}
         git config user.name ${{ secrets.CI_USER }}
         git add .
-        git commit -m "Bump version"
+        git commit -m "[Automated] Bump version"
         git push
         
         echo ::set-output name=sha::$(git rev-parse HEAD)
@@ -51,7 +51,7 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         source_ref: 'main'
         target_branch: 'develop'
-        commit_message_template: '[Automated] Merged {source_ref} into target {target_branch}'
+        commit_message_template: '[Automated] Merged {source_ref} into {target_branch}'
 
     - name: 🚀 Tag and Release
       uses: pypeclub/semver-release-action@master
