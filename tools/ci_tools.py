@@ -7,11 +7,10 @@ def release_type(filename):
     with open(filename,'r+') as f:
         text = f.read()
         regex_minor = ["feature/", "(feat)"]
-        release = "patch"
-        for reg in regex_minor if re.search(reg, text):
-            release = "minor"
-
-        return release
+        for reg in regex_minor:
+            if re.search(reg, text):
+                return "minor"
+        return "patch"
 
 
 def file_regex_replace(filename, regex, version):
