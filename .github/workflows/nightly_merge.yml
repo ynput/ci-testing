@@ -20,3 +20,4 @@ jobs:
         type: now
         from_branch: develop
         target_branch: main
+        github_token: ${{ github.token }}
