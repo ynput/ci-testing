@@ -19,20 +19,25 @@ jobs:
       with:
         python-version: 3.7
 
-    - name: 💉 Determine next version type
-      run: python ./tools/ci_tools.py --version $VERSION
+    - name: 🔎 Determine next version type
+      id: version_type
+      run: |
+        git log $(git describe --tags --abbrev=0)..HEAD --merges --oneline > new-in-this-release.log
+        TYPE=$(python ./tools/ci_tools.py --logfile new-in-this-release.log)
 
-    - name: 🔎 Find next version
+        echo ::set-output name=type::$TYPE
+
+    - name: ➕ Calculate next version
       id: next_version
       uses: pypeclub/semver-release-action@master
       with:
         prefix: nightly/
         dry_run: true
-        bump: patch
+        bump: ${{ steps.version_type.outputs.type }}
         github_token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: 💉 Inject new version into files
-      run: python ./tools/prepare_release.py $VERSION
+      run: python ./tools/ci_tools.py $VERSION
 
     - name: 💾 Commit changes
       id: git_commit

@@ -2,18 +2,15 @@ from optparse import OptionParser
 import re
 import sys
 
+
 def release_type(filename):
     with open(filename,'r+') as f:
         text = f.read()
-        regex_patch = "bugfix/"
-        regex_minor = "feature/"
-        regex_major = "breaking"
+        regex_minor = ["feature/", "(feat)"]
         release = "patch"
-        if re.search(regex_major, text):
-            release = "major"
-        elif re.search(regex_minor, text):
+        for reg in regex_minor if re.search(reg, text):
             release = "minor"
-        print(f"NEW VERSION will be {release}")
+
         return release
 
 
@@ -50,8 +47,6 @@ def main():
                       action="store", type="string", dest="version")
 
     (options, args) = parser.parse_args()
-    print(args)
-    print(options)
 
     if options.logfile:
         print(release_type(options.logfile))
@@ -62,10 +57,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-# bump version.py
-filename = "./new-in-this-release.log"
-release_type(filename)
