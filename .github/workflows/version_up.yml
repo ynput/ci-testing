@@ -14,6 +14,14 @@ jobs:
     - name: 🚛 Checkout Code
       uses: actions/checkout@v2
 
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+
+    - name: 💉 Determine next version type
+      run: python ./tools/ci_tools.py --version $VERSION
+
     - name: 🔎 Find next version
       id: next_version
       uses: pypeclub/semver-release-action@master
@@ -22,11 +30,6 @@ jobs:
         dry_run: true
         bump: patch
         github_token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.7
 
     - name: 💉 Inject new version into files
       run: python ./tools/prepare_release.py $VERSION
