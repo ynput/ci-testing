@@ -19,4 +19,4 @@ jobs:
       with:
         type: now
         from_branch: develop
-        target-branch: main
+        target_branch: main
