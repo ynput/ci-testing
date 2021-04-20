@@ -1,4 +1,4 @@
-name: version_up
+name: Bump Version
 
 on:
   push:
