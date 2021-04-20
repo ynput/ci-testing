@@ -15,9 +15,8 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Merge development -> main
-      uses: tukasz/direct-merge-action@master
+      uses: devmasx/merge-branch@v1.3.1
       with:
-        github_token: ${{ github.token }}
-        source-branch: develop
+        type: now
+        from_branch: develop
         target-branch: main
-        commit-message: [Automated] merge Develop to Main
