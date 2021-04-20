@@ -3,13 +3,16 @@ name: Bump Version
 on:
   push:
     branches: [main]
+  workflow_run:
+    workflows: ["Nightly Merge"]
+    types: [completed]
 
 
 jobs:
-  Ubuntu-latest:
-
+  Nightly Bump:
     runs-on: ubuntu-latest
-
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
     steps:
     - name: 🚛 Checkout Code
       uses: actions/checkout@v2
