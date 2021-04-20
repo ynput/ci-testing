@@ -9,10 +9,10 @@ on:
 
 
 jobs:
-  Nightly Bump:
+  version-up:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    
+
     steps:
     - name: 🚛 Checkout Code
       uses: actions/checkout@v2
