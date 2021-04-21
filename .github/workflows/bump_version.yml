@@ -6,7 +6,7 @@ on:
 
 
 jobs:
-  version-up:
+  find_version:
     runs-on: ubuntu-latest
 
     steps:
@@ -30,6 +30,7 @@ jobs:
 
     - name: ➕ Calculate next version
       id: next_version
+      if: steps.version_type.outputs.type != 'skip'
       uses: pypeclub/semver-release-action@master
       with:
         prefix: nightly/
@@ -38,10 +39,12 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: 💉 Inject new version into files
+      if: steps.version_type.outputs.type != 'skip'
       run: python ./tools/ci_tools.py $VERSION
 
     - name: 💾 Commit changes
       id: git_commit
+      if: steps.version_type.outputs.type != 'skip'
       run: |
         git config user.email ${{ secrets.CI_EMAIL }}
         git config user.name ${{ secrets.CI_USER }}
@@ -53,6 +56,7 @@ jobs:
 
     - name: 🔨 Merge main back to develop    
       uses: everlytic/branch-merge@1.1.0
+      if: steps.version_type.outputs.type != 'skip'
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         source_ref: 'main'
@@ -61,6 +65,7 @@ jobs:
 
     - name: 🚀 Tag and Release
       uses: pypeclub/semver-release-action@master
+      if: steps.version_type.outputs.type != 'skip'
       with:
         prefix: nightly/
         bump: ${{ steps.next_version.outputs.match }}
