@@ -57,7 +57,7 @@ jobs:
           --issues false \
           --author false \
           --unreleased true \
-          --exclude-tags-regex "nightly/.+""
+          --exclude-tags-regex "nightly/.+"
 
     - name: 💾 Commit changes
       id: git_commit
