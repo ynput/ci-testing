@@ -6,16 +6,12 @@
 
 **Enhancements:**
 
-- add changelog to workflow [\#4](https://github.com/pypeclub/ci-testing/pull/4) ([mkolar](https://github.com/mkolar))
-- change time for cron [\#2](https://github.com/pypeclub/ci-testing/pull/2) ([mkolar](https://github.com/mkolar))
+- add changelog to workflow [\#4](https://github.com/pypeclub/ci-testing/pull/4)
+- change time for cron [\#2](https://github.com/pypeclub/ci-testing/pull/2)
 
 **Fixed bugs:**
 
-- Host: fixing something [\#1](https://github.com/pypeclub/ci-testing/pull/1) ([mkolar](https://github.com/mkolar))
-
-**Merged pull requests:**
-
-- add changelog generator settings [\#3](https://github.com/pypeclub/ci-testing/pull/3) ([mkolar](https://github.com/mkolar))
+- Host: fixing something [\#1](https://github.com/pypeclub/ci-testing/pull/1)
 
 ## [0.3.1](https://github.com/pypeclub/ci-testing/tree/0.3.1) (2021-04-16)
 
