@@ -2,7 +2,7 @@ name: Nightly Merge
 
 on:
   schedule:
-    - cron:  '59 7 * * 0-4'
+    - cron:  '21 3 * * 0-4'
   workflow_dispatch:
 
 jobs:

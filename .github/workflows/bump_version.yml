@@ -25,6 +25,7 @@ jobs:
       run: |
         git log $(git describe --tags --abbrev=0)..HEAD --merges --oneline > new-in-this-release.log
         TYPE=$(python ./tools/ci_tools.py --logfile new-in-this-release.log)
+        rm new-in-this-release.log
 
         echo ::set-output name=type::$TYPE
 
@@ -40,7 +41,15 @@ jobs:
 
     - name: 💉 Inject new version into files
       if: steps.version_type.outputs.type != 'skip'
-      run: python ./tools/ci_tools.py $VERSION
+      run: python ./tools/ci_tools.py --version $VERSION
+
+    - name: Generate Changelog
+      if: steps.version_type.outputs.type != 'skip'
+      uses: heinrichreimer/github-changelog-generator-action@v2.1.1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        repo: pypeclub/ci-testing
+        future-release: $VERSION
 
     - name: 💾 Commit changes
       id: git_commit
