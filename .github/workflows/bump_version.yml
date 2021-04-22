@@ -50,14 +50,15 @@ jobs:
           -t ${{ secrets.GITHUB_TOKEN }} \
           --user pypeclub \
           --project ci-testing \
-          -o "/host-volume/CHANGELOG.md" \
           --future-release $VERSION \
           --enhancement-label "**Enhancements:**" \
           --release-branch "main" \
           --issues false \
           --author false \
           --unreleased true \
-          --exclude-tags-regex "nightly/.+"
+          -- pr-wo-labels false \
+          --exclude-tags-regex "nightly/.+" \
+          -o "/host-volume/CHANGELOG.md"
 
     - name: 💾 Commit changes
       id: git_commit
