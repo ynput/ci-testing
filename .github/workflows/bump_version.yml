@@ -53,10 +53,9 @@ jobs:
           --future-release $VERSION \
           --enhancement-label "**Enhancements:**" \
           --release-branch "main" \
-          --issues false \
-          --author false \
-          --unreleased true \
-          -- pr-wo-labels false \
+          --no-issues \
+          --no-author \
+          --no-pr-wo-labels \
           --exclude-tags-regex "nightly/.+" \
           -o "/host-volume/CHANGELOG.md"
 
