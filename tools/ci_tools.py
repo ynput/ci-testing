@@ -22,8 +22,7 @@ def file_regex_replace(filename, regex, version):
         text = f.read()
         text = re.sub(regex, version, text)
         print(20*"#")
-        print(f"NEW VERSION INSERTED into {filename}")
-        print(text)
+        print(f"NEW VERSION {version} INSERTED into {filename}")
         f.seek(0)
         f.write(text)
         f.truncate()
@@ -31,14 +30,13 @@ def file_regex_replace(filename, regex, version):
 def bump_file_versions(version):
     filename = "./openpypeCItest/version.py"
     regex = "(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?"
-    version = sys.argv[1]
     file_regex_replace(filename, regex, version)
 
     # bump pyproject.toml
     filename = "pyproject.toml"
     regex = "version = \"(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?\" # OpenPype"
-    version = f"version = \"{sys.argv[1]}\" # OpenPype"
-    file_regex_replace(filename, regex, version)
+    replace_version = f"version = \"{version}\" # OpenPype"
+    file_regex_replace(filename, regex, replace_version)
 
 
 def main():
@@ -46,8 +44,8 @@ def main():
     parser = OptionParser(usage)
     parser.add_option("--logfile", dest="logfile", action="store",
                       type="string", help="read data from FILENAME")
-    parser.add_option("--version",
-                      action="store", type="string", dest="version")
+    parser.add_option("--version", dest="version",
+                      action="store", type="string")
 
     (options, args) = parser.parse_args()
 
