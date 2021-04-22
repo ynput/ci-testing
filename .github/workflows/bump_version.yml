@@ -50,6 +50,9 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         repo: pypeclub/ci-testing
         futureRelease: $VERSION
+        excludeTagsRegex: nightly/.+
+        unreleased: true
+        releaseBranch: main
 
     - name: 💾 Commit changes
       id: git_commit
