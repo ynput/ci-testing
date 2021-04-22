@@ -43,10 +43,21 @@ jobs:
       if: steps.version_type.outputs.type != 'skip'
       run: python ./tools/ci_tools.py --version $VERSION
 
-    - name: Generate Changelog
+    - name: 📓 Generate Changelog
       if: steps.version_type.outputs.type != 'skip'
       run: |
-        docker run --rm -v $(pwd):/host-volume ferrarimarco/github-changelog-generator -t ${{ secrets.GITHUB_TOKEN }} --user pypeclub --project ci-testing -o "/host-volume/CHANGELOG.md" --future-release $VERSION
+        docker run --rm -v $(pwd):/host-volume ferrarimarco/github-changelog-generator \
+          -t ${{ secrets.GITHUB_TOKEN }} \
+          --user pypeclub \
+          --project ci-testing \
+          -o "/host-volume/CHANGELOG.md" \
+          --future-release $VERSION \
+          --enhancement-label "**Enhancements:**" \
+          --release-branch "main" \
+          --issues false \
+          --author false \
+          --unreleased true \
+          --exclude-tags-regex "nightly/.+""
 
     - name: 💾 Commit changes
       id: git_commit

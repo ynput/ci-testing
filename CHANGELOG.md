@@ -1,21 +1,5 @@
 # Changelog
 
-## [0.7.0](https://github.com/pypeclub/ci-testing/tree/0.7.0) (2021-04-22)
-
-[Full Changelog](https://github.com/pypeclub/ci-testing/compare/nightly/0.6.0...0.7.0)
-
-**Implemented enhancements:**
-
-- add changelog to workflow [\#4](https://github.com/pypeclub/ci-testing/pull/4) ([mkolar](https://github.com/mkolar))
-- change time for cron [\#2](https://github.com/pypeclub/ci-testing/pull/2) ([mkolar](https://github.com/mkolar))
-
-**Fixed bugs:**
-
-- Host: fixing something [\#1](https://github.com/pypeclub/ci-testing/pull/1) ([mkolar](https://github.com/mkolar))
-
-**Merged pull requests:**
-
-- add changelog generator settings [\#3](https://github.com/pypeclub/ci-testing/pull/3) ([mkolar](https://github.com/mkolar))
 
 ## [nightly/0.6.0](https://github.com/pypeclub/ci-testing/tree/nightly/0.6.0) (2021-04-21)
 
