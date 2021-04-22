@@ -45,14 +45,8 @@ jobs:
 
     - name: Generate Changelog
       if: steps.version_type.outputs.type != 'skip'
-      uses: heinrichreimer/github-changelog-generator-action@v2.1.1
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        repo: pypeclub/ci-testing
-        futureRelease: $VERSION
-        excludeTagsRegex: nightly/.+
-        unreleased: true
-        releaseBranch: main
+      run: |
+        docker run --rm -v $(pwd):/host-volume ferrarimarco/github-changelog-generator -t ${{ secrets.GITHUB_TOKEN }} --user pypeclub --project ci-testing -o "/host-volume/CHANGELOG.md" --future-release $VERSION
 
     - name: 💾 Commit changes
       id: git_commit
