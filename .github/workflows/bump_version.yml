@@ -49,7 +49,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         repo: pypeclub/ci-testing
-        future-release: $VERSION
+        futureRelease: $VERSION
 
     - name: 💾 Commit changes
       id: git_commit
