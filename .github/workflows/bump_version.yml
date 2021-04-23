@@ -59,6 +59,32 @@ jobs:
           --exclude-tags-regex "nightly/.+" \
           -o "/host-volume/CHANGELOG.md"
 
+    - name: "✏️ Generate full changelog"
+        id: generate-full-changelog
+        uses: heinrichreimer/github-changelog-generator-action@v2.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          headerLabel: "# 📑 Changelog"
+          breakingLabel: '### 💥 Breaking'
+          enhancementLabel: '### 🚀 Enhancements'
+          bugsLabel: '### 🐛 Bug fixes'
+          deprecatedLabel: '### ⚠️ Deprecations'
+          prLabel: '### 📁 Other pull requests'
+          addSections: '{"documentation":{"prefix":"### 📖 Documentation","labels":["documentation"]},"tests":{"prefix":"### ✅ Testing","labels":["tests"]}}'
+          issues: false
+          issuesWoLabels: false
+          pullRequests: true
+          prWoLabels: false
+          author: false
+          unreleased: true
+          compareLink: true
+          stripGeneratorNotice: true
+          verbose: true
+          excludeTagsRegex: "nightly/.+"
+          futureRelease: $VERSION
+          releaseBranch: "main"
+          output: "/host-volume/CHANGELOG2.md"
+
     - name: 💾 Commit changes
       id: git_commit
       if: steps.version_type.outputs.type != 'skip'
