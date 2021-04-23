@@ -57,7 +57,7 @@ jobs:
           --no-author \
           --no-pr-wo-labels \
           --exclude-tags-regex "nightly/.+" \
-          -o "/host-volume/CHANGELOG.md"
+          -o "/host-volume/CHANGELOG2.md"
 
     - name: "✏️ Generate full changelog"
       id: generate-full-changelog
@@ -83,7 +83,9 @@ jobs:
         excludeTagsRegex: "nightly/.+"
         futureRelease: $VERSION
         releaseBranch: "main"
-        output: "/host-volume/CHANGELOG2.md"
+
+    - name: "🖨️ Print changelog to console"
+      run: cat CHANGELOG.md
 
     - name: 💾 Commit changes
       id: git_commit
