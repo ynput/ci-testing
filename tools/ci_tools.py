@@ -27,15 +27,19 @@ def file_regex_replace(filename, regex, version):
         f.write(text)
         f.truncate()
 
-def bump_file_versions(version):
+def bump_file_versions(version, prerelease):
     filename = "./openpypeCItest/version.py"
     regex = "(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?"
-    file_regex_replace(filename, regex, version)
+    if prerelease:
+        replace_version = f"{version}-{prerelease}"
+    file_regex_replace(filename, regex, replace_version)
 
     # bump pyproject.toml
     filename = "pyproject.toml"
     regex = "version = \"(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?\" # OpenPype"
     replace_version = f"version = \"{version}\" # OpenPype"
+    if prerelease:
+        replace_version = f"version = \"{version}-{prerelease}\" # OpenPype"
     file_regex_replace(filename, regex, replace_version)
 
 
@@ -46,6 +50,9 @@ def main():
                       type="string", help="read data from FILENAME")
     parser.add_option("--version", dest="version",
                       action="store", type="string")
+    parser.add_option("--prerelease", dest="prerelease",
+                      action="store", type="string")
+
 
     (options, args) = parser.parse_args()
 
@@ -53,7 +60,7 @@ def main():
         print(release_type(options.logfile))
 
     if options.version:
-        print(bump_file_versions(options.version))
+        print(bump_file_versions(options.version, options.prerelease))
 
 
 if __name__ == "__main__":

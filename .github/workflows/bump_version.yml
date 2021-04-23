@@ -41,35 +41,18 @@ jobs:
 
     - name: 💉 Inject new version into files
       if: steps.version_type.outputs.type != 'skip'
-      run: python ./tools/ci_tools.py --version $VERSION
-
-    - name: 📓 Generate Changelog
-      if: steps.version_type.outputs.type != 'skip'
-      run: |
-        docker run --rm -v $(pwd):/host-volume ferrarimarco/github-changelog-generator \
-          -t ${{ secrets.GITHUB_TOKEN }} \
-          --user pypeclub \
-          --project ci-testing \
-          --future-release $VERSION \
-          --enhancement-label "**Enhancements:**" \
-          --release-branch "main" \
-          --no-issues \
-          --no-author \
-          --no-pr-wo-labels \
-          --exclude-tags-regex "nightly/.+" \
-          -o "/host-volume/CHANGELOG2.md"
+      run: python ./tools/ci_tools.py --version "$VERSION"
 
     - name: "✏️ Generate full changelog"
+      if: steps.version_type.outputs.type != 'skip'
       id: generate-full-changelog
       uses: heinrichreimer/github-changelog-generator-action@v2.2
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        headerLabel: "# 📑 Changelog"
         breakingLabel: '### 💥 Breaking'
         enhancementLabel: '### 🚀 Enhancements'
         bugsLabel: '### 🐛 Bug fixes'
         deprecatedLabel: '### ⚠️ Deprecations'
-        prLabel: '### 📁 Other pull requests'
         addSections: '{"documentation":{"prefix":"### 📖 Documentation","labels":["documentation"]},"tests":{"prefix":"### ✅ Testing","labels":["tests"]}}'
         issues: false
         issuesWoLabels: false
@@ -81,7 +64,7 @@ jobs:
         stripGeneratorNotice: true
         verbose: true
         excludeTagsRegex: "nightly/.+"
-        futureRelease: $VERSION
+        futureRelease: ${{ steps.next_version.outputs.tag }}
         releaseBranch: "main"
 
     - name: "🖨️ Print changelog to console"
