@@ -1,8 +1,8 @@
-#
+# Changelog
 
-## [$VERSION](https://github.com/pypeclub/ci-testing/tree/$VERSION) (2021-04-23)
+## [Unreleased](https://github.com/pypeclub/ci-testing/tree/HEAD)
 
-[Full Changelog](https://github.com/pypeclub/ci-testing/compare/0.3.1...$VERSION)
+[Full Changelog](https://github.com/pypeclub/ci-testing/compare/0.3.1...HEAD)
 
 ### 🚀 Enhancements
 
