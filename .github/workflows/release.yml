@@ -20,6 +20,12 @@ jobs:
     #   with:
     #     python-version: 3.7
 
+    - name: Get latest stable tag
+      id: last_version
+      run: |
+        echo ::set-output name=since_tag::git tag --list '[0-9]*' | sort -V | tail -2 | head -1
+        echo ::set-output name=due_tag::git tag --list '[0-9]*' | sort -V | tail -1
+
     - name: "✏️ Generate changelog"
       if: steps.version_type.outputs.type != 'skip'
       id: generate-last-changelog
@@ -40,9 +46,9 @@ jobs:
         stripGeneratorNotice: true
         verbose: true
         excludeTagsRegex: "nightly/.+"
-        futureRelease: ${{ github.ref }}
         releaseBranch: "main"
-        onlyLastTag: true
+        sinceTag: ${{ steps.last_version.outputs.since_tag }}
+        dueTag: ${{ steps.last_version.outputs.due_tag }}
         stripHeaders: true
 
     - name: "🖨️ Print changelog to console"
