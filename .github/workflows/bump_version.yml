@@ -64,7 +64,7 @@ jobs:
         stripGeneratorNotice: true
         verbose: true
         excludeTagsRegex: "nightly/.+"
-        futureRelease: $VERSION
+        futureRelease: "$VERSION"
         releaseBranch: "main"
 
     - name: "🖨️ Print changelog to console"
