@@ -24,7 +24,7 @@ jobs:
         ALLOW_EMPTY_CHANGELOG: "false"
         ALLOW_TAG_PREFIX: "true"
 
-    - name: "Release"
+    - name: "🚀 Github Release"
       uses: softprops/action-gh-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
