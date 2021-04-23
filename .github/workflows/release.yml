@@ -55,9 +55,6 @@ jobs:
         sinceTag: "${{ steps.last_version.outputs.since_tag }}"
         stripHeaders: true
 
-    - name: "🖨️ Print changelog to console"
-      run: echo ${{ steps.generate-last-changelog.outputs.changelog }}
-
     - name: "Release"
       uses: softprops/action-gh-release@v1
       env:
