@@ -48,12 +48,12 @@ jobs:
     - name: "🖨️ Print changelog to console"
       run: echo ${{ steps.generate-last-changelog.outputs.changelog }}
 
-     - name: "Release"
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with: 
-          body: ${{ steps.generate-last-changelog.outputs.changelog }}
+    - name: "Release"
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with: 
+        body: ${{ steps.generate-last-changelog.outputs.changelog }}
 
     # - name: 💾 Commit changes
     #   id: git_commit
