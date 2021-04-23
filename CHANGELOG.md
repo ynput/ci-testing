@@ -1,11 +1,12 @@
 # Changelog
 
-## [0.7.5](https://github.com/pypeclub/ci-testing/tree/$VERSION) (2021-04-23)
+## [$VERSION](https://github.com/pypeclub/ci-testing/tree/$VERSION) (2021-04-23)
 
-[Full Changelog](https://github.com/pypeclub/ci-testing/compare/0.7.4...0.7.5)
+[Full Changelog](https://github.com/pypeclub/ci-testing/compare/0.7.4...$VERSION)
 
 ### 🐛 Bug fixes
 
+- fix changelog [\#6](https://github.com/pypeclub/ci-testing/pull/6)
 - chagne glob [\#5](https://github.com/pypeclub/ci-testing/pull/5)
 
 ## [0.7.4](https://github.com/pypeclub/ci-testing/tree/0.7.4) (2021-04-23)
