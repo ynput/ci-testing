@@ -23,8 +23,8 @@ jobs:
     - name: Get latest stable tag
       id: last_version
       run: |
-        since_tag=git tag --list 'v[0-9]*' | sort -V | tail -2 | head -1
-        due_tag=git tag --list 'v[0-9]*' | sort -V | tail -1
+        since_tag=`git tag --list 'v[0-9]*' | sort -V | tail -2 | head -1`
+        due_tag=`git tag --list 'v[0-9]*' | sort -V | tail -1`
         echo $since_tag
         echo $due_tag
         ::set-output name=since_tag::$since_tag
