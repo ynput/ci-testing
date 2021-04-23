@@ -1,8 +1,8 @@
 # Changelog
 
-## [0.7.0](https://github.com/pypeclub/ci-testing/tree/0.7.0) (2021-04-22)
+## [0.7.1](https://github.com/pypeclub/ci-testing/tree/0.7.1) (2021-04-23)
 
-[Full Changelog](https://github.com/pypeclub/ci-testing/compare/0.3.1...0.7.0)
+[Full Changelog](https://github.com/pypeclub/ci-testing/compare/0.3.1...0.7.1)
 
 **Enhancements:**
 
