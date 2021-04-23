@@ -1,8 +1,8 @@
 # Changelog
 
-## [0.7.5](https://github.com/pypeclub/ci-testing/tree/$VERSION) (2021-04-23)
+## [nightly/0.7.7](https://github.com/pypeclub/ci-testing/tree/nightly/0.7.7) (2021-04-23)
 
-[Full Changelog](https://github.com/pypeclub/ci-testing/compare/0.7.4...$VERSION)
+[Full Changelog](https://github.com/pypeclub/ci-testing/compare/0.7.4...nightly/0.7.7)
 
 ### 🐛 Bug fixes
 
