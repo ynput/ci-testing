@@ -110,7 +110,7 @@ def main():
             print("skip")
 
     if options.nightly:
-        next_tag_v, next_release_v = calculate_next_nightly()
+        next_tag_v = calculate_next_nightly()
         bump_file_versions(next_tag_v)
         print(next_tag_v)
 
