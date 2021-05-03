@@ -73,6 +73,7 @@ def calculate_next_nightly():
     last_prerelease, last_pre_tag = get_last_version("CI")
     last_pre_v = VersionInfo.parse(last_prerelease)
     last_pre_v_finalized = last_pre_v.finalize_version()
+    print(last_pre_v_finalized)
 
     last_release, last_release_tag = get_last_version("release")
 
@@ -82,6 +83,7 @@ def calculate_next_nightly():
         return None
 
     next_release_v = last_release_v.next_version(part=bump_type)
+    print(next_release_v)
 
     if next_release_v > last_pre_v_finalized:
         next_tag = next_release_v.bump_prerelease(token="nightly").__str__()
