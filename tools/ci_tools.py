@@ -113,8 +113,9 @@ def main():
 
     if options.nightly:
         next_tag_v = calculate_next_nightly()
-        bump_file_versions(next_tag_v)
         print(next_tag_v)
+        bump_file_versions(next_tag_v)
+
 
 
 if __name__ == "__main__":
