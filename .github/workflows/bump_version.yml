@@ -23,25 +23,16 @@ jobs:
     - name: 🔎 Determine next version type
       id: version_type
       run: |
-        git log $(git describe --tags --abbrev=0)..HEAD --merges --oneline > new-in-this-release.log
-        TYPE=$(python ./tools/ci_tools.py --logfile new-in-this-release.log)
-        rm new-in-this-release.log
-
+        TYPE=$(python ./tools/ci_tools.py --bump)
         echo ::set-output name=type::$TYPE
 
-    - name: ➕ Calculate next version
-      id: next_version
-      if: steps.version_type.outputs.type != 'skip'
-      uses: pypeclub/semver-release-action@master
-      with:
-        prefix: nightly/
-        dry_run: true
-        bump: ${{ steps.version_type.outputs.type }}
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-
     - name: 💉 Inject new version into files
+      id: version
       if: steps.version_type.outputs.type != 'skip'
-      run: python ./tools/ci_tools.py --version "$VERSION"
+      run: |
+        result=$(python ./tools/ci_tools.py --nightly)
+
+        echo ::set-output name=next_tag::${result[0]}
 
     - name: "✏️ Generate full changelog"
       if: steps.version_type.outputs.type != 'skip'
@@ -64,7 +55,6 @@ jobs:
         stripGeneratorNotice: true
         verbose: true
         excludeTagsRegex: "nightly/.+"
-        futureRelease: ${{ steps.next_version.outputs.version }}
         releaseBranch: "main"
 
     - name: "🖨️ Print changelog to console"
