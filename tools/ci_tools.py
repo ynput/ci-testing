@@ -3,10 +3,6 @@ import sys
 from semver import VersionInfo
 from git import Repo
 from optparse import OptionParser
-import pprint
-
-
-pp = pprint.PrettyPrinter(indent=4)
 
 
 def remove_prefix(text, prefix):
@@ -35,9 +31,7 @@ def get_last_version(match):
 def get_log_since_tag(version):
     repo = Repo()
     assert not repo.bare
-    log = repo.git.log(f'{version}..HEAD', '--merges', '--oneline')
-    # pp.pprint(log)
-    return(log)
+    return repo.git.log(f'{version}..HEAD', '--merges', '--oneline')
 
 
 def release_type(log):
