@@ -63,6 +63,7 @@ jobs:
         releaseBranch: "main"
 
     - name: "🖨️ Print changelog to console"
+      if: steps.version_type.outputs.type != 'skip'
       run: cat CHANGELOG.md
 
     - name: 💾 Commit and Tag
