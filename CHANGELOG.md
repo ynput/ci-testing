@@ -1,13 +1,12 @@
 # Changelog
 
-## [0.8.1-nightly.3](https://github.com/pypeclub/ci-testing/tree/HEAD)
+## [0.8.1-nightly.4](https://github.com/pypeclub/ci-testing/tree/HEAD)
 
 [Full Changelog](https://github.com/pypeclub/ci-testing/compare/0.8.0...HEAD)
 
 #### 🐛 Bug fixes
 
 - Add proper PR to changelog [\#7](https://github.com/pypeclub/ci-testing/pull/7)
-- fix changelog [\#6](https://github.com/pypeclub/ci-testing/pull/6)
 
 ## [0.8.0](https://github.com/pypeclub/ci-testing/tree/0.8.0) (2021-05-04)
 
@@ -15,10 +14,11 @@
 
 ## [0.7.4](https://github.com/pypeclub/ci-testing/tree/0.7.4) (2021-05-04)
 
-[Full Changelog](https://github.com/pypeclub/ci-testing/compare/CI/0.8.0-nightly.1...0.7.4)
+[Full Changelog](https://github.com/pypeclub/ci-testing/compare/CI/0.8.0-nightly.2...0.7.4)
 
 #### 🐛 Bug fixes
 
+- fix changelog [\#6](https://github.com/pypeclub/ci-testing/pull/6)
 - chagne glob [\#5](https://github.com/pypeclub/ci-testing/pull/5)
 
 ## [0.7.3](https://github.com/pypeclub/ci-testing/tree/0.7.3) (2021-04-23)
