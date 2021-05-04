@@ -56,7 +56,8 @@ jobs:
         compareLink: true
         stripGeneratorNotice: true
         verbose: true
-        excludeTagsRegex: "nightly/.+"
+        unreleasedLabel: ${{ steps.version.outputs.next_tag }} - Unreleased
+        excludeTagsRegex: "CI/.+"
         releaseBranch: "main"
 
     - name: "🖨️ Print changelog to console"
