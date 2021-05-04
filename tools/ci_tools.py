@@ -82,7 +82,7 @@ def calculate_next_nightly():
     if not bump_type:
         return None
 
-    next_release_v = last_release_v.next_version(part="minor")
+    next_release_v = last_release_v.next_version(part=bump_type)
     # print(next_release_v)
 
     if next_release_v > last_pre_v_finalized:
