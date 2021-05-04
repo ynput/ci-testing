@@ -69,7 +69,7 @@ def bump_file_versions(version):
     file_regex_replace(filename, regex, pyproject_version)
 
 
-def calculate_next_nightly():
+def calculate_next_nightly(token="nightly"):
     last_prerelease, last_pre_tag = get_last_version("CI")
     last_pre_v = VersionInfo.parse(last_prerelease)
     last_pre_v_finalized = last_pre_v.finalize_version()
@@ -86,10 +86,10 @@ def calculate_next_nightly():
     # print(next_release_v)
 
     if next_release_v > last_pre_v_finalized:
-        next_tag = next_release_v.bump_prerelease(token="nightly").__str__()
+        next_tag = next_release_v.bump_prerelease(token=token).__str__()
         return next_tag
     elif next_release_v == last_pre_v_finalized:
-        next_tag = last_pre_v.bump_prerelease(token="nightly").__str__()
+        next_tag = last_pre_v.bump_prerelease(token=token).__str__()
         return next_tag
 
 
@@ -105,19 +105,30 @@ def main():
     parser.add_option("-v", "--version",
                       dest="version", action="store",
                       help="work with explicit version")
+    parser.add_option("-p", "--prerelease",
+                      dest="prerelease", action="store",
+                      help="define prerelease token")
 
     (options, args) = parser.parse_args()
 
     if options.bump:
+        last_CI, last_CI_tag = get_last_version("CI")
         last_release, last_release_tag = get_last_version("release")
-        bump_type = release_type(get_log_since_tag(last_release))
-        if not bump_type:
+        bump_type_CI = release_type(get_log_since_tag(last_CI_tag))
+        bump_type_release = release_type(get_log_since_tag(last_release_tag))
+        if bump_type_CI is None or bump_type_release is None:
             print("skip")
 
     if options.nightly:
         next_tag_v = calculate_next_nightly()
         print(next_tag_v)
         bump_file_versions(next_tag_v)
+
+    if options.prerelease:
+        current_prerelease = VersionInfo.parse(options.prerelease)
+        new_prerelease = current_prerelease.bump_prerelease().__str__()
+        print(new_prerelease)
+        bump_file_versions(new_prerelease)
     
     if options.version:
         bump_file_versions(options.version)
