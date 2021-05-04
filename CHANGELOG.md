@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.8.0-nightly.1](https://github.com/pypeclub/ci-testing/tree/HEAD)
+## [0.8.0-nightly.1-Unreleased](https://github.com/pypeclub/ci-testing/tree/HEAD)
 
 [Full Changelog](https://github.com/pypeclub/ci-testing/compare/0.7.3...HEAD)
 
@@ -28,7 +28,15 @@
 
 ## [0.3.0](https://github.com/pypeclub/ci-testing/tree/0.3.0) (2021-04-16)
 
-[Full Changelog](https://github.com/pypeclub/ci-testing/compare/042dc39a42c8722fb650123aafef30247b63ffcc...0.3.0)
+[Full Changelog](https://github.com/pypeclub/ci-testing/compare/0.2.0...0.3.0)
+
+## [0.2.0](https://github.com/pypeclub/ci-testing/tree/0.2.0) (2021-04-16)
+
+[Full Changelog](https://github.com/pypeclub/ci-testing/compare/0.1.0...0.2.0)
+
+## [0.1.0](https://github.com/pypeclub/ci-testing/tree/0.1.0) (2021-04-16)
+
+[Full Changelog](https://github.com/pypeclub/ci-testing/compare/042dc39a42c8722fb650123aafef30247b63ffcc...0.1.0)
 
 
 
