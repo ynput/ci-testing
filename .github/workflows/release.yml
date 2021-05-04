@@ -30,8 +30,8 @@ jobs:
         git config user.name ${{ secrets.CI_USER }}
         git fetch
         git checkout -b main origin/main
-        git tag -d $RELEASE_VERSION
-        git push origin --delete $RELEASE_VERSION
+        git tag -d ${GITHUB_REF#refs/*/}
+        git push origin --delete ${GITHUB_REF#refs/*/}
         echo PREVIOUS_VERSION=`git describe --tags --match="[0-9]*"` >> $GITHUB_ENV
        
     - name: 💉 Inject new version into files
