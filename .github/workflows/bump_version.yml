@@ -34,8 +34,7 @@ jobs:
       run: |
         RESULT=$(python ./tools/ci_tools.py --nightly)
 
-        echo ::set-output name=next_tag::$RESULT[0]
-        echo ::set-output name=next_release::$RESULT[1]
+        echo ::set-output name=next_tag::$RESULT
 
     - name: "✏️ Generate full changelog"
       if: steps.version_type.outputs.type != 'skip'
@@ -57,7 +56,7 @@ jobs:
         compareLink: true
         stripGeneratorNotice: true
         verbose: true
-        futureLabel: ${{ steps.version.outputs.next_release }}
+        unreleasedLabel: ${{ steps.version.outputs.next_tag }}-Unreleased
         excludeTagsRegex: "CI/.+"
         releaseBranch: "main"
 
