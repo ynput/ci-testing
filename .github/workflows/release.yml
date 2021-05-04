@@ -23,8 +23,13 @@ jobs:
       run: pip install gitpython semver
 
     - name: Set env
-      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-
+      run: |
+        echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+        
+        git tag -d ${{ env.RELEASE_VERSION }}
+        git push origin --delete ${{ env.RELEASE_VERSION }}
+        echo PREVIOUS_VERSION=`git describe --tags --match="[0-9]*"` >> $GITHUB_ENV
+       
     - name: 💉 Inject new version into files
       id: version
       if: steps.version_type.outputs.type != 'skip'
@@ -53,7 +58,7 @@ jobs:
         excludeTagsRegex: "CI/.+"
         futureRelease: ${{ env.RELEASE_VERSION }}
         releaseBranch: "main"
-        onlyLastTag: true
+        sinceTag: ${{ env.PREVIOUS_VERSION }}
         stripHeaders: true
 
 
@@ -81,16 +86,6 @@ jobs:
         excludeTagsRegex: "CI/.+"
         releaseBranch: "main"
 
-    # - name: "✏️ Generate changelog"
-    #   if: steps.version_type.outputs.type != 'skip'
-    #   uses: docker://antonyurchenko/git-release:latest
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #     DRAFT_RELEASE: "false"
-    #     PRE_RELEASE: "false"
-    #     CHANGELOG_FILE: "CHANGELOG.md"
-    #     ALLOW_EMPTY_CHANGELOG: "false"
-    #     ALLOW_TAG_PREFIX: "true"
 
     - name: 💾 Commit and Tag
       id: git_commit
