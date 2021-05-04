@@ -58,9 +58,12 @@ jobs:
         compareLink: true
         stripGeneratorNotice: true
         verbose: true
-        unreleasedLabel: ${{ steps.version.outputs.next_tag }}-Unreleased
+        unreleasedLabel: ${{ steps.version.outputs.next_tag }}
         excludeTagsRegex: "CI/.+"
         releaseBranch: "main"
+
+    - name: "🖨️ Print changelog to console"
+      run: cat CHANGELOG.md
 
     - name: 💾 Commit and Tag
       id: git_commit
