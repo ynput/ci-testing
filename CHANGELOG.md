@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.8.0-nightly.1-Unreleased](https://github.com/pypeclub/ci-testing/tree/HEAD)
+## [0.8.0-nightly.2-Unreleased](https://github.com/pypeclub/ci-testing/tree/HEAD)
 
 [Full Changelog](https://github.com/pypeclub/ci-testing/compare/0.7.3...HEAD)
 
