@@ -1,36 +1,62 @@
-from optparse import OptionParser
 import re
 import sys
+from semver import VersionInfo
+from git import Repo
+from optparse import OptionParser
 
 
-def release_type(filename):
-    with open(filename,'r+') as f:
-        text = f.read()
-        regex_minor = ["feature/", "(feat)"]
-        regex_patch = ["bugfix/", "fix/", "(fix)"]
-        for reg in regex_minor:
-            if re.search(reg, text):
-                return "minor"
-        for reg in regex_patch:
-            if re.search(reg, text):
-                return "patch"
-        return "skip"
+def remove_prefix(text, prefix):
+    return text[text.startswith(prefix) and len(prefix):]
+
+
+def get_last_version(match):
+    repo = Repo()
+    assert not repo.bare
+    version_types = {
+        "CI": "CI/[0-9]*",
+        "release": "[0-9]*"
+    }
+    tag = repo.git.describe(
+        '--tags',
+        f'--match={version_types[match]}',
+        '--abbrev=0'
+        )
+
+    if match == "CI":
+        return remove_prefix(tag, "CI/"), tag
+    else:
+        return tag, tag
+
+
+def get_log_since_tag(version):
+    repo = Repo()
+    assert not repo.bare
+    return repo.git.log(f'{version}..HEAD', '--merges', '--oneline')
+
+
+def release_type(log):
+    regex_minor = ["feature/", "(feat)"]
+    regex_patch = ["bugfix/", "fix/", "(fix)"]
+    for reg in regex_minor:
+        if re.search(reg, log):
+            return "minor"
+    for reg in regex_patch:
+        if re.search(reg, log):
+            return "patch"
+    return None
 
 
 def file_regex_replace(filename, regex, version):
-    with open(filename,'r+') as f:
+    with open(filename, 'r+') as f:
         text = f.read()
         text = re.sub(regex, version, text)
-        print(20*"#")
-        print(f"NEW VERSION {version} INSERTED into {filename}")
+        # pp.pprint(f"NEW VERSION {version} INSERTED into {filename}")
         f.seek(0)
         f.write(text)
         f.truncate()
 
-def bump_file_versions(version, prerelease):
 
-    if prerelease:
-        version = f"{version}-{prerelease}"
+def bump_file_versions(version):
 
     filename = "./openpypeCItest/version.py"
     regex = "(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?"
@@ -43,24 +69,53 @@ def bump_file_versions(version, prerelease):
     file_regex_replace(filename, regex, pyproject_version)
 
 
+def calculate_next_nightly():
+    last_prerelease, last_pre_tag = get_last_version("CI")
+    last_pre_v = VersionInfo.parse(last_prerelease)
+    last_pre_v_finalized = last_pre_v.finalize_version()
+    # print(last_pre_v_finalized)
+
+    last_release, last_release_tag = get_last_version("release")
+
+    last_release_v = VersionInfo.parse(last_release)
+    bump_type = release_type(get_log_since_tag(last_release))
+    if not bump_type:
+        return None
+
+    next_release_v = last_release_v.next_version(part=bump_type)
+    # print(next_release_v)
+
+    if next_release_v > last_pre_v_finalized:
+        next_tag = next_release_v.bump_prerelease(token="nightly").__str__()
+        return next_tag
+    elif next_release_v == last_pre_v_finalized:
+        next_tag = last_pre_v.bump_prerelease(token="nightly").__str__()
+        return next_tag
+
+
 def main():
     usage = "usage: %prog [options] arg"
     parser = OptionParser(usage)
-    parser.add_option("--logfile", dest="logfile", action="store",
-                      type="string", help="read data from FILENAME")
-    parser.add_option("--version", dest="version",
-                      action="store", type="string")
-    parser.add_option("--prerelease", dest="prerelease",
-                      action="store", type="string")
-
+    parser.add_option("-n", "--nightly",
+                      dest="nightly", action="store_true",
+                      help="Bump nightly version and return it")
+    parser.add_option("-b", "--bump",
+                      dest="bump", action="store_true",
+                      help="Return if there is something to bump")
 
     (options, args) = parser.parse_args()
 
-    if options.logfile:
-        print(release_type(options.logfile))
+    if options.bump:
+        last_release, last_release_tag = get_last_version("release")
+        bump_type = release_type(get_log_since_tag(last_release))
+        if not bump_type:
+            print("skip")
 
-    if options.version:
-        print(bump_file_versions(options.version, options.prerelease))
+    if options.nightly:
+        next_tag_v = calculate_next_nightly()
+        print(next_tag_v)
+        bump_file_versions(next_tag_v)
+
 
 
 if __name__ == "__main__":

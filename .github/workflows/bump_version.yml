@@ -23,25 +23,18 @@ jobs:
     - name: 🔎 Determine next version type
       id: version_type
       run: |
-        git log $(git describe --tags --abbrev=0)..HEAD --merges --oneline > new-in-this-release.log
-        TYPE=$(python ./tools/ci_tools.py --logfile new-in-this-release.log)
-        rm new-in-this-release.log
+        pip install gitpython semver
+        TYPE=$(python ./tools/ci_tools.py --bump)
 
         echo ::set-output name=type::$TYPE
 
-    - name: ➕ Calculate next version
-      id: next_version
-      if: steps.version_type.outputs.type != 'skip'
-      uses: pypeclub/semver-release-action@master
-      with:
-        prefix: nightly/
-        dry_run: true
-        bump: ${{ steps.version_type.outputs.type }}
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-
     - name: 💉 Inject new version into files
+      id: version
       if: steps.version_type.outputs.type != 'skip'
-      run: python ./tools/ci_tools.py --version "$VERSION"
+      run: |
+        RESULT=$(python ./tools/ci_tools.py --nightly)
+
+        echo ::set-output name=next_tag::$RESULT
 
     - name: "✏️ Generate full changelog"
       if: steps.version_type.outputs.type != 'skip'
@@ -63,14 +56,14 @@ jobs:
         compareLink: true
         stripGeneratorNotice: true
         verbose: true
-        excludeTagsRegex: "nightly/.+"
-        futureRelease: ${{ steps.next_version.outputs.version }}
+        unreleasedLabel: ${{ steps.version.outputs.next_tag }} - Unreleased
+        excludeTagsRegex: "CI/.+"
         releaseBranch: "main"
 
     - name: "🖨️ Print changelog to console"
       run: cat CHANGELOG.md
 
-    - name: 💾 Commit changes
+    - name: 💾 Commit and Tag
       id: git_commit
       if: steps.version_type.outputs.type != 'skip'
       run: |
@@ -78,9 +71,10 @@ jobs:
         git config user.name ${{ secrets.CI_USER }}
         git add .
         git commit -m "[Automated] Bump version"
+        tag_name="CI/${{ steps.version.outputs.next_tag }}"
+        git tag -a $tag_name -m "nightly build"
         git push
-        
-        echo ::set-output name=sha::$(git rev-parse HEAD)
+        git push origin $tag_name
 
     - name: 🔨 Merge main back to develop    
       uses: everlytic/branch-merge@1.1.0
@@ -90,12 +84,3 @@ jobs:
         source_ref: 'main'
         target_branch: 'develop'
         commit_message_template: '[Automated] Merged {source_ref} into {target_branch}'
-
-    - name: 🚀 Tag and Release
-      uses: pypeclub/semver-release-action@master
-      if: steps.version_type.outputs.type != 'skip'
-      with:
-        prefix: nightly/
-        bump: ${{ steps.next_version.outputs.match }}
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        sha: ${{ steps.git_commit.outputs.sha }}
