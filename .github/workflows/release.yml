@@ -75,7 +75,6 @@ jobs:
         tag_name="${{ env.RELEASE_VERSION }}"
         git tag -fa $tag_name -m "stable release"
         git push
-        git push origin $tag_name
 
     - name: "🚀 Github Release"
       uses: softprops/action-gh-release@v1
