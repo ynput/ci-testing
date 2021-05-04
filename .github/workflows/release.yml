@@ -70,11 +70,13 @@ jobs:
       run: |
         git config user.email ${{ secrets.CI_EMAIL }}
         git config user.name ${{ secrets.CI_USER }}
+        git checkout main
         git add .
         git commit -m "[Automated] Release"
         tag_name="${{ env.RELEASE_VERSION }}"
         git tag -fa $tag_name -m "stable release"
         git push
+        git push origin $tag_name
 
     - name: "🚀 Github Release"
       uses: softprops/action-gh-release@v1
