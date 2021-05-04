@@ -1,4 +1,4 @@
-name: Release Stable
+name: Stable Release
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - '*[0-9].*[0-9].*[0-9]*'
 
 jobs:
-  release:
+  create_release:
     runs-on: ubuntu-latest
 
     steps:
@@ -70,11 +70,15 @@ jobs:
       run: |
         git config user.email ${{ secrets.CI_EMAIL }}
         git config user.name ${{ secrets.CI_USER }}
+        git fetch
+        git checkout -b main origin/main
         git add .
         git commit -m "[Automated] Release"
         tag_name="${{ env.RELEASE_VERSION }}"
-        git tag -fa $tag_name -m "stable release"
         git push
+        git tag -fa $tag_name -m "stable release"
+        git push origin --delete $tag_name
+        git push origin $tag_name
 
     - name: "🚀 Github Release"
       uses: softprops/action-gh-release@v1
