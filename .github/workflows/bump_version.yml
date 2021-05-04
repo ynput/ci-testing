@@ -6,7 +6,7 @@ on:
 
 
 jobs:
-  find_version:
+  create_nightly:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,10 +20,12 @@ jobs:
       with:
         python-version: 3.7
 
+    - name: Install Python requirements
+      run: pip install gitpython semver
+
     - name: 🔎 Determine next version type
       id: version_type
       run: |
-        pip install gitpython semver
         TYPE=$(python ./tools/ci_tools.py --bump)
 
         echo ::set-output name=type::$TYPE
