@@ -29,6 +29,32 @@ jobs:
       run: |
         python ./tools/ci_tools.py --version ${{ env.RELEASE_VERSION }}
 
+    - name: "✏️ Generate last changelog"
+      if: steps.version_type.outputs.type != 'skip'
+      id: generate-last-changelog
+      uses: heinrichreimer/github-changelog-generator-action@v2.2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        breakingLabel: '### 💥 Breaking'
+        enhancementLabel: '### 🚀 Enhancements'
+        bugsLabel: '### 🐛 Bug fixes'
+        deprecatedLabel: '### ⚠️ Deprecations'
+        addSections: '{"documentation":{"prefix":"### 📖 Documentation","labels":["documentation"]},"tests":{"prefix":"### ✅ Testing","labels":["tests"]}}'
+        issues: false
+        issuesWoLabels: false
+        pullRequests: true
+        prWoLabels: false
+        author: false
+        compareLink: true
+        stripGeneratorNotice: true
+        verbose: true
+        excludeTagsRegex: "CI/.+"
+        futureRelease: ${{ env.RELEASE_VERSION }}
+        releaseBranch: "main"
+        onlyLastTag: true
+        stripHeaders: true
+
+
     - name: "✏️ Generate full changelog"
       if: steps.version_type.outputs.type != 'skip'
       id: generate-full-changelog
@@ -53,16 +79,16 @@ jobs:
         excludeTagsRegex: "CI/.+"
         releaseBranch: "main"
 
-    - name: "✏️ Generate changelog"
-      if: steps.version_type.outputs.type != 'skip'
-      uses: docker://antonyurchenko/git-release:latest
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        DRAFT_RELEASE: "false"
-        PRE_RELEASE: "false"
-        CHANGELOG_FILE: "CHANGELOG.md"
-        ALLOW_EMPTY_CHANGELOG: "false"
-        ALLOW_TAG_PREFIX: "true"
+    # - name: "✏️ Generate changelog"
+    #   if: steps.version_type.outputs.type != 'skip'
+    #   uses: docker://antonyurchenko/git-release:latest
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #     DRAFT_RELEASE: "false"
+    #     PRE_RELEASE: "false"
+    #     CHANGELOG_FILE: "CHANGELOG.md"
+    #     ALLOW_EMPTY_CHANGELOG: "false"
+    #     ALLOW_TAG_PREFIX: "true"
 
     - name: 💾 Commit and Tag
       id: git_commit
