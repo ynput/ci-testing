@@ -40,55 +40,55 @@ jobs:
       run: |
         python ./tools/ci_tools.py --version ${{ env.RELEASE_VERSION }}
 
-    - name: "✏️ Generate last changelog"
-      if: steps.version_type.outputs.type != 'skip'
-      id: generate-last-changelog
-      uses: heinrichreimer/github-changelog-generator-action@v2.2
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        breakingLabel: '### 💥 Breaking'
-        enhancementLabel: '### 🚀 Enhancements'
-        bugsLabel: '### 🐛 Bug fixes'
-        deprecatedLabel: '### ⚠️ Deprecations'
-        addSections: '{"documentation":{"prefix":"### 📖 Documentation","labels":["documentation"]},"tests":{"prefix":"### ✅ Testing","labels":["tests"]}}'
-        issues: false
-        issuesWoLabels: false
-        pullRequests: true
-        prWoLabels: false
-        author: false
-        compareLink: true
-        stripGeneratorNotice: true
-        verbose: true
-        excludeTagsRegex: "CI/.+"
-        futureRelease: ${{ env.RELEASE_VERSION }}
-        releaseBranch: "main"
-        sinceTag: ${{ env.PREVIOUS_VERSION }}
-        stripHeaders: true
-
-
-    # - name: "✏️ Generate full changelog"
+    # - name: "✏️ Generate last changelog"
     #   if: steps.version_type.outputs.type != 'skip'
-    #   id: generate-full-changelog
+    #   id: generate-last-changelog
     #   uses: heinrichreimer/github-changelog-generator-action@v2.2
     #   with:
     #     token: ${{ secrets.GITHUB_TOKEN }}
-    #     breakingLabel: '#### 💥 Breaking'
-    #     enhancementLabel: '#### 🚀 Enhancements'
-    #     bugsLabel: '#### 🐛 Bug fixes'
-    #     deprecatedLabel: '#### ⚠️ Deprecations'
+    #     breakingLabel: '### 💥 Breaking'
+    #     enhancementLabel: '### 🚀 Enhancements'
+    #     bugsLabel: '### 🐛 Bug fixes'
+    #     deprecatedLabel: '### ⚠️ Deprecations'
     #     addSections: '{"documentation":{"prefix":"### 📖 Documentation","labels":["documentation"]},"tests":{"prefix":"### ✅ Testing","labels":["tests"]}}'
     #     issues: false
     #     issuesWoLabels: false
     #     pullRequests: true
     #     prWoLabels: false
     #     author: false
-    #     unreleased: true
     #     compareLink: true
     #     stripGeneratorNotice: true
     #     verbose: true
-    #     futureRelease: ${{ env.RELEASE_VERSION }}
     #     excludeTagsRegex: "CI/.+"
+    #     futureRelease: ${{ env.RELEASE_VERSION }}
     #     releaseBranch: "main"
+    #     sinceTag: ${{ env.PREVIOUS_VERSION }}
+    #     stripHeaders: true
+
+
+    - name: "✏️ Generate full changelog"
+      if: steps.version_type.outputs.type != 'skip'
+      id: generate-full-changelog
+      uses: heinrichreimer/github-changelog-generator-action@v2.2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        breakingLabel: '#### 💥 Breaking'
+        enhancementLabel: '#### 🚀 Enhancements'
+        bugsLabel: '#### 🐛 Bug fixes'
+        deprecatedLabel: '#### ⚠️ Deprecations'
+        addSections: '{"documentation":{"prefix":"### 📖 Documentation","labels":["documentation"]},"tests":{"prefix":"### ✅ Testing","labels":["tests"]}}'
+        issues: false
+        issuesWoLabels: false
+        pullRequests: true
+        prWoLabels: false
+        author: false
+        unreleased: true
+        compareLink: true
+        stripGeneratorNotice: true
+        verbose: true
+        futureRelease: ${{ env.RELEASE_VERSION }}
+        excludeTagsRegex: "CI/.+"
+        releaseBranch: "main"
 
 
     - name: "🖨️ Print changelog to console"
@@ -106,11 +106,21 @@ jobs:
         git push origin $tag_name
 
     - name: "🚀 Github Release"
-      uses: softprops/action-gh-release@v1
+      uses: docker://antonyurchenko/git-release:latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with: 
-        body: ${{ steps.generate-last-changelog.outputs.changelog }}
+        DRAFT_RELEASE: "false"
+        PRE_RELEASE: "false"
+        CHANGELOG_FILE: "CHANGELOG.md"
+        ALLOW_EMPTY_CHANGELOG: "false"
+        ALLOW_TAG_PREFIX: "true"
+
+    # - name: "🚀 Github Release"
+    #   uses: softprops/action-gh-release@v1
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   with: 
+    #     body: ${{ steps.generate-last-changelog.outputs.changelog }}
 
     - name: 🔨 Merge main back to develop    
       uses: everlytic/branch-merge@1.1.0
