@@ -73,7 +73,7 @@ def calculate_next_nightly():
     last_prerelease, last_pre_tag = get_last_version("CI")
     last_pre_v = VersionInfo.parse(last_prerelease)
     last_pre_v_finalized = last_pre_v.finalize_version()
-    # print(last_pre_v_finalized)
+    print(last_pre_v_finalized)
 
     last_release, last_release_tag = get_last_version("release")
 
@@ -82,8 +82,8 @@ def calculate_next_nightly():
     if not bump_type:
         return None
 
-    next_release_v = last_release_v.next_version(part=bump_type)
-    # print(next_release_v)
+    next_release_v = last_release_v.next_version(part="minor")
+    print(next_release_v)
 
     if next_release_v > last_pre_v_finalized:
         next_tag = next_release_v.bump_prerelease(token="nightly").__str__()
@@ -102,6 +102,9 @@ def main():
     parser.add_option("-b", "--bump",
                       dest="bump", action="store_true",
                       help="Return if there is something to bump")
+    parser.add_option("-v", "--version",
+                      dest="version", action="store",
+                      help="work with explicit version")
 
     (options, args) = parser.parse_args()
 
@@ -115,6 +118,10 @@ def main():
         next_tag_v = calculate_next_nightly()
         print(next_tag_v)
         bump_file_versions(next_tag_v)
+    
+    if options.version:
+        bump_file_versions(options.version)
+        print(f"Injected version {options.version} into the release")
 
 
 
