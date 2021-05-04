@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "OpenPype"
-version = "0.8.0-nightly.4" # OpenPype version
+version = "0.8.0" # OpenPype version
 description = "Multi-platform open-source pipeline built around the Avalon platform, expanding it with extra features and integrations."
 authors = ["OpenPype Team <info@openpype.io>"]
 license = "MIT License"
