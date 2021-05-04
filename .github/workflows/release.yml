@@ -26,9 +26,13 @@ jobs:
       run: |
         echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
         
-        git tag -d ${{ env.RELEASE_VERSION }}
-        git push origin --delete ${{ env.RELEASE_VERSION }}
-        echo PREVIOUS_VERSION=`git describe --tags --match="[0-9]*"` >> $GITHUB_ENV
+        git config user.email ${{ secrets.CI_EMAIL }}
+        git config user.name ${{ secrets.CI_USER }}
+        git fetch
+        git checkout -b main origin/main
+        git tag -d ${GITHUB_REF#refs/*/}
+        git push origin --delete ${GITHUB_REF#refs/*/}
+        echo PREVIOUS_VERSION=`git describe --tags --match="[0-9]*" --abbrev=0` >> $GITHUB_ENV
        
     - name: 💉 Inject new version into files
       id: version
@@ -91,16 +95,11 @@ jobs:
       id: git_commit
       if: steps.version_type.outputs.type != 'skip'
       run: |
-        git config user.email ${{ secrets.CI_EMAIL }}
-        git config user.name ${{ secrets.CI_USER }}
-        git fetch
-        git checkout -b main origin/main
         git add .
         git commit -m "[Automated] Release"
         tag_name="${{ env.RELEASE_VERSION }}"
         git push
         git tag -fa $tag_name -m "stable release"
-        git push origin --delete $tag_name
         git push origin $tag_name
 
     - name: "🚀 Github Release"
