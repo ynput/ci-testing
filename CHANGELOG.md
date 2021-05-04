@@ -1,8 +1,8 @@
 # Changelog
 
-## [0.8.1-nightly.2](https://github.com/pypeclub/ci-testing/tree/HEAD)
+## [0.8.1](https://github.com/pypeclub/ci-testing/tree/0.8.1) (2021-05-04)
 
-[Full Changelog](https://github.com/pypeclub/ci-testing/compare/0.8.0...HEAD)
+[Full Changelog](https://github.com/pypeclub/ci-testing/compare/0.8.0...0.8.1)
 
 #### 🐛 Bug fixes
 
