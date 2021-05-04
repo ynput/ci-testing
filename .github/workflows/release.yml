@@ -66,29 +66,29 @@ jobs:
         stripHeaders: true
 
 
-    - name: "✏️ Generate full changelog"
-      if: steps.version_type.outputs.type != 'skip'
-      id: generate-full-changelog
-      uses: heinrichreimer/github-changelog-generator-action@v2.2
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        breakingLabel: '#### 💥 Breaking'
-        enhancementLabel: '#### 🚀 Enhancements'
-        bugsLabel: '#### 🐛 Bug fixes'
-        deprecatedLabel: '#### ⚠️ Deprecations'
-        addSections: '{"documentation":{"prefix":"### 📖 Documentation","labels":["documentation"]},"tests":{"prefix":"### ✅ Testing","labels":["tests"]}}'
-        issues: false
-        issuesWoLabels: false
-        pullRequests: true
-        prWoLabels: false
-        author: false
-        unreleased: true
-        compareLink: true
-        stripGeneratorNotice: true
-        verbose: true
-        futureRelease: ${{ env.RELEASE_VERSION }}
-        excludeTagsRegex: "CI/.+"
-        releaseBranch: "main"
+    # - name: "✏️ Generate full changelog"
+    #   if: steps.version_type.outputs.type != 'skip'
+    #   id: generate-full-changelog
+    #   uses: heinrichreimer/github-changelog-generator-action@v2.2
+    #   with:
+    #     token: ${{ secrets.GITHUB_TOKEN }}
+    #     breakingLabel: '#### 💥 Breaking'
+    #     enhancementLabel: '#### 🚀 Enhancements'
+    #     bugsLabel: '#### 🐛 Bug fixes'
+    #     deprecatedLabel: '#### ⚠️ Deprecations'
+    #     addSections: '{"documentation":{"prefix":"### 📖 Documentation","labels":["documentation"]},"tests":{"prefix":"### ✅ Testing","labels":["tests"]}}'
+    #     issues: false
+    #     issuesWoLabels: false
+    #     pullRequests: true
+    #     prWoLabels: false
+    #     author: false
+    #     unreleased: true
+    #     compareLink: true
+    #     stripGeneratorNotice: true
+    #     verbose: true
+    #     futureRelease: ${{ env.RELEASE_VERSION }}
+    #     excludeTagsRegex: "CI/.+"
+    #     releaseBranch: "main"
 
 
     - name: "🖨️ Print changelog to console"
