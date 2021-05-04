@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.8.0](https://github.com/pypeclub/ci-testing/tree/0.8.0) (2021-05-04)
+## [0.8.0-nithgly](https://github.com/pypeclub/ci-testing/tree/0.8.0) (2021-05-04)
 
 [Full Changelog](https://github.com/pypeclub/ci-testing/compare/CI/0.8.0-nightly.4...0.8.0)
 
