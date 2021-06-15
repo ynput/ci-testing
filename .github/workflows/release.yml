@@ -52,7 +52,7 @@ jobs:
         compareLink: true
         stripGeneratorNotice: true
         verbose: true
-        futureRelease: ${{ env.RELEASE_VERSION }}
+        futureRelease: ${{ steps.version.outputs.release_tag }}
         excludeTagsRegex: "CI/.+"
         releaseBranch: "main"
 
