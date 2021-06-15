@@ -8,6 +8,7 @@ on:
 jobs:
   create_release:
     runs-on: ubuntu-latest
+    if: github.actor != 'pypebot'
 
     steps:
     - name: 🚛 Checkout Code
@@ -31,6 +32,7 @@ jobs:
         git fetch
         git checkout -b main origin/main
         git tag -d ${GITHUB_REF#refs/*/}
+        git remote set-url --push origin https://pypebot:${{ secrets.ADMIN_TOKEN }}@github.com/pypeclub/openpype
         git push origin --delete ${GITHUB_REF#refs/*/}
         echo PREVIOUS_VERSION=`git describe --tags --match="[0-9]*" --abbrev=0` >> $GITHUB_ENV
        
@@ -71,7 +73,7 @@ jobs:
       id: generate-full-changelog
       uses: heinrichreimer/github-changelog-generator-action@v2.2
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.ADMIN_TOKEN }}
         breakingLabel: '#### 💥 Breaking'
         enhancementLabel: '#### 🚀 Enhancements'
         bugsLabel: '#### 🐛 Bug fixes'
@@ -79,6 +81,8 @@ jobs:
         addSections: '{"documentation":{"prefix":"### 📖 Documentation","labels":["documentation"]},"tests":{"prefix":"### ✅ Testing","labels":["tests"]}}'
         issues: false
         issuesWoLabels: false
+        sinceTag: "3.0.0"
+        maxIssues: 100
         pullRequests: true
         prWoLabels: false
         author: false
@@ -103,12 +107,20 @@ jobs:
         tag_name="${{ env.RELEASE_VERSION }}"
         git push
         git tag -fa $tag_name -m "stable release"
-        git push origin $tag_name
+        git remote set-url --push origin https://pypebot:${{ secrets.ADMIN_TOKEN }}@github.com/pypeclub/openpype
+
+    - name: Push to protected main branch
+      uses: CasperWA/push-protected@v2
+      with:
+        token: ${{ secrets.ADMIN_TOKEN }}
+        branch: main
+        tags: true
+        unprotect_reviews: true
 
     - name: "🚀 Github Release"
       uses: docker://antonyurchenko/git-release:latest
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.ADMIN_TOKEN }}
         DRAFT_RELEASE: "false"
         PRE_RELEASE: "false"
         CHANGELOG_FILE: "CHANGELOG.md"
@@ -126,7 +138,7 @@ jobs:
       uses: everlytic/branch-merge@1.1.0
       if: steps.version_type.outputs.type != 'skip'
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.ADMIN_TOKEN }}
         source_ref: 'main'
         target_branch: 'develop'
         commit_message_template: '[Automated] Merged release {source_ref} into {target_branch}'
