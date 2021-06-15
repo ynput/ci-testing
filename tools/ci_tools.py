@@ -158,8 +158,8 @@ def main():
         bump_file_versions(new_release)
 
     if options.lastversion:
-        last_release = get_last_version(options.lastversion)
-        print(last_release)
+        last_release, last_release_tag = get_last_version(options.lastversion)
+        print(last_release_tag)
 
     if options.releaselatest:
         new_release = finalize_latest_nightly()
