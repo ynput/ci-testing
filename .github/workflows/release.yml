@@ -103,6 +103,7 @@ jobs:
         futureRelease: ${{ steps.version.outputs.release_tag }}
         excludeTagsRegex: "CI/.+"
         releaseBranch: "main"
+        stripHeaders: true
         sinceTag: ${{ steps.version.outputs.last_release }}
 
 
