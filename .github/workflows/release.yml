@@ -57,10 +57,6 @@ jobs:
         excludeTagsRegex: "CI/.+"
         releaseBranch: "main"
 
-    - name: "🖨️ Print changelog to console"
-      if: steps.version.outputs.release_tag != 'skip'
-      run: echo ${{ steps.generate-last-changelog.outputs.changelog }}
-
     - name: 💾 Commit and Tag
       id: git_commit
       if: steps.version.outputs.release_tag != 'skip'
@@ -92,25 +88,42 @@ jobs:
     #     ALLOW_EMPTY_CHANGELOG: "true"
     #     ALLOW_TAG_PREFIX: "true"
     
-    - name: Get Changelog Entry
+    
+    - name: "✏️ Generate last changelog"
       if: steps.version.outputs.release_tag != 'skip'
-      id: changelog_reader
-      uses: mindsers/changelog-reader-action@v2
+      id: generate-last-changelog
+      uses: heinrichreimer/github-changelog-generator-action@v2.2
       with:
-        version: ${{ steps.version.outputs.release_tag }}
-        path: CHANGELOG.md
+        token: ${{ secrets.ADMIN_TOKEN }}
+        breakingLabel: '#### 💥 Breaking'
+        enhancementLabel: '#### 🚀 Enhancements'
+        bugsLabel: '#### 🐛 Bug fixes'
+        deprecatedLabel: '#### ⚠️ Deprecations'
+        addSections: '{"documentation":{"prefix":"### 📖 Documentation","labels":["documentation"]},"tests":{"prefix":"### ✅ Testing","labels":["tests"]}}'
+        issues: false
+        issuesWoLabels: false
+        maxIssues: 100
+        pullRequests: true
+        prWoLabels: false
+        author: false
+        unreleased: true
+        compareLink: true
+        stripGeneratorNotice: true
+        verbose: true
+        futureRelease: ${{ steps.version.outputs.release_tag }}
+        excludeTagsRegex: "CI/.+"
+        releaseBranch: "main"
+        onlyLastTag: true
 
-    - name: DEBUG
+    - name: "🖨️ Print changelog to console"
       if: steps.version.outputs.release_tag != 'skip'
-      run: |
-        echo ${{ steps.changelog_reader.changes }}
-        echo ${{ steps.version.outputs.release_tag }}
+      run: echo ${{ steps.generate-last-changelog.outputs.changelog }}
 
     - name: 🚀 Github Release
       if: steps.version.outputs.release_tag != 'skip'
       uses: ncipollo/release-action@v1
       with:
-        body: ${{ steps.changelog_reader.changes }}
+        body: ${{ steps.generate-last-changelog.outputs.changelog }}
         tag: ${{ steps.version.outputs.release_tag }}
         token: ${{ secrets.ADMIN_TOKEN }}
 
