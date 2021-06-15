@@ -2,7 +2,7 @@ name: Stable Release
 
 on:
   release:
-    action: 
+    types: 
       - prereleased
 
 jobs:
