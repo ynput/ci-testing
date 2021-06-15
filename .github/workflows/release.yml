@@ -108,7 +108,7 @@ jobs:
 
     - name: 🚀 Github Release
       if: steps.version.outputs.release_tag != 'skip'
-      uses: ncipollo/release-action@latest
+      uses: ncipollo/release-action@v1
       with:
         body: ${{ steps.changelog_reader.changes }}
         tag: ${{ steps.version.outputs.release_tag }}
