@@ -62,10 +62,12 @@ jobs:
       id: git_commit
       if: steps.version.outputs.release_tag != 'skip'
       run: |
+        git config user.email ${{ secrets.CI_EMAIL }}
+        git config user.name ${{ secrets.CI_USER }}
         git add .
         git commit -m "[Automated] Release"
         tag_name="${{ steps.version.outputs.release_tag }}"
-        git tag -fa $tag_name -m "stable release"
+        git tag -a $tag_name -m "stable release"
 
     - name: Push to protected main branch
       if: steps.version.outputs.release_tag != 'skip'
