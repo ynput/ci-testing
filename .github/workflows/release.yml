@@ -95,7 +95,6 @@ jobs:
       id: changelog_reader
       uses: mindsers/changelog-reader-action@v2
       with:
-        validation_depth: 0
         version: ${{ steps.version.outputs.release_tag }}
         path: ./CHANGELOG.md
 
