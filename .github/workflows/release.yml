@@ -33,38 +33,12 @@ jobs:
         git tag -d ${GITHUB_REF#refs/*/}
         git push origin --delete ${GITHUB_REF#refs/*/}
         echo PREVIOUS_VERSION=`git describe --tags --match="[0-9]*" --abbrev=0` >> $GITHUB_ENV
-       
+          
     - name: 💉 Inject new version into files
       id: version
       if: steps.version_type.outputs.type != 'skip'
       run: |
         python ./tools/ci_tools.py --version ${{ env.RELEASE_VERSION }}
-
-    # - name: "✏️ Generate last changelog"
-    #   if: steps.version_type.outputs.type != 'skip'
-    #   id: generate-last-changelog
-    #   uses: heinrichreimer/github-changelog-generator-action@v2.2
-    #   with:
-    #     token: ${{ secrets.GITHUB_TOKEN }}
-    #     breakingLabel: '### 💥 Breaking'
-    #     enhancementLabel: '### 🚀 Enhancements'
-    #     bugsLabel: '### 🐛 Bug fixes'
-    #     deprecatedLabel: '### ⚠️ Deprecations'
-    #     addSections: '{"documentation":{"prefix":"### 📖 Documentation","labels":["documentation"]},"tests":{"prefix":"### ✅ Testing","labels":["tests"]}}'
-    #     issues: false
-    #     issuesWoLabels: false
-    #     pullRequests: true
-    #     prWoLabels: false
-    #     author: false
-    #     compareLink: true
-    #     stripGeneratorNotice: true
-    #     verbose: true
-    #     excludeTagsRegex: "CI/.+"
-    #     futureRelease: ${{ env.RELEASE_VERSION }}
-    #     releaseBranch: "main"
-    #     sinceTag: ${{ env.PREVIOUS_VERSION }}
-    #     stripHeaders: true
-
 
     - name: "✏️ Generate full changelog"
       if: steps.version_type.outputs.type != 'skip'
@@ -90,7 +64,6 @@ jobs:
         excludeTagsRegex: "CI/.+"
         releaseBranch: "main"
 
-
     - name: "🖨️ Print changelog to console"
       run: echo ${{ steps.generate-last-changelog.outputs.changelog }}
 
@@ -115,12 +88,6 @@ jobs:
         ALLOW_EMPTY_CHANGELOG: "false"
         ALLOW_TAG_PREFIX: "true"
 
-    # - name: "🚀 Github Release"
-    #   uses: softprops/action-gh-release@v1
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #   with: 
-    #     body: ${{ steps.generate-last-changelog.outputs.changelog }}
 
     - name: 🔨 Merge main back to develop    
       uses: everlytic/branch-merge@1.1.0
