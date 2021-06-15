@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.1.0](https://github.com/pypeclub/ci-testing/tree/3.1.0) (2021-06-15)
+
+[Full Changelog](https://github.com/pypeclub/ci-testing/compare/CI/3.1.0-nightly.3...3.1.0)
+
 ## [3.0.0](https://github.com/pypeclub/ci-testing/tree/3.0.0) (2021-06-15)
 
 [Full Changelog](https://github.com/pypeclub/ci-testing/compare/0.8.1...3.0.0)
