@@ -1,8 +1,8 @@
 # Changelog
 
-## [3.2.0-nightly.1](https://github.com/pypeclub/ci-testing/tree/HEAD)
+## [3.2.0](https://github.com/pypeclub/ci-testing/tree/3.2.0) (2021-06-15)
 
-[Full Changelog](https://github.com/pypeclub/ci-testing/compare/3.1.1...HEAD)
+[Full Changelog](https://github.com/pypeclub/ci-testing/compare/3.1.1...3.2.0)
 
 #### 🚀 Enhancements
 
@@ -34,7 +34,7 @@
 
 ## [0.7.4](https://github.com/pypeclub/ci-testing/tree/0.7.4) (2021-05-04)
 
-[Full Changelog](https://github.com/pypeclub/ci-testing/compare/CI/0.8.0-nightly.2...0.7.4)
+[Full Changelog](https://github.com/pypeclub/ci-testing/compare/CI/0.8.0-nightly.1...0.7.4)
 
 #### 🐛 Bug fixes
 

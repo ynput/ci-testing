@@ -27,8 +27,11 @@ jobs:
     - name: 💉 Inject new version into files
       id: version
       run: |
+        echo ::set-output name=current_version::${GITHUB_REF#refs/*/}
         RESULT=$(python ./tools/ci_tools.py --finalize ${GITHUB_REF#refs/*/})
+        LASTRELEASE=$(python ./tools/ci_tools.py --lastversion release)
 
+        echo ::set-output name=last_release::$LASTRELEASE
         echo ::set-output name=release_tag::$RESULT
 
     - name: "✏️ Generate full changelog"
@@ -56,10 +59,6 @@ jobs:
         excludeTagsRegex: "CI/.+"
         releaseBranch: "main"
 
-    - name: "🖨️ Print changelog to console"
-      if: steps.version.outputs.release_tag != 'skip'
-      run: echo ${{ steps.generate-last-changelog.outputs.changelog }}
-
     - name: 💾 Commit and Tag
       id: git_commit
       if: steps.version.outputs.release_tag != 'skip'
@@ -78,39 +77,49 @@ jobs:
         token: ${{ secrets.ADMIN_TOKEN }}
         branch: main
         tags: true
-        unprotect_reviews: true
-
-    # - name: "🚀 Github Release"
-    #   if: steps.version.outputs.release_tag != 'skip'
-    #   uses: docker://antonyurchenko/git-release:latest
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.ADMIN_TOKEN }}
-    #     DRAFT_RELEASE: "false"
-    #     PRE_RELEASE: "false"
-    #     CHANGELOG_FILE: "CHANGELOG.md"
-    #     ALLOW_EMPTY_CHANGELOG: "true"
-    #     ALLOW_TAG_PREFIX: "true"
+        unprotect_reviews: true    
     
-    - name: Get Changelog Entry
-      id: changelog_reader
-      uses: mindsers/changelog-reader-action@v2
+    - name: "✏️ Generate last changelog"
+      if: steps.version.outputs.release_tag != 'skip'
+      id: generate-last-changelog
+      uses: heinrichreimer/github-changelog-generator-action@v2.2
       with:
-        validation_depth: 0
-        version: ${{ steps.version.outputs.release_tag }}
-        path: ./CHANGELOG.md
+        token: ${{ secrets.ADMIN_TOKEN }}
+        breakingLabel: '**💥 Breaking**'
+        enhancementLabel: '**🚀 Enhancements**'
+        bugsLabel: '**🐛 Bug fixes**'
+        deprecatedLabel: '**⚠️ Deprecations**'
+        addSections: '{"documentation":{"prefix":"### 📖 Documentation","labels":["documentation"]},"tests":{"prefix":"### ✅ Testing","labels":["tests"]}}'
+        issues: false
+        issuesWoLabels: false
+        maxIssues: 100
+        pullRequests: true
+        prWoLabels: false
+        author: false
+        unreleased: true
+        compareLink: true
+        stripGeneratorNotice: true
+        verbose: true
+        futureRelease: ${{ steps.version.outputs.release_tag }}
+        excludeTagsRegex: "CI/.+"
+        releaseBranch: "main"
+        stripHeaders: true
+        sinceTag: ${{ steps.version.outputs.last_release }}
 
-    - name: Release
-      uses: softprops/action-gh-release@v1
+
+    - name: 🚀 Github Release
+      if: steps.version.outputs.release_tag != 'skip'
+      uses: ncipollo/release-action@v1
       with:
-        body: ${{ steps.changelog_reader.changes }}
-        tag_name: ${{ steps.version.outputs.release_tag }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+        body: ${{ steps.generate-last-changelog.outputs.changelog }}
+        tag: ${{ steps.version.outputs.release_tag }}
+        token: ${{ secrets.ADMIN_TOKEN }}
 
     - name: ☠ Delete Pre-release
+      if: steps.version.outputs.release_tag != 'skip'
       uses: cb80/delrel@latest
       with:
-        tag: ${GITHUB_REF}
+        tag: "${{ steps.version.outputs.current_version }}"
 
     - name: 🔨 Merge main back to develop    
       if: steps.version.outputs.release_tag != 'skip'
