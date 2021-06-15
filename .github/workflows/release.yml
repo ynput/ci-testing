@@ -1,7 +1,8 @@
 name: Stable Release
 
 on:
-  workflow_dispatch:
+  release:
+    types: [prereleased]
 
 jobs:
   create_release:
@@ -20,11 +21,14 @@ jobs:
         python-version: 3.7
     - name: Install Python requirements
       run: pip install gitpython semver
-          
+  
+
     - name: 💉 Inject new version into files
       id: version
       run: |
-        RESULT=$(python ./tools/ci_tools.py --release)
+        echo ${GITHUB_REF#refs/*/}
+      
+        RESULT=$(python ./tools/ci_tools.py --finalize ${GITHUB_REF#refs/*/})
 
         echo ::set-output name=release_tag::$RESULT
 
@@ -67,7 +71,6 @@ jobs:
         git commit -m "[Automated] Release"
         tag_name="${{ steps.version.outputs.release_tag }}"
         git tag -a $tag_name -m "stable release"
-        git checkout $tag_name
 
     - name: Push to protected main branch
       if: steps.version.outputs.release_tag != 'skip'

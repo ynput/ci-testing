@@ -100,6 +100,15 @@ def finalize_latest_nightly():
 
     return last_pre_v_finalized.__str__()
 
+def finalize_prerelease(prerelease):
+
+    if "/" in prerelease:
+        prerelease = prerelease.split("/")[-1]
+
+    prerelease_v = VersionInfo.parse(prerelease)
+    prerelease_v_finalized = prerelease_v.finalize_version()
+
+    return prerelease_v_finalized.__str__()
 
 
 def main():
@@ -111,11 +120,14 @@ def main():
     parser.add_option("-b", "--bump",
                       dest="bump", action="store_true",
                       help="Return if there is something to bump")
-    parser.add_option("-r", "--release",
-                      dest="release", action="store_true",
+    parser.add_option("-r", "--release-latest",
+                      dest="releaselatest", action="store_true",
                       help="finalize latest prerelease to a release")
     parser.add_option("-p", "--prerelease",
                       dest="prerelease", action="store",
+                      help="define prerelease token")
+    parser.add_option("-f", "--finalize",
+                      dest="finalize", action="store",
                       help="define prerelease token")
     parser.add_option("-v", "--version",
                       dest="version", action="store",
@@ -137,7 +149,12 @@ def main():
         print(next_tag_v)
         bump_file_versions(next_tag_v)
 
-    if options.release:
+    if options.finalize:
+        new_release = finalize_prerelease(options.finalize)
+        print(new_release)
+        bump_file_versions(new_release)
+
+    if options.releaselatest:
         new_release = finalize_latest_nightly()
         last_release, last_release_tag = get_last_version("release")
 
