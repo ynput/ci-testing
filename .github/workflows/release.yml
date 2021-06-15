@@ -67,6 +67,7 @@ jobs:
         git commit -m "[Automated] Release"
         tag_name="${{ steps.version.outputs.release_tag }}"
         git tag -a $tag_name -m "stable release"
+        git checkout $tag_name
 
     - name: Push to protected main branch
       if: steps.version.outputs.release_tag != 'skip'
