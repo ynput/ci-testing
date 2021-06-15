@@ -27,6 +27,7 @@ jobs:
     - name: 💉 Inject new version into files
       id: version
       run: |
+        echo ::set-output name=current_version::${GITHUB_REF#refs/*/}
         RESULT=$(python ./tools/ci_tools.py --finalize ${GITHUB_REF#refs/*/})
 
         echo ::set-output name=release_tag::$RESULT
@@ -92,24 +93,32 @@ jobs:
     #     ALLOW_TAG_PREFIX: "true"
     
     - name: Get Changelog Entry
+      if: steps.version.outputs.release_tag != 'skip'
       id: changelog_reader
       uses: mindsers/changelog-reader-action@v2
       with:
         version: ${{ steps.version.outputs.release_tag }}
-        path: ./CHANGELOG.md
+        path: CHANGELOG.md
 
-    - name: Release
-      uses: softprops/action-gh-release@v1
+    - name: DEBUG
+      if: steps.version.outputs.release_tag != 'skip'
+      run: |
+        echo ${{ steps.changelog_reader.changes }}
+        echo ${{ steps.version.outputs.release_tag }}
+
+    - name: 🚀 Github Release
+      if: steps.version.outputs.release_tag != 'skip'
+      uses: ncipollo/release-action
       with:
         body: ${{ steps.changelog_reader.changes }}
-        tag_name: ${{ steps.version.outputs.release_tag }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+        tag: ${{ steps.version.outputs.release_tag }}
+        token: ${{ secrets.ADMIN_TOKEN }}
 
     - name: ☠ Delete Pre-release
+      if: steps.version.outputs.release_tag != 'skip'
       uses: cb80/delrel@latest
       with:
-        tag: ${GITHUB_REF}
+        tag: ${{ GITHUB_REF }}
 
     - name: 🔨 Merge main back to develop    
       if: steps.version.outputs.release_tag != 'skip'
