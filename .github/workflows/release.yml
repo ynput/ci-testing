@@ -2,7 +2,8 @@ name: Stable Release
 
 on:
   release:
-    types: [prereleased]
+    action: 
+      - prereleased
 
 jobs:
   create_release:
