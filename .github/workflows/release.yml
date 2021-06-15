@@ -80,16 +80,32 @@ jobs:
         tags: true
         unprotect_reviews: true
 
-    - name: "🚀 Github Release"
-      if: steps.version.outputs.release_tag != 'skip'
-      uses: docker://antonyurchenko/git-release:latest
+    # - name: "🚀 Github Release"
+    #   if: steps.version.outputs.release_tag != 'skip'
+    #   uses: docker://antonyurchenko/git-release:latest
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+    #     DRAFT_RELEASE: "false"
+    #     PRE_RELEASE: "false"
+    #     CHANGELOG_FILE: "CHANGELOG.md"
+    #     ALLOW_EMPTY_CHANGELOG: "true"
+    #     ALLOW_TAG_PREFIX: "true"
+    
+    - name: Get Changelog Entry
+      id: changelog_reader
+      uses: mindsers/changelog-reader-action@v2
+      with:
+        validation_depth: 0
+        version: ${{ steps.version.outputs.release_tag }}
+        path: ./CHANGELOG.md
+
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        body: ${{ steps.changelog_reader.changes }}
+        tag_name: ${{ steps.version.outputs.release_tag }}
       env:
         GITHUB_TOKEN: ${{ secrets.ADMIN_TOKEN }}
-        DRAFT_RELEASE: "false"
-        PRE_RELEASE: "false"
-        CHANGELOG_FILE: "CHANGELOG.md"
-        ALLOW_EMPTY_CHANGELOG: "true"
-        ALLOW_TAG_PREFIX: "true"
 
     - name: ☠ Delete Pre-release
       uses: cb80/delrel@latest
