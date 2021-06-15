@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.2.0-nightly.1](https://github.com/pypeclub/ci-testing/tree/HEAD)
+
+[Full Changelog](https://github.com/pypeclub/ci-testing/compare/3.1.1...HEAD)
+
+#### 🚀 Enhancements
+
+- testing PR in changelog [\#8](https://github.com/pypeclub/ci-testing/pull/8)
+
 ## [3.1.1](https://github.com/pypeclub/ci-testing/tree/3.1.1) (2021-06-15)
 
 [Full Changelog](https://github.com/pypeclub/ci-testing/compare/CI/3.1.1-nightly.1...3.1.1)
