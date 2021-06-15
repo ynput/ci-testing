@@ -132,6 +132,9 @@ def main():
     parser.add_option("-v", "--version",
                       dest="version", action="store",
                       help="work with explicit version")
+    parser.add_option("-l", "--lastversion",
+                      dest="lastversion", action="store",
+                      help="work with explicit version")
 
 
     (options, args) = parser.parse_args()
@@ -153,6 +156,10 @@ def main():
         new_release = finalize_prerelease(options.finalize)
         print(new_release)
         bump_file_versions(new_release)
+
+    if options.lastversion:
+        last_release = get_last_version(options.lastversion)
+        print(last_release)
 
     if options.releaselatest:
         new_release = finalize_latest_nightly()

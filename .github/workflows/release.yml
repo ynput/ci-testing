@@ -29,7 +29,9 @@ jobs:
       run: |
         echo ::set-output name=current_version::${GITHUB_REF#refs/*/}
         RESULT=$(python ./tools/ci_tools.py --finalize ${GITHUB_REF#refs/*/})
+        LASTRELEASE=$(python ./tools/ci_tools.py --lastversion release)
 
+        echo ::set-output name=last_release::$LASTRELEASE
         echo ::set-output name=release_tag::$RESULT
 
     - name: "✏️ Generate full changelog"
@@ -113,7 +115,7 @@ jobs:
         futureRelease: ${{ steps.version.outputs.release_tag }}
         excludeTagsRegex: "CI/.+"
         releaseBranch: "main"
-        onlyLastTag: true
+        sinceTag: ${{ steps.version.outputs.last_release }}
 
     - name: "🖨️ Print changelog to console"
       if: steps.version.outputs.release_tag != 'skip'
