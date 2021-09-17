@@ -3,6 +3,24 @@ import sys
 from semver import VersionInfo
 from git import Repo
 from optparse import OptionParser
+from github import Github
+
+def get_github_PRs(Log):
+    # print(Log)
+    g = Github("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")   
+    repo = g.get_repo("pypeclub/ci-testing")
+    used_labels = set()
+    for line in Log.splitlines():
+        print(line)
+        match = re.search("pull request #(\d+)", line)
+        if match:
+            pr_number = match.group(1)
+            pr = repo.get_pull(int(pr_number))
+            for label in pr.labels:
+                used_labels.add(label.name)
+    print(used_labels)
+
+    
 
 
 def remove_prefix(text, prefix):
@@ -36,7 +54,7 @@ def get_log_since_tag(version):
 
 def release_type(log):
     regex_minor = ["feature/", "(feat)"]
-    regex_patch = ["bugfix/", "fix/", "(fix)", "enhancement/"]
+    regex_patch = ["bugfix/", "fix/", "(fix)", "enhancement/", "update"]
     for reg in regex_minor:
         if re.search(reg, log):
             return "minor"
@@ -135,6 +153,9 @@ def main():
     parser.add_option("-l", "--lastversion",
                       dest="lastversion", action="store",
                       help="work with explicit version")
+    parser.add_option("-g", "--github",
+                      dest="github", action="store_true",
+                      help="get github")
 
 
     (options, args) = parser.parse_args()
@@ -146,6 +167,12 @@ def main():
         bump_type_release = release_type(get_log_since_tag(last_release_tag))
         if bump_type_CI is None or bump_type_release is None:
             print("skip")
+        else:
+            print(bump_type_release)
+
+    if options.github:
+        last_release, last_release_tag = get_last_version("release")
+        get_github_PRs(get_log_since_tag(last_release_tag))
 
     if options.nightly:
         next_tag_v = calculate_next_nightly()
