@@ -4,12 +4,16 @@ from semver import VersionInfo
 from git import Repo
 from optparse import OptionParser
 from github import Github
+import os
 
-def get_github_PRs(Log):
+def get_release_type_github(Log):
     # print(Log)
-    g = Github("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")   
+    minor_labels = ["type: feature", "type: deprecated"]
+    patch_labels = ["type: enhancement", "type: bug"]
+
+    g = Github(os.environ["GITHUB_TOKEN"])
     repo = g.get_repo("pypeclub/ci-testing")
-    used_labels = set()
+
     for line in Log.splitlines():
         print(line)
         match = re.search("pull request #(\d+)", line)
@@ -17,11 +21,13 @@ def get_github_PRs(Log):
             pr_number = match.group(1)
             pr = repo.get_pull(int(pr_number))
             for label in pr.labels:
-                used_labels.add(label.name)
-    print(used_labels)
-
+                print(label.name)
+                if label.name in minor_labels:
+                    return ("minor")
+                elif label.name in patch_labels: 
+                    return("patch")
+    return None
     
-
 
 def remove_prefix(text, prefix):
     return text[text.startswith(prefix) and len(prefix):]
@@ -161,18 +167,12 @@ def main():
     (options, args) = parser.parse_args()
 
     if options.bump:
-        last_CI, last_CI_tag = get_last_version("CI")
         last_release, last_release_tag = get_last_version("release")
-        bump_type_CI = release_type(get_log_since_tag(last_CI_tag))
-        bump_type_release = release_type(get_log_since_tag(last_release_tag))
-        if bump_type_CI is None or bump_type_release is None:
+        bump_type_release = get_release_type_github(get_log_since_tag(last_release_tag))
+        if bump_type_release is None:
             print("skip")
         else:
             print(bump_type_release)
-
-    if options.github:
-        last_release, last_release_tag = get_last_version("release")
-        get_github_PRs(get_log_since_tag(last_release_tag))
 
     if options.nightly:
         next_tag_v = calculate_next_nightly()
