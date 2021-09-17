@@ -105,6 +105,7 @@ jobs:
         releaseBranch: "main"
         stripHeaders: true
         sinceTag: ${{ steps.version.outputs.last_release }}
+        base: ""
 
 
     - name: 🚀 Github Release
