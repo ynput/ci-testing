@@ -36,7 +36,7 @@ def get_log_since_tag(version):
 
 def release_type(log):
     regex_minor = ["feature/", "(feat)"]
-    regex_patch = ["bugfix/", "fix/", "(fix)"]
+    regex_patch = ["bugfix/", "fix/", "(fix)", "enhancement/"]
     for reg in regex_minor:
         if re.search(reg, log):
             return "minor"
@@ -58,7 +58,7 @@ def file_regex_replace(filename, regex, version):
 
 def bump_file_versions(version):
 
-    filename = "./openpypeCItest/version.py"
+    filename = "./openpype/version.py"
     regex = "(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?"
     file_regex_replace(filename, regex, version)
 
