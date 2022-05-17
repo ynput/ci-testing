@@ -20,12 +20,12 @@ jobs:
         python-version: 3.7
 
     - name: Install Python requirements
-      run: pip install gitpython semver
+      run: pip install gitpython semver PyGithub
 
     - name: 🔎 Determine next version type
       id: version_type
       run: |
-        TYPE=$(python ./tools/ci_tools.py --bump)
+        TYPE=$(python ./tools/ci_tools.py --bump --github_token ${{ secrets.GITHUB_TOKEN }})
 
         echo ::set-output name=type::$TYPE
 
@@ -63,21 +63,6 @@ jobs:
       if: steps.version_type.outputs.type != 'skip'
       run: cat CHANGELOG.md
 
-    - name: 💾 Commit and Tag
-      id: git_commit
-      if: steps.version_type.outputs.type != 'skip'
-      run: |
-        git config user.email ${{ secrets.CI_EMAIL }}
-        git config user.name ${{ secrets.CI_USER }}
-        cd repos/avalon-core
-        git checkout main
-        git pull
-        cd ../..
-        git add .
-        git commit -m "[Automated] Bump version"
-        tag_name="CI/${{ steps.version.outputs.next_tag }}"
-        git tag -a $tag_name -m "nightly build"
-    
     - name: Push to protected main branch
       uses: CasperWA/push-protected@v2
       with:

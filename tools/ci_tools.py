@@ -6,12 +6,12 @@ from optparse import OptionParser
 from github import Github
 import os
 
-def get_release_type_github(Log):
+def get_release_type_github(Log, github_token):
     # print(Log)
     minor_labels = ["type: feature", "type: deprecated"]
     patch_labels = ["type: enhancement", "type: bug"]
 
-    g = Github(os.environ["GITHUB_TOKEN"])
+    g = Github(github_token)
     repo = g.get_repo("pypeclub/ci-testing")
 
     for line in Log.splitlines():
@@ -159,16 +159,19 @@ def main():
     parser.add_option("-l", "--lastversion",
                       dest="lastversion", action="store",
                       help="work with explicit version")
-    parser.add_option("-g", "--github",
-                      dest="github", action="store_true",
-                      help="get github")
+    parser.add_option("-g", "--github_token",
+                      dest="github_token", action="store",
+                      help="github token")
 
 
     (options, args) = parser.parse_args()
 
     if options.bump:
         last_release, last_release_tag = get_last_version("release")
-        bump_type_release = get_release_type_github(get_log_since_tag(last_release_tag))
+        bump_type_release = get_release_type_github(
+            get_log_since_tag(last_release_tag),
+            options.github_token
+            )
         if bump_type_release is None:
             print("skip")
         else:
