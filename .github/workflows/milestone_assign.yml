@@ -1,0 +1,26 @@
+name: Assign Milestone To PR
+
+on:
+  pull_request_target:
+    types: [opened, reopened]
+
+jobs:
+  run_if_release:
+    if:  startsWith(github.head_ref, 'release')
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: zoispag/action-assign-milestone@v1
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          milestone: 'next-minor'
+
+  run_if_develop:
+    if:  startsWith(github.base_ref, 'develop')
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: zoispag/action-assign-milestone@v1
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          milestone: 'next-patch'
