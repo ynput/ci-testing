@@ -3,11 +3,10 @@ name: Milestone - next-minor
 on:
   pull_request_target:
     types: [opened, reopened]
-    branches:
-      - 'release/**'
 
 jobs:
-  assign-milestone:
+  run_if:
+    if:  startsWith(github.head_ref, 'release')
     runs-on: ubuntu-latest
 
     steps:
