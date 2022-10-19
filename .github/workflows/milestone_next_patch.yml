@@ -1,0 +1,21 @@
+name: Milestone [next-patch]
+
+on:
+  pull_request:
+    types:
+      - opened
+    branches:
+      - 'feature/**'
+      - 'bugfix/**'
+      - 'hotfix/**'
+      - 'enhancement/**'
+
+jobs:
+  assign-milestone:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: zoispag/action-assign-milestone@v1
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          milestone: 'next-patch'
