@@ -1,9 +1,7 @@
 name: Milestone - next-minor
 
 on:
-  pull_request:
-    types:
-      - opened
+  pull_request_target:
     branches:
       - 'release/**'
 

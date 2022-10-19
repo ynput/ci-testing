@@ -1,14 +1,9 @@
 name: Milestone - next-patch
 
 on:
-  pull_request:
-    types:
-      - opened
+  pull_request_target:
     branches:
-      - 'feature/**'
-      - 'bugfix/**'
-      - 'hotfix/**'
-      - 'enhancement/**'
+      - 'develop'
 
 jobs:
   assign-milestone:
