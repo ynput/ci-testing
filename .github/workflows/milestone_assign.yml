@@ -16,7 +16,7 @@ jobs:
           milestone: 'next-minor'
 
   run_if_develop:
-    if:  startsWith(github.base_ref, 'develop')
+    if:  ${{ github.base_ref == 'develop' }}
     runs-on: ubuntu-latest
 
     steps:
