@@ -6,7 +6,7 @@ on:
 
 jobs:
   run_if_release:
-    if:  startsWith(github.head_ref, 'release')
+    if:  startsWith(github.base_ref, 'release')
     runs-on: ubuntu-latest
 
     steps:
