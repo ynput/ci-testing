@@ -1,4 +1,9 @@
-name: Generate
+name: Generate New Milestone
+
+on:
+  milestone:
+    types: [closed]
+
 jobs:
   generate:
     steps:
