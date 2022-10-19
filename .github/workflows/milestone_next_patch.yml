@@ -1,4 +1,4 @@
-name: Milestone [next-patch]
+name: Milestone - next-patch
 
 on:
   pull_request:
