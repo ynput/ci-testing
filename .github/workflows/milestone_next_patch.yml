@@ -1,7 +1,9 @@
 name: Milestone_next-patch
 
 on:
-  pull_request_target:
+  pull_request:
+    branches:
+      - 'develop'
 
 jobs:
   assign-milestone-patch:
