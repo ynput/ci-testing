@@ -1,0 +1,16 @@
+name: Milestone_next-minor
+
+on:
+  pull_request:
+    branches:
+      - 'release/**'
+
+jobs:
+  assign-milestone-minor:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: zoispag/action-assign-milestone@v1
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          milestone: 'next-minor'
