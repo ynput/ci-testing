@@ -1,4 +1,4 @@
-name: Milestone - next-minor
+name: Milestone_next-minor
 
 on:
   pull_request_target:

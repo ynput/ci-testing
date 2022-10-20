@@ -1,4 +1,4 @@
-name: Milestone - next-patch
+name: Milestone_next-patch
 
 on:
   pull_request_target:
@@ -6,7 +6,7 @@ on:
       - 'develop'
 
 jobs:
-  assign-milestone-path:
+  assign-milestone-patch:
     runs-on: ubuntu-latest
 
     steps:
