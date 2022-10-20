@@ -6,7 +6,7 @@ on:
       - 'release/**'
 
 jobs:
-  assign-milestone:
+  assign-milestone-minor:
     runs-on: ubuntu-latest
 
     steps:

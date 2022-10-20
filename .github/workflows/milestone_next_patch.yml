@@ -4,11 +4,9 @@ on:
   pull_request_target:
     branches:
       - 'develop'
-      - 'main'
-      - 'feature/**'
 
 jobs:
-  assign-milestone:
+  assign-milestone-path:
     runs-on: ubuntu-latest
 
     steps:
