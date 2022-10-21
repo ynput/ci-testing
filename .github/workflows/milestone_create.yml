@@ -14,7 +14,7 @@ jobs:
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
-      - run: printf "::set-output name=number::%s" $(printenv MILESTONES | jq --arg MILESTONE $(printenv MILESTONE) '.[]  | select(.title == $MILESTONE) | .number')
+      - run: echo  "name=number::%s" $(printenv MILESTONES | jq --arg MILESTONE $(printenv MILESTONE) '.[]  | select(.title == $MILESTONE) | .number')
         id: querymilestone
         env:
           MILESTONES: ${{ steps.milestones.outputs.milestones }}
