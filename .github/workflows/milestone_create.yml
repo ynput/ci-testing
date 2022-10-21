@@ -14,11 +14,15 @@ jobs:
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
-      - run: echo  "name=number::%s" $(printenv MILESTONES | jq --arg MILESTONE $(printenv MILESTONE) '.[]  | select(.title == $MILESTONE) | .number')
+      - run: printf "::set-output name=number::%s" $(printenv MILESTONES | jq --arg MILESTONE $(printenv MILESTONE) '.[]  | select(.title == $MILESTONE) | .number')
         id: querymilestone
         env:
           MILESTONES: ${{ steps.milestones.outputs.milestones }}
           MILESTONE: "next-patch"
+
+      - name: Read output
+        run: |
+          echo "${{ steps.querymilestone.outputs.number }}"
 
       - name: 'Create Milestone'
         if: steps.querymilestone.outputs.number == ''
