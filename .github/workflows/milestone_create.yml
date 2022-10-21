@@ -8,6 +8,7 @@ jobs:
   generate-next-patch:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v1
       - run: |
           echo "Is dependabot PR"
           if [[ "$(printenv MILESTONES | jq -c '. | length')" -eq "0" ]] ; then
