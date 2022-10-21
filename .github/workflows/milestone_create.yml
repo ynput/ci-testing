@@ -8,28 +8,14 @@ jobs:
   generate-next-patch:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - run: |
-          echo "Is dependabot PR"
-          if [[ "$(printenv MILESTONES | jq -c '. | length')" -eq "0" ]] ; then
-            echo "No milestone exists, usint patch version for next milestone"
-            printf "::set-output name=milestone::%s" "next-patch"
-            exit 0
-          fi
-        name: Decide which version to use as milestone
-        id: milestone
-        env:
-          MILESTONES: ${{ steps.milestones.outputs.milestones }}
       - name: 'Get Milestones'
         uses: "WyriHaximus/github-action-get-milestones@master"
         id: milestones
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-      - run: printf "::set-output name=number::%s" $(printenv MILESTONES | jq --arg MILESTONE $(printenv MILESTONE) '.[]  | select(.title == $MILESTONE) | .number')
-      id: querymilestone
-        env:
-          MILESTONES: ${{ steps.milestones.outputs.milestones }}
-          MILESTONE: ${{ steps.milestone.outputs.milestone }}
+      - name: Read output
+        run: |
+          echo "${{ steps.milestones.outputs.milestones }}"
       # - uses: actions/checkout@v1
       # - name: 'Create `next-patch` milestone'
       #   id: createmilestone
