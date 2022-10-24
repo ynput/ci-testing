@@ -31,8 +31,8 @@ jobs:
         run: echo "Actual milestone url - ${{ github.event.milestone.url }}"
         run: echo "New name milestone - ${{ steps.semvers.outputs.minor }}"
 
-      - name: 'Rename triggering milestone'
-        id: renametag
+      # - name: 'Rename triggering milestone'
+      #   id: renametag
         # ${{ github.event.milestone.title }}
         # add step to rename actually closed milestone to the tag version
         # 1. search all milestones and get id number of the milestone
