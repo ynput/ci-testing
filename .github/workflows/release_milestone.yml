@@ -1,0 +1,47 @@
+name: Stable Release [milestone]
+
+on:
+  milestone:
+    type: [closed]
+
+jobs:
+  release_milestone_minor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: 'Get Previous tag'
+        id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: 'Get next minor version'
+        id: semvers
+        uses: "WyriHaximus/github-action-next-semvers@v1"
+        with:
+          version: ${{ steps.previoustag.outputs.tag }}
+
+      - name: Build Changelog - minor
+        id: github_release
+        uses: okcredit/changelog-creator-action@v1.0.0
+        with:
+          milestone: ${{ steps.semvers.outputs.minor }}
+          configuration: "../conf/changelog_conf.json"
+          failOnError: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Print change log
+        run: echo "Generated changelog - ${{ steps.github_release.outputs.changelog }}"
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ steps.github_release.outputs.milestone }}
+          release_name: ${{ steps.github_release.outputs.milestone }}
+          body: ${{steps.github_release.outputs.changelog}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
