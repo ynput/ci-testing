@@ -26,7 +26,9 @@ jobs:
           version: ${{ steps.previoustag.outputs.tag }}
 
       - name: Print milestone title
-        run: echo "Actual milestone - ${{ github.event.milestone.title }}"
+        run: echo "Actual milestone title - ${{ github.event.milestone.title }}"
+        run: echo "Actual milestone number - ${{ github.event.milestone.number }}"
+        run: echo "Actual milestone url - ${{ github.event.milestone.url }}"
         run: echo "New name milestone - ${{ steps.semvers.outputs.minor }}"
 
       - name: 'Rename triggering milestone'
