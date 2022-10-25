@@ -45,7 +45,6 @@ jobs:
         with:
           milestone: ${{ steps.semvers.outputs.minor }}
           configuration: "../conf/changelog_conf.json"
-          failOnError: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
