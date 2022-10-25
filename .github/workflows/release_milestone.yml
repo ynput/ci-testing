@@ -39,6 +39,14 @@ jobs:
         # add step to rename actually closed milestone to the tag version
         # 1. search all milestones and get id number of the milestone
         # 2. use restapi to change the milestone title to tag name
+      - name: Rename milestone
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: ${{ github.event.milestone.url }}
+          method: 'PATCH'
+          bearerToken: ${{ secrets.GITHUB_TOKEN }}
+          contentType: "application/vnd.github+json"
+          data: '{"title": "${{ steps.semvers.outputs.minor }}"}'
 
       - name: Build Changelog - minor
         id: github_release
