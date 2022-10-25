@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 """Definition of OpenPype version."""
 
-__version__ = "0.0.2"
+__version__ = "1.3.1"
+
+# text
 
 
 
