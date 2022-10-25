@@ -51,6 +51,12 @@ jobs:
       - name: Print change log
         run: echo "Generated changelog - ${{ steps.github_release.outputs.changelog }}"
 
+      - name: Bump version and push tag
+        uses: laputansoft/github-tag-action@v4.6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.semvers.outputs.minor }}
+
       - name: Create Release
         uses: actions/create-release@v1
         with:
