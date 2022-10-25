@@ -27,18 +27,9 @@ jobs:
 
       - name: Print milestone title
         run: |
-          echo "Actual milestone title - ${{ github.event.milestone.title }}"
-          echo "Actual milestone number - ${{ github.event.milestone.number }}"
           echo "Actual milestone url - ${{ github.event.milestone.url }}"
           echo "New name milestone - ${{ steps.semvers.outputs.minor }}"
 
-      # - name: 'Rename triggering milestone'
-
-      #   id: renametag
-        # ${{ github.event.milestone.title }}
-        # add step to rename actually closed milestone to the tag version
-        # 1. search all milestones and get id number of the milestone
-        # 2. use restapi to change the milestone title to tag name
       - name: Rename milestone
         uses: fjogeleit/http-request-action@v1
         with:
@@ -55,7 +46,8 @@ jobs:
           milestone: ${{ steps.semvers.outputs.minor }}
           configuration: "../conf/changelog_conf.json"
           failOnError: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Print change log
         run: echo "Generated changelog - ${{ steps.github_release.outputs.changelog }}"
