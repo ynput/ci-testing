@@ -2,11 +2,11 @@
     "categories": [
       {
         "title": "## 🚀 Features",
-        "labels": ["feature"]
+        "labels": ["feature", "type: feature", "type: enhancement"]
       },
       {
         "title": "## 🐛 Fixes",
-        "labels": ["fix"]
+        "labels": ["fix", "type: bug"]
       },
       {
         "title": "## 🧪 Tests",
