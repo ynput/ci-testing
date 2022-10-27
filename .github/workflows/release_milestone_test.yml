@@ -17,8 +17,9 @@ jobs:
         uses: okcredit/changelog-creator-action@v1.0.0
         with:
           milestone: "3.3.0"
+          failOnError: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Print change log
-        run: echo "Generated changelog - ${{ steps.github_release.outputs.changelog }}"
+        run: echo "Generated changelog > ${{steps.github_release.outputs.changelog}}"
