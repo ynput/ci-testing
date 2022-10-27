@@ -1,8 +1,7 @@
 name: Stable Release test
 
 on:
-  milestone:
-    type: [edited]
+  workflow_dispatch:
 
 jobs:
   release_milestone_minor:
