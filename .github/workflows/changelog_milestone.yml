@@ -1,4 +1,4 @@
-name: [Test] Milestone changelog generator
+name: (Test) Milestone changelog generator
 
 on:
   workflow_dispatch:
