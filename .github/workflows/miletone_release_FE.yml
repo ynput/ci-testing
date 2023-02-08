@@ -5,6 +5,12 @@ on:
     inputs:
       milestone:
         required: true
+    name:
+        type: choice
+        description: What release should be created
+        options:
+        - release
+        - pre-release
   milestone:
     types: closed
 
