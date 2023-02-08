@@ -1,4 +1,4 @@
-name: Milestone Release FE
+name: Milestone Release [frontend]
 
 on:
   workflow_dispatch:
