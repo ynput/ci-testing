@@ -1,4 +1,4 @@
-name: Milestone Release
+name: Milestone Release FE
 
 on:
   workflow_dispatch:
@@ -34,7 +34,7 @@ jobs:
 
   call-ci-tools-milestone-release:
     needs: milestone-title
-    uses: ynput/ci-tools/.github/workflows/generate_changelog.yml@main
+    uses: ynput/ci-tools/.github/workflows/milestone_release_BE.yml@main
     with:
       milestone: ${{ needs.milestone-title.outputs.milestone }}
       repo-owner: ${{ github.event.repository.owner.login }}
