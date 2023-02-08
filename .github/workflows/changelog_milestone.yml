@@ -1,13 +1,20 @@
-name: (Test) Milestone changelog generator
+name: Milestone Release
 
 on:
   workflow_dispatch:
+  on:
+    milestone:
+      types: closed
+
 
 jobs:
-  call-ci-tools-changelog-generator:
+  test-milestone-title:
+    run: |
+      echo "${{ github.event.milestone.title }}"
+  call-ci-tools-milestone-release:
     uses: ynput/ci-tools/.github/workflows/generate_changelog.yml@main
     with:
-      milestone: "3.3.0"
+      milestone: ${{ github.event.milestone.title }}
       repo-owner: ${{ github.event.repository.owner.login }}
       repo-name: ${{ github.event.repository.name }}
     secrets:
