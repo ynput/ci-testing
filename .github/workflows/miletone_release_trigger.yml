@@ -1,4 +1,4 @@
-name: Milestone Release [frontend]
+name: Milestone Release [trigger]
 
 on:
   workflow_dispatch:
