@@ -2,19 +2,35 @@ name: Milestone Release
 
 on:
   workflow_dispatch:
-  on:
-    milestone:
-      types: closed
+    inputs:
+      milestone:
+        required: true
+  milestone:
+    types: closed
 
 
 jobs:
-  test-milestone-title:
-    run: |
-      echo "${{ github.event.milestone.title }}"
+  milestone-title:
+    runs-on: ubuntu-latest
+    outputs:
+      milestone: ${{ steps.milestoneTitle.outputs.value }}
+    steps:
+      - name: Switch input milestone
+        uses: haya14busa/action-cond@v1
+        id: milestoneTitle
+        with:
+          cond: ${{ inputs.milestone == '' }}
+          if_true: ${{ github.event.milestone.title }}
+          if_false: ${{ inputs.milestone }}
+      - name: Print resulted milestone
+        run: |
+          echo "${{ steps.milestoneTitle.outputs.value }}"
+
   call-ci-tools-milestone-release:
+    needs: milestone-title
     uses: ynput/ci-tools/.github/workflows/generate_changelog.yml@main
     with:
-      milestone: ${{ github.event.milestone.title }}
+      milestone: ${{ needs.milestone-title.outputs.milestone }}
       repo-owner: ${{ github.event.repository.owner.login }}
       repo-name: ${{ github.event.repository.name }}
     secrets:
