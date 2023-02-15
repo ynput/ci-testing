@@ -40,4 +40,4 @@ jobs:
       repo-owner: ${{ github.event.repository.owner.login }}
       repo-name: ${{ github.event.repository.name }}
     secrets:
-      token: ${{ secrets.GITHUB_TOKEN }}
+      token: ${{ secrets.YNPUT_BOT_TOKEN }}
