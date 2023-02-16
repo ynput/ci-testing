@@ -41,3 +41,5 @@ jobs:
       repo-name: ${{ github.event.repository.name }}
     secrets:
       token: ${{ secrets.YNPUT_BOT_TOKEN }}
+    env:
+      test-var: ${{ github.workspace }}
