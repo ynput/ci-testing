@@ -20,8 +20,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       milestone: ${{ steps.milestoneTitle.outputs.value }}
-    env:
-      test_var: "this text"
     steps:
       - name: Switch input milestone
         uses: haya14busa/action-cond@v1
@@ -33,7 +31,6 @@ jobs:
       - name: Print resulted milestone
         run: |
           echo "${{ steps.milestoneTitle.outputs.value }}"
-          echo "test_var=${{ env.test_var }}" >> $GITHUB_ENV
 
   call-ci-tools-milestone-release:
     needs: milestone-title
@@ -42,5 +39,7 @@ jobs:
       milestone: ${{ needs.milestone-title.outputs.milestone }}
       repo-owner: ${{ github.event.repository.owner.login }}
       repo-name: ${{ github.event.repository.name }}
+      version-py-path: "./openpype/version.py"
+      pyproject-path: "./pyproject.toml"
     secrets:
       token: ${{ secrets.YNPUT_BOT_TOKEN }}
