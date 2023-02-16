@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       milestone: ${{ steps.milestoneTitle.outputs.value }}
+    env:
+      test-var: ${{ github.workspace }}
     steps:
       - name: Switch input milestone
         uses: haya14busa/action-cond@v1
@@ -34,14 +36,10 @@ jobs:
 
   call-ci-tools-milestone-release:
     needs: milestone-title
-    env:
-      test-var: ${{ github.workspace }}
-    steps:
-      - name: referenced worlfow
-        uses: ynput/ci-tools/.github/workflows/milestone_release_ref.yml@main
-        with:
-          milestone: ${{ needs.milestone-title.outputs.milestone }}
-          repo-owner: ${{ github.event.repository.owner.login }}
-          repo-name: ${{ github.event.repository.name }}
-        secrets:
-          token: ${{ secrets.YNPUT_BOT_TOKEN }}
+    uses: ynput/ci-tools/.github/workflows/milestone_release_ref.yml@main
+    with:
+      milestone: ${{ needs.milestone-title.outputs.milestone }}
+      repo-owner: ${{ github.event.repository.owner.login }}
+      repo-name: ${{ github.event.repository.name }}
+    secrets:
+      token: ${{ secrets.YNPUT_BOT_TOKEN }}
