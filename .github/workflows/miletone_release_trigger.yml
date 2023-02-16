@@ -21,7 +21,7 @@ jobs:
     outputs:
       milestone: ${{ steps.milestoneTitle.outputs.value }}
     env:
-      test-var: ${{ github.workspace }}
+      test_var: "this text"
     steps:
       - name: Switch input milestone
         uses: haya14busa/action-cond@v1
@@ -33,6 +33,7 @@ jobs:
       - name: Print resulted milestone
         run: |
           echo "${{ steps.milestoneTitle.outputs.value }}"
+          echo "test_var=${{ env.test_var }}" >> $GITHUB_ENV
 
   call-ci-tools-milestone-release:
     needs: milestone-title
