@@ -34,12 +34,14 @@ jobs:
 
   call-ci-tools-milestone-release:
     needs: milestone-title
-    uses: ynput/ci-tools/.github/workflows/milestone_release_ref.yml@main
-    with:
-      milestone: ${{ needs.milestone-title.outputs.milestone }}
-      repo-owner: ${{ github.event.repository.owner.login }}
-      repo-name: ${{ github.event.repository.name }}
-    secrets:
-      token: ${{ secrets.YNPUT_BOT_TOKEN }}
     env:
       test-var: ${{ github.workspace }}
+    steps:
+      - name: referenced worlfow
+        uses: ynput/ci-tools/.github/workflows/milestone_release_ref.yml@main
+        with:
+          milestone: ${{ needs.milestone-title.outputs.milestone }}
+          repo-owner: ${{ github.event.repository.owner.login }}
+          repo-name: ${{ github.event.repository.name }}
+        secrets:
+          token: ${{ secrets.YNPUT_BOT_TOKEN }}
