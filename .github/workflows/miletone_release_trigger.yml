@@ -43,3 +43,5 @@ jobs:
       pyproject-path: "./pyproject.toml"
     secrets:
       token: ${{ secrets.YNPUT_BOT_TOKEN }}
+      user_email: ${{ secrets.CI_EMAIL }}
+      user_name: ${{ secrets.CI_USER }}
