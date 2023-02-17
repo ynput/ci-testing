@@ -1,6 +1,61 @@
 # Changelog
 
 
+## [3.4.3](https://github.com/ynput/ci-testing/tree/3.4.3)
+
+[Full Changelog](https://github.com/ynput/ci-testing/compare/3.4.3...3.4.2)
+
+### **🚀 Enhancements**
+
+
+<details>
+<summary>not sure what (<i><font color='#367F6C';>3d</font> </i> <i><font style='color:#365E7F';>/ maya</font></i> ) - <a href="https://github.com/ynput/ci-testing/pull/33">#33</a></summary>
+
+
+___
+
+
+## Brief description
+Use Publisher tool and new creation system in TVPaint integration.
+
+## Description
+Using new creation system makes TVPaint integration a little bit easier to maintain for artists. Removed unneeded tools Creator and Subset Manager tools. Goal is to keep the integration work as close as possible to previous integration. Some changes were made but primarilly because they were not right using previous system.All creators create instance with final family instead of changing the family during extraction. Render passes are not related to group id but to render layer instance. Render layer is still related to group. Workfile, review and scene render instances are created using autocreators instead of auto-collection during publishing. Subset names are fully filled during publishing but instance labels are filled on refresh with the last known right value. Implemented basic of legacy convertor which should convert render layers and render passes.
+
+
+
+
+___
+
+
+</details>
+
+### **🐛 Bug fixes**
+
+
+<details>
+<summary>asdfasdf (<i><font color='#367F6C';>2d</font> </i> <i><font style='color:#365E7F';>/ nuke</font></i> ) - <a href="https://github.com/ynput/ci-testing/pull/32">#32</a></summary>
+
+
+___
+
+
+## Brief description
+Setting up deadline for 3dsmax
+
+## Description
+Setting up deadline for 3dsmax by setting render outputs and viewport camera
+
+
+
+
+___
+
+
+</details>
+
+
+
+
 ## [3.4.1](https://github.com/ynput/ci-testing/tree/3.4.1)
 
 [Full Changelog](https://github.com/ynput/ci-testing/compare/3.4.1...3.4.0)
