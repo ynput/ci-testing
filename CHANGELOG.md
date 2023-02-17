@@ -3,6 +3,123 @@
 
 ## [3.4.1](https://github.com/ynput/ci-testing/tree/3.4.1)
 
+[Full Changelog](https://github.com/ynput/ci-testing/compare/3.4.1...3.4.0)
+
+### **🆕 New features**
+
+
+<details>
+<summary>this is testing pr for changelog generator (<i><font color='#367F6C';>3d</font> </i> <i><font style='color:#365E7F';>/ maya</font></i> ) - <a href="https://github.com/ynput/ci-testing/pull/21">#21</a></summary>
+
+
+___
+
+
+## Brief description
+Little introduciton of the PR content.
+
+## Description
+Here is some text describing the Pr in more details. Here is some text describing the Pr in more details. Here is some text describing the Pr in more details. Here is some text describing the Pr in more details. Here is some text describing the Pr in more details. Here is some text describing the Pr in more details.
+- some action points which were taken
+- some action points which were taken
+
+
+
+
+___
+
+
+</details>
+
+
+<details>
+<summary>feature - about this (<i><font color='#367F6C';>2d</font> </i> <i><font style='color:#365E7F';>/ nuke</font></i> ) - <a href="https://github.com/ynput/ci-testing/pull/28">#28</a></summary>
+
+
+___
+
+
+this is a description for Pr
+
+
+___
+
+
+</details>
+
+### **🚀 Enhancements**
+
+
+<details>
+<summary>stable release with changelog from milestone (<i><font color='#367F6C';>editorial</font> </i> <i><font style='color:#365E7F';>/ flame</font></i> ) - <a href="https://github.com/ynput/ci-testing/pull/27">#27</a></summary>
+
+
+___
+
+
+
+
+
+___
+
+
+</details>
+
+### **🐛 Bug fixes**
+
+
+<details>
+<summary>feature - also this needs to be included (<i><font color='#367F6C';>3d</font> </i> <i><font style='color:#365E7F';>/ nuke,maya</font></i> <i><font style='color:#1E1B7B';>/ ftrack</font></i> ) - <a href="https://github.com/ynput/ci-testing/pull/29">#29</a></summary>
+
+
+___
+
+
+## Brief description
+This tries to reduce the scattered **hardcoded** values for _renderer_ attribute names, types and tries to clean up the same things on the `RenderSettings` class. I've also refactored the usage of it across the code.
+
+## Description
+
+- Delays getting image prefixes per renderer instead of loading project settings three times on import of `lib_rendersettings`
+- Move over missing image prefixes values that existed on validator but not in `lib_rendersettings`
+- Move over AOV char logic to `lib_rendersettings`
+- Readability cosmetic tweaks on some lines which did more complex formatting than needed.
+- Removed `lib.RENDER_ATTRS` in favor of the now added `RenderSettings.get_padding_attr` (other logic of `lib.RENDER_ATTRS` was unused)
+
+```Python
+import this
+this.use(1)
+```
+
+
+
+
+___
+
+
+</details>
+
+
+<details>
+<summary>fix: this and that (<i><font color='#367F6C';>editorial</font> </i> <i><font style='color:#365E7F';>/ flame</font></i> ) - <a href="https://github.com/ynput/ci-testing/pull/30">#30</a></summary>
+
+
+___
+
+
+here is a text
+
+
+___
+
+
+</details>
+
+
+
+
+## [3.4.1](https://github.com/ynput/ci-testing/tree/3.4.1)
+
 [Full Changelog](https://github.com/ynput/ci-testing/compare/3.4.0...3.4.1)
 
 ### **🆕 New features**
