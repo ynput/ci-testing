@@ -12,7 +12,9 @@ jobs:
     steps:
       - name: Get ClickUp ID from ref head name
         id: get_cuID
-        run:  echo "cuID=$( echo ${github.ref} | sed 's/.*\/\(OP\-[0-9]\{4\}\).*/\1/')" >> $GITHUB_OUTPUT
+        run: |
+          echo ${{ github.ref }}
+          echo "cuID=$( echo ${GITHUB_REF#refs/heads/} | sed 's/.*\/\(OP\-[0-9]\{4\}\).*/\1/')" >> $GITHUB_OUTPUT
 
       - name: Print ClickUp ID
         run: echo ${{ steps.get_cuID.outputs.cuID }}
