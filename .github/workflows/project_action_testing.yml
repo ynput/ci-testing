@@ -14,7 +14,11 @@ jobs:
         id: get_cuID
         run:  echo "cuID=$( echo ${github.ref} | sed 's/.*\/\(OP\-[0-9]\{4\}\).*/\1/')" >> $GITHUB_OUTPUT
 
+      - name: Print ClickUp ID
+        run: echo ${{ steps.get_cuID.outputs.cuID }}
+
       - name: Move PR to 'Review in Progress'
+        if: steps.get_cuID.outputs.cuID
         run: |
          curl -i -X PUT \
           'https://api.clickup.com/api/v2/task/${{ steps.get_cuID.outputs.cuID }}?custom_task_ids=true&team_id=${{secrets.CLICKUP_TEAM_ID}}' \
