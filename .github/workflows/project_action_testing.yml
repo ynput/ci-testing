@@ -15,8 +15,8 @@ jobs:
       - name: Get ClickUp ID from ref head name
         id: get_cuID
         run: |
-          echo ${{ github.head_ref }}
-          echo "cuID=$( echo ${GITHUB_HEAD_REF} | sed 's/.*\/\(OP\-[0-9]\{4\}\).*/\1/')" >> $GITHUB_OUTPUT
+          echo ${{ github.event.pull_request.head.ref}}
+          echo "cuID=$( echo ${github.event.pull_request.head.ref} | sed 's/.*\/\(OP\-[0-9]\{4\}\).*/\1/')" >> $GITHUB_OUTPUT
 
       - name: Print ClickUp ID
         run: echo ${{ steps.get_cuID.outputs.cuID }}
