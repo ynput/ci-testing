@@ -1,4 +1,4 @@
-name: project-actions
+name: project-actions-test
 
 on:
   pull_request_review:
