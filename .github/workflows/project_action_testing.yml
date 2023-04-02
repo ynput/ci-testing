@@ -1,0 +1,25 @@
+name: project-actions
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  get_cu_id:
+    id: get_cuID
+    run:  echo "cuID=$( echo ${github.ref} | sed 's/.*\/\(OP\-[0-9]\{4\}\).*/\1/'") >> $GITHUB_OUTPUT
+
+  pr_review_started:
+    name: pr_review_started
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request_review' && github.event.review.state == 'changes_requested'
+    steps:
+      - name: Move PR to 'Review in Progress'
+        run: |
+         curl -i -X PUT \
+          'https://api.clickup.com/api/v2/task/${{ steps.get_cuID.outputs.cuID }}?custom_task_ids=true&team_id=${{secret.CLICKUP_TEAM_ID}}' \
+          -H 'Authorization: ${{secret.CLICKUP_API_KEY}}' \
+          -H 'Content-Type: application/json' \
+          -d '{
+             "status": "in progress"
+           }'
