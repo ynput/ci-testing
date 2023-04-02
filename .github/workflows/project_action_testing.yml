@@ -5,15 +5,15 @@ on:
     types: [submitted]
 
 jobs:
-  get_cu_id:
-    id: get_cuID
-    run:  echo "cuID=$( echo ${github.ref} | sed 's/.*\/\(OP\-[0-9]\{4\}\).*/\1/'") >> $GITHUB_OUTPUT
-
   pr_review_started:
     name: pr_review_started
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request_review' && github.event.review.state == 'changes_requested'
     steps:
+      - name: Get ClickUp ID from ref head name
+        id: get_cuID
+        run:  echo "cuID=$( echo ${github.ref} | sed 's/.*\/\(OP\-[0-9]\{4\}\).*/\1/'") >> $GITHUB_OUTPUT
+
       - name: Move PR to 'Review in Progress'
         run: |
          curl -i -X PUT \
