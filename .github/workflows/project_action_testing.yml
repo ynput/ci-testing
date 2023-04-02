@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request_review' && github.event.review.state == 'changes_requested'
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Get ClickUp ID from ref head name
         id: get_cuID
         run: |
