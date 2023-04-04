@@ -5,10 +5,14 @@ on:
     types: [submitted]
 
 jobs:
-  pr_review_started:
-    name: pr_review_started
+  pr_review_requested:
+    # -----------------------------
+    # Resets Clickup Task status to 'In Progress' after 'Changes Requested' were submitted to PR
+    # It only runs if custom clickup task id was found in ref branch of PR
+    # -----------------------------
+    name: pr_review_requested
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request_review' && github.event.review.state == 'changes_requested'
+    if: github.event_name == 'pull_request_review' && github.event.pull_request.head.repo.owner.login == 'ynput' && github.event.review.state == 'changes_requested'
     steps:
       - name: Set branch env
         run: echo "BRANCH_NAME=${{ github.event.pull_request.head.ref}}" >> $GITHUB_ENV
@@ -21,7 +25,7 @@ jobs:
       - name: Print ClickUp ID
         run: echo ${{ steps.get_cuID.outputs.cuID }}
 
-      - name: Move PR to 'Review in Progress'
+      - name: Move found Clickup task to 'Review in Progress'
         if: steps.get_cuID.outputs.cuID
         run: |
          curl -i -X PUT \
