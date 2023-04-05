@@ -1,8 +1,8 @@
 name: feature request
 description: Create a report to help us improve
-title: "[ FEATURE ]: "
+title: ""
 labels:
-  - type: feature
+  - "type: feature"
 body:
   - type: markdown
     attributes:

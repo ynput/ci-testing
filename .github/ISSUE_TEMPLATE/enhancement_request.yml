@@ -1,8 +1,8 @@
 name: enhancement request
 description: Create a report to help us improve
-title: "[ ENHANCEMENT ]: "
+title: ""
 labels:
-  - type: enhancement
+  - "type: enhancement"
 body:
   - type: markdown
     attributes:
