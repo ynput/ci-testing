@@ -1,6 +1,6 @@
 name: feature request
 description: Create a report to help us improve
-title: ""
+title: "feature: "
 labels:
   - "type: feature"
 body:
