@@ -20,7 +20,6 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           registry: github
           dropdown: _version
-          order: asc
           limit_to: 25
           form: .github/ISSUE_TEMPLATE/bug_report.yml
           commit_message: 'chore(): update bug report / version'
