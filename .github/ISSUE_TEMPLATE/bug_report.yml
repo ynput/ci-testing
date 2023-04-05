@@ -27,10 +27,14 @@ body:
       description: A concise description of what you expected to happen.
     validations:
       required: false
-  - type: textarea
+  - type: dropdown
+    id: _version
     attributes:
       label: Version
       description: What version are you running? Look to OpenPype Tray
+      options:
+        - v1.0.2
+        - v1.0.3
     validations:
       required: true
   - type: dropdown
