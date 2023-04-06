@@ -1,8 +1,5 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Ynput Questions and Community Support
-    url: https://community.ynput.io
-    about: Please discuss any topic here.
   - name: Ynput Discord Server
     url: https://discord.gg/ynput
     about: For community quick chats.
