@@ -15,7 +15,7 @@ jobs:
         with:
           ref: ${{ github.event.release.target_commitish }}
       - name: Update version
-        uses: ynput/gha-populate-form-version@057adcecdfb40384f88db2232a706a4ed9ffaa64
+        uses: ynput/gha-populate-form-version@adding_regex_replace_pattern
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           registry: github
