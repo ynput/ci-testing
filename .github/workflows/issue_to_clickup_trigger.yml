@@ -12,7 +12,7 @@ on:
 jobs:
   call-ci-tools-issue-sync:
     if: github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'backlog')
-    uses: ynput/ci-tools/.github/workflows/issue_to_clickup_ref.yml@develop
+    uses: ynput/ci-tools/.github/workflows/issue_to_clickup_ref.yml@main
     with:
       # issue number should be taken either from inputs or from the event
       issue-number: ${{ github.event.inputs.issue-number || github.event.issue.number }}
