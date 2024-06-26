@@ -38,7 +38,7 @@ jobs:
     needs: fetch-latest-tag
     uses: ynput/ci-tools/.github/workflows/milestone_release_ref.yml@main
     with:
-      milestone: ${{ needs.fetch-latest-tag.outputs.latest_tag }}
+      milestone: ""
       repo-owner: ${{ github.event.repository.owner.login }}
       repo-name: ${{ github.event.repository.name }}
       version-py-path: "./openpype/version.py"
