@@ -60,4 +60,5 @@ jobs:
       token: ${{ secrets.YNPUT_BOT_TOKEN }}
       user_email: ${{ secrets.CI_EMAIL }}
       user_name: ${{ secrets.CI_USER }}
+      cu_api_key: ${{ secrets.CLICKUP_API_KEY }}
 
