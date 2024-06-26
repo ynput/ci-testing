@@ -3,7 +3,7 @@ name: Release [trigger]
 on:
   push:
     branches:
-      - main
+      - develop
   workflow_dispatch:
     inputs:
       release-type:
