@@ -30,22 +30,9 @@ jobs:
         id: getLatestTag
         run: echo "::set-output name=latest_tag::$(git describe --tags `git rev-list --tags --max-count=1`)"
 
-      - name: Increment minor version
-        id: incrementTag
-        run: |
-          latest_tag="${{ steps.getLatestTag.outputs.latest_tag }}"
-          IFS='.' read -r -a parts <<< "$latest_tag"
-          major="${parts[0]}"
-          minor="${parts[1]}"
-          patch="${parts[2]}"
-          new_minor=$((minor + 1))
-          new_tag="${major}.${new_minor}.0"
-          echo "New tag: $new_tag"
-          echo "::set-output name=new_tag::$new_tag"
-
-      - name: Print new tag
-        run: |
-          echo "New tag: ${{ steps.incrementTag.outputs.new_tag }}"
+      - name: Show latest Tag
+        run: | 
+          echo "${{ steps.getLatestTag.outputs.latest_tag }}"
 
   call-ci-tools-milestone-release:
     needs: fetch-latest-tag
