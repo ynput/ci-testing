@@ -152,7 +152,7 @@ jobs:
           ref: ${{ env.target_branch }}
 
       - name: Fetch Latest Changes
-        run: git fetch origin develop
+        run: git fetch develop
 
       - name: List Branches
         run: git branch -a
@@ -163,7 +163,7 @@ jobs:
 
       - name: merge develop to main
         run: |
-          git merge ${{ env.source_branch }} --no-ff --no-commit
+          git merge origin/${{ env.source_branch }} --no-ff --no-commit
           git add .
           git commit -m "[Automated] Merged ${{ env.source_branch }} into ${{ env.target_branch }}"
 
