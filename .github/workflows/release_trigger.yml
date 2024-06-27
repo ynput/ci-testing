@@ -1,0 +1,300 @@
+name: Release [trigger]
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+    inputs:
+      release-type:
+        type: choice
+        description: What release should be created
+        options:
+          - release
+          - pre-release
+        required: true
+
+jobs:
+  set-job-variables:
+    runs-on: ubuntu-latest
+    env:
+      # TODO move as many of these as possible to inputs
+      version-py-path: "./openpype/version.py"
+      pyproject_deb: "./pyproject.toml"
+      ci-tools-workdir: /home/runner/work/ci-tools
+      base-branch: "develop"
+      GITHUB_TOKEN: ${{ secrets.YNPUT_BOT_TOKEN }}
+      user_email: ${{ secrets.CI_EMAIL }}
+      user_name: ${{ secrets.CI_USER }}
+      cu_api_key: ${{ secrets.CLICKUP_API_KEY }}
+      cu_team_id: ${{ secrets.CLICKUP_TEAM_ID }}
+
+
+    steps:
+      #----------------------------------------------
+      # switch between secret inputs
+      #----------------------------------------------
+      - name: Set secret switch
+        uses: haya14busa/action-cond@v1
+        id: secretToken
+        with:
+          cond: ${{ env.GITHUB_TOKEN }}
+          if_true: ${{ env.GITHUB_TOKEN }}
+          if_false: ${{ secrets.YNPUT_BOT_TOKEN }}
+
+      #----------------------------------------------
+      # set environment for github token and repo
+      #----------------------------------------------
+      - name: Set environment vars
+        run: |
+          echo "GITHUB_TOKEN=${{ steps.secretToken.outputs.value }}" >> $GITHUB_ENV
+          echo "GITHUB_REPOSITORY_OWNER=${{ github.event.repository.owner.login }}"  >> $GITHUB_ENV
+          echo "GITHUB_REPOSITORY_NAME=${{ github.event.repository.name }}" >> $GITHUB_ENV
+          echo "CLICKUP_API_KEY=env.cu_api_key" >> $GITHUB_ENV
+          echo "CLICKUP_RELEASE_FIELD_ID=${{ secrets.CLICKUP_RELEASE_FIELD_ID }}" >> $GITHUB_ENV
+          echo "CLICKUP_TEAM_ID=${{ env.cu_team_id }}" >> $GITHUB_ENV
+
+      #----------------------------------------------
+      #      check out to ci tools repo
+      #----------------------------------------------
+      - name: Checkout CI Tools repo
+        uses: actions/checkout@v3
+        with:
+          repository: ynput/ci-tools
+          ref: main
+          path: ./ci-tools
+
+      #----------------------------------------------
+      # set-up python
+      #----------------------------------------------
+      - name: Set up python
+        id: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11.5'
+
+      #----------------------------------------------
+      # move ci tools cloned files to different folder
+      #----------------------------------------------
+      - name: Move CI Tools work dir content
+        run: |
+          mv ${{ github.workspace }}/ci-tools ${{ env.ci-tools-workdir }}
+          cd "${{ env.ci-tools-workdir }}"
+          ls -l
+
+      #----------------------------------------------
+      # install & configure poetry
+      #----------------------------------------------
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+
+      #----------------------------------------------
+      # install dependencies if cache does not exist
+      #----------------------------------------------
+      - name: Install dependencies
+        if: ${{ env.ci-tools-workdir }}
+        
+        run: |
+          if [ -d "${{ env.ci-tools-workdir }}" ]; then
+            poetry --directory=${{ env.ci-tools-workdir }} install --no-interaction
+            exit 0
+          else
+            echo "Directory ${{ env.ci-tools-workdir }} does not exist."
+            exit 1
+          fi
+
+      #----------------------------------------------
+      # check if a commit is added to input milestone
+      #----------------------------------------------
+      # - name: Get milestone commit
+      #   id: milestoneCommit
+      #   run: |
+      #     source ${{ env.ci-tools-workdir }}/.venv/bin/activate
+      #     COMMIT=$(python ${{ env.ci-tools-workdir }}/tools/cli.py milestones get-milestone-commit --milestone=${{ inputs.milestone }})
+      #     echo "commit=${COMMIT}" >> $GITHUB_OUTPUT
+      #   shell: bash
+
+      #----------------------------------------------
+      # inject commit into milestone if there is none
+      #----------------------------------------------
+      # - name: 💉 Inject commit into milestone
+      #   id: milestoneCommitInject
+      #   if: steps.milestoneCommit.outputs.commit == ''
+      #   run: |
+      #       source ${{ env.ci-tools-workdir }}/.venv/bin/activate
+      #       python ${{ env.ci-tools-workdir }}/tools/cli.py milestones set-milestone-commit --milestone=${{ inputs.milestone }} --commit-sha=${{ steps.baseBranchCommit.outputs.commit }}
+
+      #----------------------------------------------
+      # merge base branch (develop) to main
+      #    only if not commit in milestone
+      #----------------------------------------------
+      - name: 🔨 Merge develop to main
+        # if: steps.milestoneCommit.outputs.commit == ''
+        uses: everlytic/branch-merge@1.1.0
+        with:
+          github_token: ${{ env.GITHUB_TOKEN }}
+          source_ref: ${{ env.base-branch }}
+          target_branch: 'main'
+          commit_message_template: '[Automated] Merged {source_ref} into {target_branch}'
+
+      #----------------------------------------------
+      #      check out to ci tools repo
+      #----------------------------------------------
+      - name: Checkout Workspace repo to main
+        uses: actions/checkout@v3
+        with:
+          ref: main
+
+      #----------------------------------------------
+      # get next available version from tags if
+      # if milestone title still `next-` and not version
+      #----------------------------------------------
+      - name: Get next version from tags
+        run: |
+          source ${{ env.ci-tools-workdir }}/.venv/bin/activate
+          NEXT_VERSION=$(python ${{ env.ci-tools-workdir }}/tools/cli.py versioning bump-version --type=release --part=patch)
+          CURRENT_VERSION=$(python ${{ env.ci-tools-workdir }}/tools/cli.py versioning current-version --type=release)
+          python ${{ env.ci-tools-workdir }}/tools/cli.py milestones set-milestone-tag --milestone="" --tag-name=${CURRENT_VERSION}
+          python ${{ env.ci-tools-workdir }}/tools/cli.py milestones set-milestone-title --milestone="" --new-title=${NEXT_VERSION}
+
+          echo "NEXT_VERSION=${NEXT_VERSION}" >> $GITHUB_ENV
+          echo "CURRENT_VERSION=${CURRENT_VERSION}" >> $GITHUB_ENV
+        shell: bash
+
+      #----------------------------------------------
+      # get version number from milestone title
+      # if not `next-` in name of input milestone
+      #----------------------------------------------
+      - name: Get next version from milestone title
+        id: get_version
+        run: |
+          source ${{ env.ci-tools-workdir }}/.venv/bin/activate
+
+          CURRENT_VERSION=$(python ${{ env.ci-tools-workdir }}/tools/cli.py milestones get-milestone-tag --milestone="")
+          echo "::set-output name=NEXT_VERSION::${NEXT_VERSION}"
+          echo "::set-output name=CURRENT_VERSION::${CURRENT_VERSION}"
+          echo "NEXT_VERSION=" >> $GITHUB_ENV
+          echo "CURRENT_VERSION=${CURRENT_VERSION}" >> $GITHUB_ENV
+        shell: bash
+
+      #----------------------------------------------
+      # generate change log and add it to milestone, bump versions
+      #----------------------------------------------
+      - name: Changelog generate & assign to milestone description
+        id: changelog 
+        run : |
+          source ${{ env.ci-tools-workdir }}/.venv/bin/activate
+
+          changelog_temp_file=$(python ${{ env.ci-tools-workdir }}/tools/cli.py changelog generate-milestone-changelog --milestone=${{ steps.get_version.outputs.NEXT_VERSION }} --old-tag=${{ steps.get_version.outputs.CURRENT_VERSION }} --new-tag=${{ steps.get_version.outputs.NEXT_VERSION }})
+          updated_changelog=$(python ${{ env.ci-tools-workdir }}/tools/cli.py changelog add-to-changelog-file --old-changelog-path=./CHANGELOG.md  --new-changelog-path=${changelog_temp_file} --tag=${{ steps.get_version.outputs.NEXT_VERSION }})
+          python ${{ env.ci-tools-workdir }}/tools/cli.py versioning bump-file-version --version=${{ steps.get_version.outputs.NEXT_VERSION }} --version-path=${{ env.version-py-path }} --pyproject_deb=${{ env.pyproject_deb }}
+
+          delimiter=$(openssl rand -hex 8)
+          {
+              echo "string<<$delimiter"
+              sed -e '$a\' $changelog_temp_file
+              echo "$delimiter"
+          } >> "$GITHUB_OUTPUT"
+          echo "updated=${updated_changelog}" >> $GITHUB_OUTPUT
+
+        shell: bash
+
+      #----------------------------------------------
+      # Set Release Version custom attribute to ClickUp project
+      #----------------------------------------------
+      - name: Set Release version to ClickUp tasks
+        run: |
+          source ${{ env.ci-tools-workdir }}/.venv/bin/activate
+          python ${{ env.ci-tools-workdir }}/tools/cli.py project prs-to-clickup --milestone=${{ steps.get_version.outputs.NEXT_VERSION }}
+        shell: bash
+
+      #----------------------------------------------
+      # Test printing
+      #----------------------------------------------
+      - name: Test print the change log result
+        run: |
+          echo "current_version: ${{ steps.get_version.outputs.CURRENT_VERSION }}"
+          echo "next_version: ${{ steps.get_version.outputs.NEXT_VERSION }}"
+          echo "user.email: ${{ secrets.CI_EMAIL }}"
+          echo "user.name: ${{ secrets.CI_USER }}"
+          echo "updated: ${{ steps.changelog.outputs.updated }}"
+
+      - name: 💾 Commit and Tag
+        if: ${{ steps.changelog.outputs.updated }}
+        id: gitCommit
+        run: |
+          git config user.email ${{ env.user_email }}
+          git config user.name ${{ env.user_name }}
+          git add .
+          git commit -m "[Automated] Release"
+          tag_name="${{ steps.get_version.outputs.NEXT_VERSION }}"
+          git tag -a $tag_name -m "stable release"
+
+      - name: 🔏 Push to protected main branch
+        if: ${{ steps.changelog.outputs.updated }}
+        uses: CasperWA/push-protected@v2.10.0
+        with:
+          token: ${{ env.GITHUB_TOKEN }}
+          branch: main
+          tags: true
+          unprotect_reviews: true
+
+      - name: 🔁 Merge main back to develop
+        if: ${{ steps.changelog.outputs.updated }}
+        uses: everlytic/branch-merge@1.1.0
+        with:
+          github_token: ${{ env.GITHUB_TOKEN }}
+          source_ref: 'main'
+          target_branch: 'develop'
+          commit_message_template: '[Automated] Merged release {source_ref} into {target_branch}'
+
+      # ----------------------------------------------
+      # make tag release
+      # ---------------------------------------------
+      - name: 🚀 Github Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ env.NEXT_VERSION }}
+          body: ${{ steps.changelog.outputs.string }}
+          token: ${{ env.GITHUB_TOKEN }}
+
+# jobs:
+#   fetch-latest-tag:
+#     runs-on: ubuntu-latest
+#     outputs:
+#       latest_tag: ${{ steps.getLatestTag.outputs.latest_tag }}
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v3
+
+#       - name: Fetch all tags
+#         run: git fetch --tags
+
+#       - name: Get the latest tag
+#         id: getLatestTag
+#         run: echo "::set-output name=latest_tag::$(git describe --tags `git rev-list --tags --max-count=1`)"
+
+#       - name: Show latest Tag
+#         run: | 
+#           echo "${{ steps.getLatestTag.outputs.latest_tag }}"
+
+#   call-ci-tools-milestone-release:
+#     needs: fetch-latest-tag
+#     uses: ynput/ci-tools/.github/workflows/milestone_release_ref.yml@main
+#     with:
+#       milestone: ""
+#       repo-owner: ${{ github.event.repository.owner.login }}
+#       repo-name: ${{ github.event.repository.name }}
+#       version-py-path: "./openpype/version.py"
+#       pyproject_deb: "./pyproject.toml"
+#     secrets:
+#       token: ${{ secrets.YNPUT_BOT_TOKEN }}
+#       user_email: ${{ secrets.CI_EMAIL }}
+#       user_name: ${{ secrets.CI_USER }}
+#       cu_api_key: ${{ secrets.CLICKUP_API_KEY }}
+#       cu_team_id: ${{ secrets.CLICKUP_TEAM_ID }}
+#       cu_field_id: ${{ secrets.CLICKUP_RELEASE_FIELD_ID }}
