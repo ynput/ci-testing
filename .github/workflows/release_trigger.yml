@@ -151,9 +151,12 @@ jobs:
         with:
           ref: main
 
+      - name: List Branches
+        run: git branch -a
+
       - name: merge develop to main
         run: |
-          git merge develop
+          git merge ${{ env.source_branch }}
           git commit -m "[Automated] Merged ${{ env.source_branch }} into ${{ env.target_branch }}"
 
       - name: Check Modified Files
