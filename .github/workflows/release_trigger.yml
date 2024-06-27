@@ -136,7 +136,6 @@ jobs:
       #    only if not commit in milestone
       #----------------------------------------------
       - name: 🔨 Merge develop to main
-        # if: steps.milestoneCommit.outputs.commit == ''
         uses: everlytic/branch-merge@1.1.0
         with:
           github_token: ${{ env.GITHUB_TOKEN }}
@@ -176,6 +175,7 @@ jobs:
     
           echo "::set-output name=latest_version::$latest_version"
           echo "Latest release version: $latest_version"
+          # TODO "`set-output` comamnd is deprecated"
 
       #----------------------------------------------
       # get version number from milestone title
@@ -235,44 +235,46 @@ jobs:
           echo "user.name: ${{ secrets.CI_USER }}"
           echo "updated: ${{ env.changelog }}"
 
-      - name: 💾 Commit and Tag
-        if: ${{ env.changelog }}
-        id: gitCommit
-        run: |
-          git config user.email ${{ env.user_email }}
-          git config user.name ${{ env.user_name }}
-          git add .
-          git commit -m "[Automated] Release"
-          tag_name="${{ env.next_version }}"
-          git tag -a $tag_name -m "stable release"
+      # TODO make this work
 
-      - name: 🔏 Push to protected main branch
-        if: ${{ env.changelog }}
-        uses: CasperWA/push-protected@v2.10.0
-        with:
-          token: ${{ env.GITHUB_TOKEN }}
-          branch: main
-          tags: true
-          unprotect_reviews: true
+      # - name: 💾 Commit and Tag
+      #   if: ${{ env.changelog }}
+      #   id: gitCommit
+      #   run: |
+      #     git config user.email ${{ env.user_email }}
+      #     git config user.name ${{ env.user_name }}
+      #     git add .
+      #     git commit -m "[Automated] Release"
+      #     tag_name="${{ env.next_version }}"
+      #     git tag -a $tag_name -m "stable release"
 
-      - name: 🔁 Merge main back to develop
-        if: ${{ env.changelog }}
-        uses: everlytic/branch-merge@1.1.0
-        with:
-          github_token: ${{ env.GITHUB_TOKEN }}
-          source_ref: 'main'
-          target_branch: 'develop'
-          commit_message_template: '[Automated] Merged release {source_ref} into {target_branch}'
+      # - name: 🔏 Push to protected main branch
+      #   if: ${{ env.changelog }}
+      #   uses: CasperWA/push-protected@v2.10.0
+      #   with:
+      #     token: ${{ env.GITHUB_TOKEN }}
+      #     branch: main
+      #     tags: true
+      #     unprotect_reviews: true
+
+      # - name: 🔁 Merge main back to develop
+      #   if: ${{ env.changelog }}
+      #   uses: everlytic/branch-merge@1.1.0
+      #   with:
+      #     github_token: ${{ env.GITHUB_TOKEN }}
+      #     source_ref: 'main'
+      #     target_branch: 'develop'
+      #     commit_message_template: '[Automated] Merged release {source_ref} into {target_branch}'
 
       # ----------------------------------------------
       # make tag release
       # ---------------------------------------------
-      - name: 🚀 Github Release
-        uses: ncipollo/release-action@v1
-        with:
-          tag: ${{ env.NEXT_VERSION }}
-          body: ${{ env.changelog }}
-          token: ${{ env.GITHUB_TOKEN }}
+      # - name: 🚀 Github Release
+      #   uses: ncipollo/release-action@v1
+      #   with:
+      #     tag: ${{ env.NEXT_VERSION }}
+      #     body: ${{ env.changelog }}
+      #     token: ${{ env.GITHUB_TOKEN }}
 
 # jobs:
 #   fetch-latest-tag:
