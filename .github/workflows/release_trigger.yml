@@ -22,7 +22,8 @@ jobs:
       version-py-path: "./openpype/version.py"
       pyproject_deb: "./pyproject.toml"
       ci-tools-workdir: /home/runner/work/ci-tools
-      base-branch: "develop"
+      source_branch: "develop"
+      target_branch: "main"
       GITHUB_TOKEN: ${{ secrets.YNPUT_BOT_TOKEN }}
       user_email: ${{ secrets.CI_EMAIL }}
       user_name: ${{ secrets.CI_USER }}
@@ -134,17 +135,13 @@ jobs:
       # merge base branch (develop) to main
       #    only if not commit in milestone
       #----------------------------------------------
-      - name: 🔨 Merge develop to main
-        uses: everlytic/branch-merge@1.1.0
-        with:
-          github_token: ${{ env.GITHUB_TOKEN }}
-          source_ref: ${{ env.base-branch }}
-          target_branch: 'main'
-          commit_message_template: '[Automated] Merged {source_ref} into {target_branch}'
-
-      - name: Check Modified Files
-        run: |
-          git status
+      # - name: 🔨 Merge develop to main
+      #   uses: everlytic/branch-merge@1.1.0
+      #   with:
+      #     github_token: ${{ env.GITHUB_TOKEN }}
+      #     source_ref: ${{ env.source_branch }}
+      #     target_branch: 'main'
+      #     commit_message_template: '[Automated] Merged {source_ref} into {target_branch}'
 
       #----------------------------------------------
       #      check out to ci tools repo
@@ -153,6 +150,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
+
+      - name: merge develop to main
+        run: |
+          git merge develop
+          git commit -m "[Automated] Merged ${{ env.source_branch }} into ${{ env.target_branch }}"
 
       - name: Check Modified Files
         run: |
