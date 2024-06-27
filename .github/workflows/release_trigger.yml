@@ -62,7 +62,7 @@ jobs:
       #      check out to ci tools repo
       #----------------------------------------------
       - name: Checkout CI Tools repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: ynput/ci-tools
           ref: main
@@ -147,9 +147,13 @@ jobs:
       #      check out to ci tools repo
       #----------------------------------------------
       - name: Checkout Workspace repo to main
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: main
+
+      - name: Check Modified Files
+        run: |
+          git status
 
       #----------------------------------------------
       # get next available version from tags if
