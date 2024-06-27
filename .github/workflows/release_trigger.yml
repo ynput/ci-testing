@@ -28,6 +28,9 @@ jobs:
       user_name: ${{ secrets.CI_USER }}
       cu_api_key: ${{ secrets.CLICKUP_API_KEY }}
       cu_team_id: ${{ secrets.CLICKUP_TEAM_ID }}
+      current_version: 3.6.1
+      next_version: 3.6.2
+      changelog: "Test Changelog"
 
 
     steps:
@@ -97,7 +100,6 @@ jobs:
       #----------------------------------------------
       - name: Install dependencies
         if: ${{ env.ci-tools-workdir }}
-        
         run: |
           if [ -d "${{ env.ci-tools-workdir }}" ]; then
             poetry --directory=${{ env.ci-tools-workdir }} install --no-interaction
@@ -153,55 +155,64 @@ jobs:
       # get next available version from tags if
       # if milestone title still `next-` and not version
       #----------------------------------------------
-      - name: Get next version from tags
-        run: |
-          source ${{ env.ci-tools-workdir }}/.venv/bin/activate
-          NEXT_VERSION=$(python ${{ env.ci-tools-workdir }}/tools/cli.py versioning bump-version --type=release --part=patch)
-          CURRENT_VERSION=$(python ${{ env.ci-tools-workdir }}/tools/cli.py versioning current-version --type=release)
-          python ${{ env.ci-tools-workdir }}/tools/cli.py milestones set-milestone-tag --milestone="" --tag-name=${CURRENT_VERSION}
-          python ${{ env.ci-tools-workdir }}/tools/cli.py milestones set-milestone-title --milestone="" --new-title=${NEXT_VERSION}
+      # - name: Get next version from tags
+      #   run: |
+      #     source ${{ env.ci-tools-workdir }}/.venv/bin/activate
+      #     NEXT_VERSION=$(python ${{ env.ci-tools-workdir }}/tools/cli.py versioning bump-version --type=release --part=patch)
+      #     CURRENT_VERSION=$(python ${{ env.ci-tools-workdir }}/tools/cli.py versioning current-version --type=release)
+      #     python ${{ env.ci-tools-workdir }}/tools/cli.py milestones set-milestone-tag --milestone="" --tag-name=${CURRENT_VERSION}
+      #     python ${{ env.ci-tools-workdir }}/tools/cli.py milestones set-milestone-title --milestone="" --new-title=${NEXT_VERSION}
 
-          echo "NEXT_VERSION=${NEXT_VERSION}" >> $GITHUB_ENV
-          echo "CURRENT_VERSION=${CURRENT_VERSION}" >> $GITHUB_ENV
-        shell: bash
+      #     echo "NEXT_VERSION=${NEXT_VERSION}" >> $GITHUB_ENV
+      #     echo "CURRENT_VERSION=${CURRENT_VERSION}" >> $GITHUB_ENV
+      #   shell: bash
+
+      - name: Get latest release version
+        id: latest_release
+        run: |
+          git fetch --tags
+          latest_version=$(git describe --tags `git rev-list --tags --max-count=1`)
+    
+          echo "::set-output name=latest_version::$latest_version"
+          echo "Latest release version: $latest_version"
 
       #----------------------------------------------
       # get version number from milestone title
       # if not `next-` in name of input milestone
       #----------------------------------------------
-      - name: Get next version from milestone title
-        id: get_version
-        run: |
-          source ${{ env.ci-tools-workdir }}/.venv/bin/activate
+      # - name: Get next version from milestone title
+      #   id: get_version
+      #   run: |
+      #     source ${{ env.ci-tools-workdir }}/.venv/bin/activate
 
-          CURRENT_VERSION=$(python ${{ env.ci-tools-workdir }}/tools/cli.py milestones get-milestone-tag --milestone="")
-          echo "::set-output name=NEXT_VERSION::${NEXT_VERSION}"
-          echo "::set-output name=CURRENT_VERSION::${CURRENT_VERSION}"
-          echo "NEXT_VERSION=" >> $GITHUB_ENV
-          echo "CURRENT_VERSION=${CURRENT_VERSION}" >> $GITHUB_ENV
-        shell: bash
+      #     CURRENT_VERSION=$(python ${{ env.ci-tools-workdir }}/tools/cli.py milestones get-milestone-tag --milestone="")
+      #     echo "::set-output name=NEXT_VERSION::${NEXT_VERSION}"
+      #     echo "::set-output name=CURRENT_VERSION::${CURRENT_VERSION}"
+      #     echo "NEXT_VERSION=" >> $GITHUB_ENV
+      #     echo "CURRENT_VERSION=${CURRENT_VERSION}" >> $GITHUB_ENV
+      #   shell: bash
 
       #----------------------------------------------
       # generate change log and add it to milestone, bump versions
       #----------------------------------------------
-      - name: Changelog generate & assign to milestone description
-        id: changelog 
-        run : |
-          source ${{ env.ci-tools-workdir }}/.venv/bin/activate
+      # - name: Changelog generate & assign to milestone description
+      #   id: changelog 
+      #   run : |
+      #     source ${{ env.ci-tools-workdir }}/.venv/bin/activate
 
-          changelog_temp_file=$(python ${{ env.ci-tools-workdir }}/tools/cli.py changelog generate-milestone-changelog --milestone=${{ steps.get_version.outputs.NEXT_VERSION }} --old-tag=${{ steps.get_version.outputs.CURRENT_VERSION }} --new-tag=${{ steps.get_version.outputs.NEXT_VERSION }})
-          updated_changelog=$(python ${{ env.ci-tools-workdir }}/tools/cli.py changelog add-to-changelog-file --old-changelog-path=./CHANGELOG.md  --new-changelog-path=${changelog_temp_file} --tag=${{ steps.get_version.outputs.NEXT_VERSION }})
-          python ${{ env.ci-tools-workdir }}/tools/cli.py versioning bump-file-version --version=${{ steps.get_version.outputs.NEXT_VERSION }} --version-path=${{ env.version-py-path }} --pyproject_deb=${{ env.pyproject_deb }}
+      #     changelog_temp_file=$(python ${{ env.ci-tools-workdir }}/tools/cli.py changelog generate-milestone-changelog --milestone=${{ steps.get_version.outputs.NEXT_VERSION }} --old-tag=${{ steps.get_version.outputs.CURRENT_VERSION }} --new-tag=${{ steps.get_version.outputs.NEXT_VERSION }})
+      #     updated_changelog=$(python ${{ env.ci-tools-workdir }}/tools/cli.py changelog add-to-changelog-file --old-changelog-path=./CHANGELOG.md  --new-changelog-path=${changelog_temp_file} --tag=${{ steps.get_version.outputs.NEXT_VERSION }})
+      #     python ${{ env.ci-tools-workdir }}/tools/cli.py versioning bump-file-version --version=${{ steps.get_version.outputs.NEXT_VERSION }} --version-path=${{ env.version-py-path }} --pyproject_deb=${{ env.pyproject_deb }}
 
-          delimiter=$(openssl rand -hex 8)
-          {
-              echo "string<<$delimiter"
-              sed -e '$a\' $changelog_temp_file
-              echo "$delimiter"
-          } >> "$GITHUB_OUTPUT"
-          echo "updated=${updated_changelog}" >> $GITHUB_OUTPUT
+      #     delimiter=$(openssl rand -hex 8)
+      #     {
+      #         echo "string<<$delimiter"
+      #         sed -e '$a\' $changelog_temp_file
+      #         echo "$delimiter"
+      #     } >> "$GITHUB_OUTPUT"
+      #     echo "updated=${updated_changelog}" >> $GITHUB_OUTPUT
 
-        shell: bash
+      #   shell: bash
 
       #----------------------------------------------
       # Set Release Version custom attribute to ClickUp project
@@ -209,7 +220,7 @@ jobs:
       - name: Set Release version to ClickUp tasks
         run: |
           source ${{ env.ci-tools-workdir }}/.venv/bin/activate
-          python ${{ env.ci-tools-workdir }}/tools/cli.py project prs-to-clickup --milestone=${{ steps.get_version.outputs.NEXT_VERSION }}
+          python ${{ env.ci-tools-workdir }}/tools/cli.py project prs-to-clickup --milestone=${{ env.next_version }}
         shell: bash
 
       #----------------------------------------------
@@ -217,25 +228,25 @@ jobs:
       #----------------------------------------------
       - name: Test print the change log result
         run: |
-          echo "current_version: ${{ steps.get_version.outputs.CURRENT_VERSION }}"
-          echo "next_version: ${{ steps.get_version.outputs.NEXT_VERSION }}"
+          echo "current_version: ${{ env.current_version }}"
+          echo "next_version: ${{ env.next_version }}"
           echo "user.email: ${{ secrets.CI_EMAIL }}"
           echo "user.name: ${{ secrets.CI_USER }}"
-          echo "updated: ${{ steps.changelog.outputs.updated }}"
+          echo "updated: ${{ env.changelog }}"
 
       - name: 💾 Commit and Tag
-        if: ${{ steps.changelog.outputs.updated }}
+        if: ${{ env.changelog }}
         id: gitCommit
         run: |
           git config user.email ${{ env.user_email }}
           git config user.name ${{ env.user_name }}
           git add .
           git commit -m "[Automated] Release"
-          tag_name="${{ steps.get_version.outputs.NEXT_VERSION }}"
+          tag_name="${{ env.next_version }}"
           git tag -a $tag_name -m "stable release"
 
       - name: 🔏 Push to protected main branch
-        if: ${{ steps.changelog.outputs.updated }}
+        if: ${{ env.changelog }}
         uses: CasperWA/push-protected@v2.10.0
         with:
           token: ${{ env.GITHUB_TOKEN }}
@@ -244,7 +255,7 @@ jobs:
           unprotect_reviews: true
 
       - name: 🔁 Merge main back to develop
-        if: ${{ steps.changelog.outputs.updated }}
+        if: ${{ env.changelog }}
         uses: everlytic/branch-merge@1.1.0
         with:
           github_token: ${{ env.GITHUB_TOKEN }}
@@ -259,7 +270,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ env.NEXT_VERSION }}
-          body: ${{ steps.changelog.outputs.string }}
+          body: ${{ env.changelog }}
           token: ${{ env.GITHUB_TOKEN }}
 
 # jobs:
