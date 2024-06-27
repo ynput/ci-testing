@@ -21,7 +21,7 @@ jobs:
       # TODO move as many of these as possible to inputs
       version-py-path: "./openpype/version.py"
       pyproject_deb: "./pyproject.toml"
-      ci-tools-workdir: /home/runner/work/ci-testing
+      ci-tools-workdir: /home/runner/work/ci-tools
       base-branch: "develop"
       GITHUB_TOKEN: ${{ secrets.YNPUT_BOT_TOKEN }}
       user_email: ${{ secrets.CI_EMAIL }}
@@ -57,11 +57,12 @@ jobs:
       #----------------------------------------------
       #      check out to ci tools repo
       #----------------------------------------------
-      - name: Checkout current repo
+      - name: Checkout CI Tools repo
         uses: actions/checkout@v3
         with:
-          ref: develop
-          path: ./ci-testing
+          repository: ynput/ci-tools
+          ref: main
+          path: ./ci-tools
 
       #----------------------------------------------
       # set-up python
@@ -75,11 +76,11 @@ jobs:
       #----------------------------------------------
       # move ci tools cloned files to different folder
       #----------------------------------------------
-      # - name: Move CI Tools work dir content
-      #   run: |
-          # mv ${{ github.workspace }}/ci-tools ${{ env.ci-tools-workdir }}
-          # cd "${{ env.ci-tools-workdir }}"
-          # ls -l
+      - name: Move CI Tools work dir content
+        run: |
+          mv ${{ github.workspace }}/ci-tools ${{ env.ci-tools-workdir }}
+          cd "${{ env.ci-tools-workdir }}"
+          ls -l
 
       #----------------------------------------------
       # install & configure poetry
@@ -96,6 +97,7 @@ jobs:
       #----------------------------------------------
       - name: Install dependencies
         if: ${{ env.ci-tools-workdir }}
+        
         run: |
           if [ -d "${{ env.ci-tools-workdir }}" ]; then
             poetry --directory=${{ env.ci-tools-workdir }} install --no-interaction
