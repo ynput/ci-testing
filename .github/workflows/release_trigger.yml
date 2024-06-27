@@ -20,7 +20,7 @@ jobs:
     env:
       # TODO move as many of these as possible to inputs
       version-py-path: "./openpype/version.py"
-      pyproject-path: "./pyproject.toml"
+      pyproject_deb: "./pyproject.toml"
       ci-tools-workdir: /home/runner/work/ci-testing
       base-branch: "develop"
       GITHUB_TOKEN: ${{ secrets.YNPUT_BOT_TOKEN }}
@@ -57,11 +57,11 @@ jobs:
       #----------------------------------------------
       #      check out to ci tools repo
       #----------------------------------------------
-      - name: Checkout CI Tools repo
+      - name: Checkout current repo
         uses: actions/checkout@v3
         with:
-          ref: main
-          path: ./ci-tools
+          ref: develop
+          path: ./ci-testing
 
       #----------------------------------------------
       # set-up python
@@ -95,7 +95,15 @@ jobs:
       # install dependencies if cache does not exist
       #----------------------------------------------
       - name: Install dependencies
-        run: poetry --directory=${{ env.ci-tools-workdir }} install --no-interaction
+        if: ${{ env.ci-tools-workdir }}
+        run: |
+          if [ -d "${{ env.ci-tools-workdir }}" ]; then
+            poetry --directory=${{ env.ci-tools-workdir }} install --no-interaction
+            exit 0
+          else
+            echo "Directory ${{ env.ci-tools-workdir }} does not exist."
+            exit 1
+          fi
 
       #----------------------------------------------
       # check if a commit is added to input milestone
@@ -181,7 +189,7 @@ jobs:
 
           changelog_temp_file=$(python ${{ env.ci-tools-workdir }}/tools/cli.py changelog generate-milestone-changelog --milestone=${{ steps.get_version.outputs.NEXT_VERSION }} --old-tag=${{ steps.get_version.outputs.CURRENT_VERSION }} --new-tag=${{ steps.get_version.outputs.NEXT_VERSION }})
           updated_changelog=$(python ${{ env.ci-tools-workdir }}/tools/cli.py changelog add-to-changelog-file --old-changelog-path=./CHANGELOG.md  --new-changelog-path=${changelog_temp_file} --tag=${{ steps.get_version.outputs.NEXT_VERSION }})
-          python ${{ env.ci-tools-workdir }}/tools/cli.py versioning bump-file-version --version=${{ steps.get_version.outputs.NEXT_VERSION }} --version-path=${{ env.version-py-path }} --pyproject-path=${{ env.pyproject-path }}
+          python ${{ env.ci-tools-workdir }}/tools/cli.py versioning bump-file-version --version=${{ steps.get_version.outputs.NEXT_VERSION }} --version-path=${{ env.version-py-path }} --pyproject_deb=${{ env.pyproject_deb }}
 
           delimiter=$(openssl rand -hex 8)
           {
@@ -280,7 +288,7 @@ jobs:
 #       repo-owner: ${{ github.event.repository.owner.login }}
 #       repo-name: ${{ github.event.repository.name }}
 #       version-py-path: "./openpype/version.py"
-#       pyproject-path: "./pyproject.toml"
+#       pyproject_deb: "./pyproject.toml"
 #     secrets:
 #       token: ${{ secrets.YNPUT_BOT_TOKEN }}
 #       user_email: ${{ secrets.CI_EMAIL }}
