@@ -1,9 +1,6 @@
 name: Release [trigger]
 
 on:
-  push:
-    branches:
-      - develop
   workflow_dispatch:
     inputs:
       release-type:
@@ -22,7 +19,8 @@ jobs:
       version-py-path: "./openpype/version.py"
       pyproject_deb: "./pyproject.toml"
       ci-tools-workdir: /home/runner/work/ci-tools
-      base-branch: "develop"
+      source_branch: "develop"
+      target_branch: "main"
       GITHUB_TOKEN: ${{ secrets.YNPUT_BOT_TOKEN }}
       user_email: ${{ secrets.CI_EMAIL }}
       user_name: ${{ secrets.CI_USER }}
@@ -134,29 +132,37 @@ jobs:
       # merge base branch (develop) to main
       #    only if not commit in milestone
       #----------------------------------------------
-      - name: 🔨 Merge develop to main
-        uses: everlytic/branch-merge@1.1.0
-        with:
-          github_token: ${{ env.GITHUB_TOKEN }}
-          source_ref: ${{ env.base-branch }}
-          target_branch: 'main'
-          commit_message_template: '[Automated] Merged {source_ref} into {target_branch}'
-
-      - name: Check Modified Files
-        run: |
-          git status
+      # - name: 🔨 Merge develop to main
+      #   uses: everlytic/branch-merge@1.1.0
+      #   with:
+      #     github_token: ${{ env.GITHUB_TOKEN }}
+      #     source_ref: ${{ env.source_branch }}
+      #     target_branch: ${{ env.target_branch }}
+      #     commit_message_template: '[Automated] Merged {source_ref} into {target_branch}'
 
       #----------------------------------------------
       #      check out to ci tools repo
       #----------------------------------------------
-      - name: Checkout Workspace repo to main
+      - name: Checkout Workspace repo to ${{ env.target_branch }}
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ env.target_branch }}
+
+      - name: Fetch Latest Changes
+        run: git fetch origin develop
+
+      - name: List Branches
+        run: git branch -a
 
       - name: Check Modified Files
         run: |
           git status
+
+      - name: merge develop to main
+        run: |
+          git merge origin/${{ env.source_branch }} --no-ff --no-commit
+          git add .
+          git commit -m "[Automated] Merged ${{ env.source_branch }} into ${{ env.target_branch }}"
 
       #----------------------------------------------
       # get next available version from tags if
@@ -244,44 +250,44 @@ jobs:
 
       # TODO make this work
 
-      # - name: 💾 Commit and Tag
-      #   if: ${{ env.changelog }}
-      #   id: gitCommit
-      #   run: |
-      #     git config user.email ${{ env.user_email }}
-      #     git config user.name ${{ env.user_name }}
-      #     git add .
-      #     git commit -m "[Automated] Release"
-      #     tag_name="${{ env.next_version }}"
-      #     git tag -a $tag_name -m "stable release"
+      - name: 💾 Commit and Tag
+        if: ${{ env.changelog }}
+        id: gitCommit
+        run: |
+          git config user.email ${{ env.user_email }}
+          git config user.name ${{ env.user_name }}
+          git add .
+          git commit -m "[Automated] Release"
+          tag_name="${{ env.next_version }}"
+          git tag -a $tag_name -m "stable release"
 
-      # - name: 🔏 Push to protected main branch
-      #   if: ${{ env.changelog }}
-      #   uses: CasperWA/push-protected@v2.10.0
-      #   with:
-      #     token: ${{ env.GITHUB_TOKEN }}
-      #     branch: main
-      #     tags: true
-      #     unprotect_reviews: true
+      - name: 🔏 Push to protected main branch
+        if: ${{ env.changelog }}
+        uses: CasperWA/push-protected@v2.10.0
+        with:
+          token: ${{ env.GITHUB_TOKEN }}
+          branch: main
+          tags: true
+          unprotect_reviews: true
 
-      # - name: 🔁 Merge main back to develop
-      #   if: ${{ env.changelog }}
-      #   uses: everlytic/branch-merge@1.1.0
-      #   with:
-      #     github_token: ${{ env.GITHUB_TOKEN }}
-      #     source_ref: 'main'
-      #     target_branch: 'develop'
-      #     commit_message_template: '[Automated] Merged release {source_ref} into {target_branch}'
+      - name: 🔁 Merge main back to develop
+        if: ${{ env.changelog }}
+        uses: everlytic/branch-merge@1.1.0
+        with:
+          github_token: ${{ env.GITHUB_TOKEN }}
+          source_ref: 'main'
+          target_branch: 'develop'
+          commit_message_template: '[Automated] Merged release {source_ref} into {target_branch}'
 
       # ----------------------------------------------
       # make tag release
       # ---------------------------------------------
-      # - name: 🚀 Github Release
-      #   uses: ncipollo/release-action@v1
-      #   with:
-      #     tag: ${{ env.NEXT_VERSION }}
-      #     body: ${{ env.changelog }}
-      #     token: ${{ env.GITHUB_TOKEN }}
+      - name: 🚀 Github Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ env.NEXT_VERSION }}
+          body: ${{ env.changelog }}
+          token: ${{ env.GITHUB_TOKEN }}
 
 # jobs:
 #   fetch-latest-tag:
