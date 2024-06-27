@@ -217,11 +217,11 @@ jobs:
       #----------------------------------------------
       # Set Release Version custom attribute to ClickUp project
       #----------------------------------------------
-      - name: Set Release version to ClickUp tasks
-        run: |
-          source ${{ env.ci-tools-workdir }}/.venv/bin/activate
-          python ${{ env.ci-tools-workdir }}/tools/cli.py project prs-to-clickup --milestone=${{ env.next_version }}
-        shell: bash
+      # - name: Set Release version to ClickUp tasks
+      #   run: |
+      #     source ${{ env.ci-tools-workdir }}/.venv/bin/activate
+      #     python ${{ env.ci-tools-workdir }}/tools/cli.py project prs-to-clickup --milestone=${{ env.next_version }}
+      #   shell: bash
 
       #----------------------------------------------
       # Test printing
