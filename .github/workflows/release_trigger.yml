@@ -142,6 +142,10 @@ jobs:
           target_branch: 'main'
           commit_message_template: '[Automated] Merged {source_ref} into {target_branch}'
 
+      - name: Check Modified Files
+        run: |
+          git status
+
       #----------------------------------------------
       #      check out to ci tools repo
       #----------------------------------------------
