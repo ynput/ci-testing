@@ -140,16 +140,21 @@ jobs:
       #   with:
       #     github_token: ${{ env.GITHUB_TOKEN }}
       #     source_ref: ${{ env.source_branch }}
-      #     target_branch: 'main'
+      #     target_branch: ${{ env.target_branch }}
       #     commit_message_template: '[Automated] Merged {source_ref} into {target_branch}'
 
       #----------------------------------------------
       #      check out to ci tools repo
       #----------------------------------------------
-      - name: Checkout Workspace repo to main
+      - name: Checkout Workspace repo to ${{ env.source_branch }}
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ env.source_branch }}
+
+      - name: Checkout Workspace repo to ${{ env.target_branch }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.target_branch }}
 
       - name: List Branches
         run: git branch -a
