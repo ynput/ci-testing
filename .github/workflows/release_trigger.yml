@@ -152,7 +152,7 @@ jobs:
           ref: ${{ env.target_branch }}
 
       - name: Fetch Latest Changes
-        run: git fetch develop
+        run: git fetch origin develop
 
       - name: List Branches
         run: git branch -a
