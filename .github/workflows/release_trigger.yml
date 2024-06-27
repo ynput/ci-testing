@@ -3,8 +3,7 @@ name: Release [trigger]
 on:
   push:
     branches:
-      - main
-      - develop  # remove this one after RnD
+      - develop
   workflow_dispatch:
     inputs:
       release-type:
