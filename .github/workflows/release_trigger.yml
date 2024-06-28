@@ -103,7 +103,7 @@ jobs:
 
       # INFO doesn't seem to show merge conflicts 
       - name: Merge develop -> main
-        uses: everlytic/branch-merge@1.1.5
+        uses: everlytic/branch-merge-v2@0610c6f5aba9438185a97eda7bdffe918fa80288
         with:
           github_token: ${{ env.GITHUB_TOKEN }}
           source_ref: ${{ env.source_branch }}
@@ -172,7 +172,7 @@ jobs:
 
       - name: 🔁 Merge main -> develop
         if: ${{ env.changelog }}
-        uses: everlytic/branch-merge@1.1.5
+        uses: everlytic/branch-merge-v2@0610c6f5aba9438185a97eda7bdffe918fa80288
         with:
           github_token: ${{ env.GITHUB_TOKEN }}
           source_ref: 'main'
