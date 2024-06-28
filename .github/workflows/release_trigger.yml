@@ -150,41 +150,42 @@ jobs:
       #    only if not commit in milestone
       #----------------------------------------------
       # INFO doesn't seem to show merge conflicts 
-      - name: 🔨 Merge develop to main
-        uses: everlytic/branch-merge@1.1.5
-        with:
-          github_token: ${{ env.GITHUB_TOKEN }}
-          source_ref: ${{ env.source_branch }}
-          target_branch: ${{ env.source_branch }}
-          commit_message_template: '[Automated] Merged {source_ref} into {target_branch}'
+      # - name: 🔨 Merge develop to main
+      #   uses: everlytic/branch-merge@1.1.5
+      #   with:
+      #     github_token: ${{ env.GITHUB_TOKEN }}
+      #     source_ref: ${{ env.source_branch }}
+      #     target_branch: ${{ env.source_branch }}
+      #     commit_message_template: '[Automated] Merged {source_ref} into {target_branch}'
 
-      #----------------------------------------------
-      #      check out to ci tools repo
-      #----------------------------------------------
       - name: Checkout Workspace repo to main
         uses: actions/checkout@v4
         with:
           ref: ${{ env.target_branch }}
 
+      - name: Fetch Latest Changes
+        run: git fetch origin develop
+
+      - name: Merge with ${{ env.source_branch }}
+        run: |
+          git merge develop --no-ff --no-commit  # Perform merge without fast-forward
+          # Handle merge conflicts if any
+          git add .
+          git commit -m "[Automated] Merge develop into main"
+
       - name: Check Modified Files
         run: |
           git status
 
-      #----------------------------------------------
-      # get next available version from tags if
-      # if milestone title still `next-` and not version
-      #----------------------------------------------
-      # - name: Get next version from tags
-      #   run: |
-      #     source ${{ env.ci-tools-workdir }}/.venv/bin/activate
-      #     NEXT_VERSION=$(python ${{ env.ci-tools-workdir }}/tools/cli.py versioning bump-version --type=release --part=patch)
-      #     CURRENT_VERSION=$(python ${{ env.ci-tools-workdir }}/tools/cli.py versioning current-version --type=release)
-      #     python ${{ env.ci-tools-workdir }}/tools/cli.py milestones set-milestone-tag --milestone="" --tag-name=${CURRENT_VERSION}
-      #     python ${{ env.ci-tools-workdir }}/tools/cli.py milestones set-milestone-title --milestone="" --new-title=${NEXT_VERSION}
+      - name: Get next version from tags
+        run: |
+          source ${{ env.ci-tools-workdir }}/.venv/bin/activate
+          NEXT_VERSION=$(python ${{ env.ci-tools-workdir }}/tools/cli.py versioning bump-version --type=release --part=patch)
+          CURRENT_VERSION=$(python ${{ env.ci-tools-workdir }}/tools/cli.py versioning current-version --type=release)
 
-      #     echo "NEXT_VERSION=${NEXT_VERSION}" >> $GITHUB_ENV
-      #     echo "CURRENT_VERSION=${CURRENT_VERSION}" >> $GITHUB_ENV
-      #   shell: bash
+          echo "NEXT_VERSION=${NEXT_VERSION}" >> $GITHUB_ENV
+          echo "CURRENT_VERSION=${CURRENT_VERSION}" >> $GITHUB_ENV
+        shell: bash
 
       - name: Get latest release version
         id: latest_release
