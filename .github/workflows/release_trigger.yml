@@ -261,14 +261,14 @@ jobs:
           echo "user.name: ${{ secrets.CI_USER }}"
           echo "updated: ${{ env.changelog }}"
 
-      - name: 💾 Commit and Tag
-        if: ${{ env.changelog }}
-        id: gitCommit
-        run: |
-          git add .
-          git commit -m "[Automated] Release"
-          tag_name="${{ env.next_version }}"
-          git tag -a $tag_name -m "stable release"
+      # - name: 💾 Commit and Tag
+      #   if: ${{ env.changelog }}
+      #   id: gitCommit
+      #   run: |
+      #     git add .
+      #     git commit -m "[Automated] Release"
+      #     tag_name="${{ env.next_version }}"
+      #     git tag -a $tag_name -m "stable release"
 
       - name: 🔏 Push to protected main branch
         if: ${{ env.changelog }}
