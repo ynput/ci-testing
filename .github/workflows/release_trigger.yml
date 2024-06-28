@@ -279,14 +279,26 @@ jobs:
           tags: true
           unprotect_reviews: true
 
-      - name: 🔁 Merge main back to develop
-        if: ${{ env.changelog }}
-        uses: everlytic/branch-merge@1.1.0
+      # - name: 🔁 Merge main back to develop
+      #   if: ${{ env.changelog }}
+      #   uses: everlytic/branch-merge@1.1.0
+      #   with:
+      #     github_token: ${{ env.GITHUB_TOKEN }}
+      #     source_ref: 'main'
+      #     target_branch: 'develop'
+      #     commit_message_template: '[Automated] Merged release {source_ref} into {target_branch}'
+
+      - name: Checkout Workspace repo to main
+        uses: actions/checkout@v4
         with:
-          github_token: ${{ env.GITHUB_TOKEN }}
-          source_ref: 'main'
-          target_branch: 'develop'
-          commit_message_template: '[Automated] Merged release {source_ref} into {target_branch}'
+          ref: ${{ env.source_branch }}
+
+      - name: 🔁 Merge ${{ env.target_branch }} back to ${{ env.source_branch }}
+        run: |
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git fetch origin ${{ env.target_branch }}
+          git merge origin/${{ env.target_branch }} --no-ff -m "[Automated] Merge ${{ env.target_branch }} into ${{ env.source_branch }}"
+          git push origin ${{ env.source_branch }}
 
       # ----------------------------------------------
       # make tag release
