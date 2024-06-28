@@ -200,6 +200,8 @@ jobs:
             echo "changelog=true" >> $GITHUB_ENV
           else
             echo "changelog=false" >> $GITHUB_ENV
+          fi
+          exit 0
 
       #----------------------------------------------
       # get version number from milestone title
