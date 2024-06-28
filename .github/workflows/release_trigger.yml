@@ -1,6 +1,10 @@
 name: Release [trigger]
 
 on:
+  push: 
+    branches:
+      - develop
+
   workflow_dispatch:
     inputs:
       release-type:
@@ -16,11 +20,13 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # TODO move as many of these as possible to inputs
+      # TODO check action default environement varibales to avoid redundancy
+      # https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables
       version-py-path: "./openpype/version.py"
       pyproject_deb: "./pyproject.toml"
       ci-tools-workdir: /home/runner/work/ci-tools
-      source_branch: "develop"
-      target_branch: "main"
+      source_branch: "develop"  # move to repo variables
+      target_branch: "main"  # move to repo variables
       GITHUB_TOKEN: ${{ secrets.YNPUT_BOT_TOKEN }}
       user_email: ${{ secrets.CI_EMAIL }}
       user_name: ${{ secrets.CI_USER }}
@@ -59,7 +65,7 @@ jobs:
       #      check out to ci tools repo
       #----------------------------------------------
       - name: Checkout CI Tools repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
           repository: ynput/ci-tools
           ref: main
@@ -119,6 +125,17 @@ jobs:
       #   shell: bash
 
       #----------------------------------------------
+      # get latest commit found on develop branch
+      #----------------------------------------------
+      - name: Get base branch commit
+        id: baseBranchCommit
+        run: |
+          source ${{ env.ci-tools-workdir }}/.venv/bin/activate
+          COMMIT=$(python ${{ env.ci-tools-workdir }}/tools/cli.py repo get-latest-commit --branch=${{ env.source_branch }})
+          echo "commit=${COMMIT}" >> $GITHUB_OUTPUT
+        shell: bash
+
+      #----------------------------------------------
       # inject commit into milestone if there is none
       #----------------------------------------------
       # - name: 💉 Inject commit into milestone
@@ -132,37 +149,25 @@ jobs:
       # merge base branch (develop) to main
       #    only if not commit in milestone
       #----------------------------------------------
-      # - name: 🔨 Merge develop to main
-      #   uses: everlytic/branch-merge@1.1.0
-      #   with:
-      #     github_token: ${{ env.GITHUB_TOKEN }}
-      #     source_ref: ${{ env.source_branch }}
-      #     target_branch: ${{ env.target_branch }}
-      #     commit_message_template: '[Automated] Merged {source_ref} into {target_branch}'
+      - name: 🔨 Merge develop to main
+        uses: everlytic/branch-merge@1.1.0
+        with:
+          github_token: ${{ env.GITHUB_TOKEN }}
+          source_ref: ${{ env.source_branch }}
+          target_branch: ${{ env.source_branch }}
+          commit_message_template: '[Automated] Merged {source_ref} into {target_branch}'
 
       #----------------------------------------------
       #      check out to ci tools repo
       #----------------------------------------------
-      - name: Checkout Workspace repo to ${{ env.target_branch }}
+      - name: Checkout Workspace repo to main
         uses: actions/checkout@v4
         with:
           ref: ${{ env.target_branch }}
 
-      - name: Fetch Latest Changes
-        run: git fetch origin develop
-
-      - name: List Branches
-        run: git branch -a
-
       - name: Check Modified Files
         run: |
           git status
-
-      - name: merge develop to main
-        run: |
-          git merge origin/${{ env.source_branch }} --no-ff --no-commit
-          git add .
-          git commit -m "[Automated] Merged ${{ env.source_branch }} into ${{ env.target_branch }}"
 
       #----------------------------------------------
       # get next available version from tags if
@@ -188,7 +193,6 @@ jobs:
     
           echo "::set-output name=latest_version::$latest_version"
           echo "Latest release version: $latest_version"
-          # TODO "`set-output` comamnd is deprecated"
 
       #----------------------------------------------
       # get version number from milestone title
@@ -249,7 +253,6 @@ jobs:
           echo "updated: ${{ env.changelog }}"
 
       # TODO make this work
-
       - name: 💾 Commit and Tag
         if: ${{ env.changelog }}
         id: gitCommit
