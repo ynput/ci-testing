@@ -16,7 +16,7 @@ on:
         required: true
 
 jobs:
-  set-job-variables:
+  release-trigger:
     runs-on: ubuntu-latest
     env:
       # TODO move as many of these as possible to inputs
@@ -149,8 +149,9 @@ jobs:
       # merge base branch (develop) to main
       #    only if not commit in milestone
       #----------------------------------------------
+      # INFO doesn't seem to show merge conflicts 
       - name: 🔨 Merge develop to main
-        uses: everlytic/branch-merge@1.1.0
+        uses: everlytic/branch-merge@1.1.5
         with:
           github_token: ${{ env.GITHUB_TOKEN }}
           source_ref: ${{ env.source_branch }}
