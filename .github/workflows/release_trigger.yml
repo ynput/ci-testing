@@ -15,29 +15,28 @@ on:
           - pre-release
         required: true
 
-env:
-  # TODO move as many of these as possible to inputs
-  # TODO check action default environement varibales to avoid redundancy
-  # https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables
-  version-py-path: "./openpype/version.py"
-  pyproject_deb: "./pyproject.toml"
-  ci-tools-workdir: /home/runner/work/ci-tools
-  source_branch: "develop"  # move to repo variables
-  target_branch: "main"  # move to repo variables
-  GITHUB_TOKEN: ${{ secrets.YNPUT_BOT_TOKEN }}
-  user_email: ${{ secrets.CI_EMAIL }}
-  user_name: ${{ secrets.CI_USER }}
-  cu_api_key: ${{ secrets.CLICKUP_API_KEY }}
-  cu_team_id: ${{ secrets.CLICKUP_TEAM_ID }}
-  current_version: 3.6.1
-  next_version: 3.6.2
-  changelog: "Test Changelog"
-
 jobs:
   release-trigger:
     runs-on: ubuntu-latest
     # TODO get name from variable
     if: github.actor != 'ynbot'
+    env:
+      # TODO move as many of these as possible to inputs
+      # TODO check action default environement varibales to avoid redundancy
+      # https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables
+      version-py-path: "./openpype/version.py"
+      pyproject_deb: "./pyproject.toml"
+      ci-tools-workdir: /home/runner/work/ci-tools
+      source_branch: "develop"  # move to repo variables
+      target_branch: "main"  # move to repo variables
+      GITHUB_TOKEN: ${{ secrets.YNPUT_BOT_TOKEN }}
+      user_email: ${{ secrets.CI_EMAIL }}
+      user_name: ${{ secrets.CI_USER }}
+      cu_api_key: ${{ secrets.CLICKUP_API_KEY }}
+      cu_team_id: ${{ secrets.CLICKUP_TEAM_ID }}
+      current_version: 3.6.1
+      next_version: 3.6.2
+      changelog: "Test Changelog"
 
     steps:
       - name: Set secret switch
@@ -66,7 +65,7 @@ jobs:
 
       - name: Set up python
         id: setup-python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11.5'
 
@@ -103,7 +102,7 @@ jobs:
         shell: bash
 
       # INFO doesn't seem to show merge conflicts 
-      - name: 🔨 Merge develop to main
+      - name: Merge develop -> main
         uses: everlytic/branch-merge@1.1.5
         with:
           github_token: ${{ env.GITHUB_TOKEN }}
@@ -171,7 +170,7 @@ jobs:
           tags: true
           unprotect_reviews: true
 
-      - name: 🔁 Merge main back to develop
+      - name: 🔁 Merge main -> develop
         if: ${{ env.changelog }}
         uses: everlytic/branch-merge@1.1.5
         with:
