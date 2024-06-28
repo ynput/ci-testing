@@ -15,27 +15,28 @@ on:
           - pre-release
         required: true
 
+env:
+  # TODO move as many of these as possible to inputs
+  # TODO check action default environement varibales to avoid redundancy
+  # https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables
+  version-py-path: "./openpype/version.py"
+  pyproject_deb: "./pyproject.toml"
+  ci-tools-workdir: /home/runner/work/ci-tools
+  source_branch: "develop"  # move to repo variables
+  target_branch: "main"  # move to repo variables
+  GITHUB_TOKEN: ${{ secrets.YNPUT_BOT_TOKEN }}
+  user_email: ${{ secrets.CI_EMAIL }}
+  user_name: ${{ secrets.CI_USER }}
+  cu_api_key: ${{ secrets.CLICKUP_API_KEY }}
+  cu_team_id: ${{ secrets.CLICKUP_TEAM_ID }}
+  current_version: 3.6.1
+  next_version: 3.6.2
+  changelog: "Test Changelog"
+
 jobs:
   release-trigger:
     runs-on: ubuntu-latest
-    env:
-      # TODO move as many of these as possible to inputs
-      # TODO check action default environement varibales to avoid redundancy
-      # https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables
-      version-py-path: "./openpype/version.py"
-      pyproject_deb: "./pyproject.toml"
-      ci-tools-workdir: /home/runner/work/ci-tools
-      source_branch: "develop"  # move to repo variables
-      target_branch: "main"  # move to repo variables
-      GITHUB_TOKEN: ${{ secrets.YNPUT_BOT_TOKEN }}
-      user_email: ${{ secrets.CI_EMAIL }}
-      user_name: ${{ secrets.CI_USER }}
-      cu_api_key: ${{ secrets.CLICKUP_API_KEY }}
-      cu_team_id: ${{ secrets.CLICKUP_TEAM_ID }}
-      current_version: 3.6.1
-      next_version: 3.6.2
-      changelog: "Test Changelog"
-
+    if: github.actor != 'ynbot'
 
     steps:
       #----------------------------------------------
