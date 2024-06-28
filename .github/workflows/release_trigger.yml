@@ -19,7 +19,7 @@ jobs:
   release-trigger:
     runs-on: ubuntu-latest
     # TODO get name from variable
-    if: github.actor != 'ynbot'
+    # if: github.actor != 'ynbot'
     env:
       # TODO move as many of these as possible to inputs
       # TODO check action default environement varibales to avoid redundancy

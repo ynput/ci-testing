@@ -1,9 +1,18 @@
-digraph release_trigger {
-    release_trigger [label="Release Trigger"]
-    milestone [label="Milestone"]
-    github_project [label="Github Project"]
-    auto_collect [label="Auto Collect (Default)"]
+digraph ReleaseProcess {
+    node [shape=box, fontname="Arial"];
 
-    {milestone, github_project, auto_collect} -> release_trigger [label="Release Data"]
+    main_start [label="Main Branch"]
+    develop_start [label="Develop Branch"]
+    main_end [shape=circle, label=""]
+    develop_end [shape=circle, label=""]
+
+    feature_merge [shape=doublecircle, label="M", xlabel="Merged Feature PR"]
+    feature_from_dev [shape=doublecircle, label="M", xlabel="Merge from develop"]
+
+    main_start -> feature_from_dev [color="green", penwidth=3.0]
+    feature_from_dev -> main_end [color="green", penwidth=3.0]
+    develop_start -> feature_merge [color="blue", penwidth=3.0]
+    feature_merge -> develop_end [color="blue", penwidth=3.0]
+    feature_merge -> feature_from_dev
 
 }
