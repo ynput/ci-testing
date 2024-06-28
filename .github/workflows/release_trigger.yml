@@ -173,7 +173,6 @@ jobs:
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git fetch origin develop
           git merge origin/develop --no-ff -m "[Automated] Merge ${{ env.source_branch }} into ${{ env.target_branch }}"
-          git push origin ${{ env.target_branch }}
 
       - name: Check Modified Files
         run: |
