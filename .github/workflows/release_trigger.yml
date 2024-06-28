@@ -154,10 +154,10 @@ jobs:
           target_branch: ${{ env.source_branch }}
           commit_message_template: '[Automated] Merged {source_ref} into {target_branch}'
 
-      # - name: Checkout Workspace repo to main
-      #   uses: actions/checkout@v4
-      #   with:
-      #     ref: ${{ env.target_branch }}
+      - name: Checkout Workspace repo to main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.target_branch }}
 
       # - name: Configure Git User
       #   run: |
