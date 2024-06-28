@@ -103,6 +103,7 @@ jobs:
 
       # INFO doesn't seem to show merge conflicts 
       - name: Merge develop -> main
+        # TODO research other merge actions that usde node version 20 instead of 16 (eol)
         uses: everlytic/branch-merge@1.1.5
         with:
           github_token: ${{ env.GITHUB_TOKEN }}
@@ -172,6 +173,7 @@ jobs:
 
       - name: 🔁 Merge main -> develop
         if: ${{ env.changelog }}
+        # TODO research other merge actions that usde node version 20 instead of 16 (eol)
         uses: everlytic/branch-merge@1.1.5
         with:
           github_token: ${{ env.GITHUB_TOKEN }}
