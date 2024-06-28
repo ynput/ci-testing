@@ -1,6 +1,10 @@
 name: Release [trigger]
 
 on:
+  push: 
+    branches:
+      - develop
+
   workflow_dispatch:
     inputs:
       release-type:
@@ -12,15 +16,17 @@ on:
         required: true
 
 jobs:
-  set-job-variables:
+  release-trigger:
     runs-on: ubuntu-latest
     env:
       # TODO move as many of these as possible to inputs
+      # TODO check action default environement varibales to avoid redundancy
+      # https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables
       version-py-path: "./openpype/version.py"
       pyproject_deb: "./pyproject.toml"
       ci-tools-workdir: /home/runner/work/ci-tools
-      source_branch: "develop"
-      target_branch: "main"
+      source_branch: "develop"  # move to repo variables
+      target_branch: "main"  # move to repo variables
       GITHUB_TOKEN: ${{ secrets.YNPUT_BOT_TOKEN }}
       user_email: ${{ secrets.CI_EMAIL }}
       user_name: ${{ secrets.CI_USER }}
@@ -59,7 +65,7 @@ jobs:
       #      check out to ci tools repo
       #----------------------------------------------
       - name: Checkout CI Tools repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
           repository: ynput/ci-tools
           ref: main
@@ -119,6 +125,17 @@ jobs:
       #   shell: bash
 
       #----------------------------------------------
+      # get latest commit found on develop branch
+      #----------------------------------------------
+      - name: Get base branch commit
+        id: baseBranchCommit
+        run: |
+          source ${{ env.ci-tools-workdir }}/.venv/bin/activate
+          COMMIT=$(python ${{ env.ci-tools-workdir }}/tools/cli.py repo get-latest-commit --branch=${{ env.source_branch }})
+          echo "commit=${COMMIT}" >> $GITHUB_OUTPUT
+        shell: bash
+
+      #----------------------------------------------
       # inject commit into milestone if there is none
       #----------------------------------------------
       # - name: 💉 Inject commit into milestone
@@ -132,53 +149,40 @@ jobs:
       # merge base branch (develop) to main
       #    only if not commit in milestone
       #----------------------------------------------
+      # INFO doesn't seem to show merge conflicts 
       # - name: 🔨 Merge develop to main
-      #   uses: everlytic/branch-merge@1.1.0
+      #   uses: everlytic/branch-merge@1.1.5
       #   with:
       #     github_token: ${{ env.GITHUB_TOKEN }}
       #     source_ref: ${{ env.source_branch }}
-      #     target_branch: ${{ env.target_branch }}
+      #     target_branch: ${{ env.source_branch }}
       #     commit_message_template: '[Automated] Merged {source_ref} into {target_branch}'
 
-      #----------------------------------------------
-      #      check out to ci tools repo
-      #----------------------------------------------
-      - name: Checkout Workspace repo to ${{ env.target_branch }}
+      - name: Checkout Workspace repo to main
         uses: actions/checkout@v4
         with:
           ref: ${{ env.target_branch }}
 
-      - name: Fetch Latest Changes
-        run: git fetch origin develop
-
-      - name: List Branches
-        run: git branch -a
-
-      - name: Check Modified Files
+      - name: Configure Git User
         run: |
-          git status
+          git config --global user.email ${{ env.user_email }}
+          git config --global user.name ${{ env.user_name }}
 
-      - name: merge develop to main
+      - name: Merge ${{ env.source_branch }} into ${{ env.target_branch }}
         run: |
-          git merge origin/${{ env.source_branch }} --no-ff --no-commit
-          git add .
-          git commit -m "[Automated] Merged ${{ env.source_branch }} into ${{ env.target_branch }}"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git fetch origin develop
+          git merge origin/develop --no-ff -m "[Automated] Merge ${{ env.source_branch }} into ${{ env.target_branch }}"
 
-      #----------------------------------------------
-      # get next available version from tags if
-      # if milestone title still `next-` and not version
-      #----------------------------------------------
-      # - name: Get next version from tags
-      #   run: |
-      #     source ${{ env.ci-tools-workdir }}/.venv/bin/activate
-      #     NEXT_VERSION=$(python ${{ env.ci-tools-workdir }}/tools/cli.py versioning bump-version --type=release --part=patch)
-      #     CURRENT_VERSION=$(python ${{ env.ci-tools-workdir }}/tools/cli.py versioning current-version --type=release)
-      #     python ${{ env.ci-tools-workdir }}/tools/cli.py milestones set-milestone-tag --milestone="" --tag-name=${CURRENT_VERSION}
-      #     python ${{ env.ci-tools-workdir }}/tools/cli.py milestones set-milestone-title --milestone="" --new-title=${NEXT_VERSION}
+      - name: Get next version from tags
+        run: |
+          source ${{ env.ci-tools-workdir }}/.venv/bin/activate
+          NEXT_VERSION=$(python ${{ env.ci-tools-workdir }}/tools/cli.py versioning bump-version --type=release --part=patch)
+          CURRENT_VERSION=$(python ${{ env.ci-tools-workdir }}/tools/cli.py versioning current-version --type=release)
 
-      #     echo "NEXT_VERSION=${NEXT_VERSION}" >> $GITHUB_ENV
-      #     echo "CURRENT_VERSION=${CURRENT_VERSION}" >> $GITHUB_ENV
-      #   shell: bash
+          echo "NEXT_VERSION=${NEXT_VERSION}" >> $GITHUB_ENV
+          echo "CURRENT_VERSION=${CURRENT_VERSION}" >> $GITHUB_ENV
+        shell: bash
 
       - name: Get latest release version
         id: latest_release
@@ -188,7 +192,16 @@ jobs:
     
           echo "::set-output name=latest_version::$latest_version"
           echo "Latest release version: $latest_version"
-          # TODO "`set-output` comamnd is deprecated"
+
+      - name: Check for Changes
+        id: check_changes
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "changelog=true" >> $GITHUB_ENV
+          else
+            echo "changelog=false" >> $GITHUB_ENV
+          fi
+          exit 0
 
       #----------------------------------------------
       # get version number from milestone title
@@ -248,18 +261,14 @@ jobs:
           echo "user.name: ${{ secrets.CI_USER }}"
           echo "updated: ${{ env.changelog }}"
 
-      # TODO make this work
-
-      - name: 💾 Commit and Tag
-        if: ${{ env.changelog }}
-        id: gitCommit
-        run: |
-          git config user.email ${{ env.user_email }}
-          git config user.name ${{ env.user_name }}
-          git add .
-          git commit -m "[Automated] Release"
-          tag_name="${{ env.next_version }}"
-          git tag -a $tag_name -m "stable release"
+      # - name: 💾 Commit and Tag
+      #   if: ${{ env.changelog }}
+      #   id: gitCommit
+      #   run: |
+      #     git add .
+      #     git commit -m "[Automated] Release"
+      #     tag_name="${{ env.next_version }}"
+      #     git tag -a $tag_name -m "stable release"
 
       - name: 🔏 Push to protected main branch
         if: ${{ env.changelog }}

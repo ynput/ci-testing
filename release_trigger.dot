@@ -1,0 +1,9 @@
+digraph release_trigger {
+    release_trigger [label="Release Trigger"]
+    milestone [label="Milestone"]
+    github_project [label="Github Project"]
+    auto_collect [label="Auto Collect (Default)"]
+
+    {milestone, github_project, auto_collect} -> release_trigger [label="Release Data"]
+
+}
