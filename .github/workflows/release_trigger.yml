@@ -158,25 +158,21 @@ jobs:
       #     target_branch: ${{ env.source_branch }}
       #     commit_message_template: '[Automated] Merged {source_ref} into {target_branch}'
 
-      - name: Configure Git User
-        run: |
-          git config --global user.email ${{ env.user_email }}
-          git config --global user.name ${{ env.user_name }}
-
       - name: Checkout Workspace repo to main
         uses: actions/checkout@v4
         with:
           ref: ${{ env.target_branch }}
+
+      - name: Configure Git User
+        run: |
+          git config --global user.email ${{ env.user_email }}
+          git config --global user.name ${{ env.user_name }}
 
       - name: Merge ${{ env.source_branch }} into ${{ env.target_branch }}
         run: |
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git fetch origin develop
           git merge origin/develop --no-ff -m "[Automated] Merge ${{ env.source_branch }} into ${{ env.target_branch }}"
-
-      - name: Check Modified Files
-        run: |
-          git status
 
       - name: Get next version from tags
         run: |
@@ -196,6 +192,14 @@ jobs:
     
           echo "::set-output name=latest_version::$latest_version"
           echo "Latest release version: $latest_version"
+
+      - name: Check for Changes
+        id: check_changes
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "changelog=true" >> $GITHUB_ENV
+          else
+            echo "changelog=false" >> $GITHUB_ENV
 
       #----------------------------------------------
       # get version number from milestone title
@@ -255,13 +259,10 @@ jobs:
           echo "user.name: ${{ secrets.CI_USER }}"
           echo "updated: ${{ env.changelog }}"
 
-      # TODO make this work
       - name: 💾 Commit and Tag
         if: ${{ env.changelog }}
         id: gitCommit
         run: |
-          git config user.email ${{ env.user_email }}
-          git config user.name ${{ env.user_name }}
           git add .
           git commit -m "[Automated] Release"
           tag_name="${{ env.next_version }}"
