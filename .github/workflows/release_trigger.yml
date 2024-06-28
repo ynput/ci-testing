@@ -168,10 +168,10 @@ jobs:
 
       - name: Merge with ${{ env.source_branch }}
         run: |
-          git merge develop --no-ff --no-commit  # Perform merge without fast-forward
+          git merge origin/${{ env.source_branch }} --no-ff --no-commit  # Perform merge without fast-forward
           # Handle merge conflicts if any
           git add .
-          git commit -m "[Automated] Merge develop into main"
+          git commit -m "[Automated] Merge origin/${{ env.source_branch }} into ${{ env.target_branch }}"
 
       - name: Check Modified Files
         run: |
