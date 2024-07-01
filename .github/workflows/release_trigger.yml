@@ -1,10 +1,5 @@
 name: Release [trigger]
-
 on:
-  push: 
-    branches:
-      - develop
-
   workflow_dispatch:
     inputs:
       release-type:
