@@ -1,18 +1,97 @@
 digraph ReleaseProcess {
-    node [shape=box, fontname="Arial"];
+    node [shape=circle, fontname="Arial", width=0.3, height=0.3, style=filled, label=""];
+    rankdir=TB;
 
-    main_start [label="Main Branch"]
-    develop_start [label="Develop Branch"]
-    main_end [shape=circle, label=""]
-    develop_end [shape=circle, label=""]
+    main_start [style="", shape=plain, label="main"];
+    hotfix_start [style="", shape=plain, label="hotfixes"];
+    release_start [style="", shape=plain, label="releases"];
+    develop_start [style="", shape=plain, label="develop"];
+    feature01_start [style="", shape=plain, label="feature_01"];
+    feature02_start [style="", shape=plain, label="feature_02"];
+    main_end [fillcolor=blue, label=""];
+    hotfix_end [style="", shape=plaintext, label=""];
+    release_end [style="", shape=plaintext, label=""];
+    develop_end [fillcolor=yellow, label=""];
+    feature01_end [style="", shape=plaintext, label=""];
+    feature02_end [style="", shape=plaintext, label=""];
 
-    feature_merge [shape=doublecircle, label="M", xlabel="Merged Feature PR"]
-    feature_from_dev [shape=doublecircle, label="M", xlabel="Merge from develop"]
+    main_01 [fillcolor=blue, label="v1.0.0", margin=0.01];
+    main_02 [fillcolor=blue, label="v1.0.1", margin=0.01];
+    main_03 [fillcolor=blue, label="v2.0.0", margin=0.01];
 
-    main_start -> feature_from_dev [color="green", penwidth=3.0]
-    feature_from_dev -> main_end [color="green", penwidth=3.0]
-    develop_start -> feature_merge [color="blue", penwidth=3.0]
-    feature_merge -> develop_end [color="blue", penwidth=3.0]
-    feature_merge -> feature_from_dev
+    hotfix_01 [fillcolor=red, label=""];
 
+    release_01 [fillcolor=green, label=""];
+    release_02 [fillcolor=green, label=""];
+    release_03 [fillcolor=green, label=""];
+    release_04 [fillcolor=green, label=""];
+    release_05 [fillcolor=green, label=""];
+
+    dev_01 [fillcolor=yellow, label=""];
+    dev_02 [fillcolor=yellow, label=""];
+    dev_03 [fillcolor=yellow, label=""];
+    dev_04 [fillcolor=yellow, label=""];
+    dev_05 [fillcolor=yellow, label=""];
+    dev_06 [fillcolor=yellow, label=""];
+    dev_07 [fillcolor=yellow, label=""];
+    dev_08 [fillcolor=yellow, label=""];
+    dev_09 [fillcolor=yellow, label=""];
+    dev_10 [fillcolor=yellow, label=""];
+
+    feature01_01 [fillcolor=pink, label=""];
+    feature01_02 [fillcolor=pink, label=""];
+    feature01_03 [fillcolor=pink, label=""];
+    feature01_04 [fillcolor=pink, label=""];
+    feature01_05 [fillcolor=pink, label=""];
+    feature01_06 [fillcolor=pink, label=""];
+
+    feature02_01 [fillcolor=pink, label=""];
+    feature02_02 [fillcolor=pink, label=""];
+    feature02_03 [fillcolor=pink, label=""];
+    feature02_04 [fillcolor=pink, label=""];
+
+    main_start -> main_01 [style=dashed]
+    main_01 -> { main_02, hotfix_01 }
+    main_02 -> main_03
+    main_03 -> main_end
+
+    { rank=same; main_start, hotfix_start, release_start, develop_start, feature01_start, feature02_start }
+
+    subgraph hotfix {
+        rankdir=TB;
+        hotfix_start -> hotfix_01 -> hotfix_end;
+        hotfix_01 -> { main_02, dev_05 };
+    }
+
+    subgraph releases {
+        rankdir=TB;
+        release_start -> release_01 -> release_02 -> release_03 -> release_04 -> release_05 -> release_end;
+        release_02 -> dev_07;
+        // release_03 -> dev_08 [label="bugfixes only", color=grey];
+        // release_04 -> dev_09;
+        // release_05 -> release_end;
+    }
+
+    subgraph develop {
+        rankdir=TB;
+        develop_start -> dev_01 -> dev_02 -> dev_03 -> dev_04 -> dev_05 -> dev_06 -> dev_07 -> dev_08 -> dev_09 -> dev_10 -> develop_end;
+        dev_06 -> release_01;
+        dev_09 -> release_05;
+        // dev_03 -> feature01_01;
+        // dev_07 -> feature01_04;
+    }
+
+    subgraph feature01 {
+        rankdir=TB;
+        feature01_start -> feature01_01 -> feature01_02 -> feature01_03 -> feature01_04 -> feature01_05 -> feature01_06 -> feature01_end;
+        // feature01_03 -> dev_06;
+        // feature01_06 -> dev_09;
+    }
+
+    subgraph feature02 {
+        rankdir=TB;
+        feature02_start -> feature02_01 -> feature02_02 -> feature02_03 -> feature02_04 -> feature02_end;
+    }
+
+    { rank=same; main_end, hotfix_end, release_end, develop_end, feature01_end, feature02_end }
 }
