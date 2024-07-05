@@ -43,7 +43,7 @@ jobs:
       target_branch: "develop"  # move to repo variables
 
     steps:
-      - name: ⬇️ Checkout ${{ env.source_branch }}
+      - name: ⬇️ Checkout ${{ env.target_branch }}
         uses: actions/checkout@v4
         with:
           ref: ${{ env.target_branch }}
