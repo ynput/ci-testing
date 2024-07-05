@@ -35,8 +35,9 @@ jobs:
           tags: true
           unprotect_reviews: true
 
-  update-develop:
+  merge-to-develop:
     runs-on: ubuntu-latest
+    needs: merge-to-main
     env:
       source_branch: "main"  # move to repo variables
       target_branch: "develop"  # move to repo variables
