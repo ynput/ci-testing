@@ -51,6 +51,7 @@ jobs:
 
       - name: 🔑 Set Bot Authentication
         run: |
+          # INFO might also require bit token first
           git config --global user.email "${{ secrets.CI_EMAIL }}"
           git config --global user.name "${{ secrets.CI_USER }}"
 
