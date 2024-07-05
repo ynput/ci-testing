@@ -75,6 +75,7 @@ jobs:
       changelog: "Updates Palceholder"
     
     steps:
+      # TODO dive into the action as reference to impleemnt custom actions
       - name: Get next version
         uses: reecetech/version-increment@2024.4.4
         id: version
@@ -86,7 +87,7 @@ jobs:
 
       - name: Show version
         run: |
-          echo ${{ steps.version }}
+          echo ${{ steps.version.outputs.version }}
 
       # - name: 🚀 Github Release
       #   uses: ncipollo/release-action@v1
