@@ -22,23 +22,18 @@ jobs:
       #     target_branch: ${{ env.source_branch }}
       #     commit_message_template: '[Automated] Merged {source_branch} -> {target_branch}'
 
-      - name: Define repository reference
-        run: |
-          token=${{ env.GITHUB_TOKEN }}
-          bot_name=${{ env.user_name }}
-          REPO_REF="https://${bot_name}:${token}@github.com/${{ github.repository}}.git"
-
-      - name: Define upstream repo
-        run: |
-          git config --global user.email "${{ env.user_email }}"
-          git config --global user.name "${{ env.user_name }}"
-          git remote add upstream "${REPO_REF}"
-          git branch --verbose
-
       - name: Checkout ${{ env.source_branch }}
         uses: actions/checkout@v4
         with:
           ref: ${{ env.target_branch }}
+          fetch-depth: 0
+
+      - name: Set Bot Token
+        run: |
+          git config --global user.email "${{ env.user_email }}"
+          git config --global user.name "${{ env.user_name }}"
+          git remote add upstream https://${{ env.user_name }}:${{ env.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git branch --verbose
 
       - name: Merge ${{ env.source_branch }} -> ${{ env.target_branch }}
         run: |
