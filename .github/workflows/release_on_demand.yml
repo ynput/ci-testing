@@ -10,12 +10,22 @@ jobs:
       source_branch: "develop"  # move to repo variables
       target_branch: "main"  # move to repo variables
 
+    outputs:
+      latest_release: ${{ steps.get_latest_release.outputs.LATEST_RELEASE }}
+
     steps:
       - name: ⬇️ Checkout ${{ env.target_branch }}
         uses: actions/checkout@v4
         with:
           ref: ${{ env.target_branch }}
           fetch-depth: 0
+
+      - name: Get Latest Release
+        id: get_latest_release
+        run: |
+          LATEST_RELEASE=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases/latest | jq -r '.tag_name')
+          echo "Latest release version: $LATEST_RELEASE"
+          echo "LATEST_RELEASE=$LATEST_RELEASE" >> $GITHUB_OUTPUT
 
       - name: 🔑 Set Bot Authentication
         run: |
@@ -60,4 +70,25 @@ jobs:
           git pull origin ${{ env.source_branch }}
           git merge origin/${{ env.source_branch }} -m "[Automated] Merged ${{ env.source_branch }} -> ${{ env.target_branch }}"
           git push origin ${{ env.target_branch }}
+
+  create-release:
+    runs-on: ubuntu-latest
+    needs: merge-to-main
+    env:
+      source_branch: "main"  # move to repo variables
+      target_branch: "develop"  # move to repo variables
+      NEXT_VERSION: ${{ needs.merge-to-main.outputs.latest_release }}
+      changelog: "Updates Palceholder"
+    
+    steps:
+      - name: Show current version
+        run: |
+          echo ${{ env.NEXT_VERSION }}
+
+      # - name: 🚀 Github Release
+      #   uses: ncipollo/release-action@v1
+      #   with:
+      #     tag: ${{ env.NEXT_VERSION }}
+      #     body: ${{ env.changelog }}
+      #     token: ${{ secrets.YNPUT_BOT_TOKEN }}
 
