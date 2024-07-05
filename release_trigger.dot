@@ -2,12 +2,12 @@ digraph ReleaseProcess {
     node [shape=circle, fontname="Arial", width=0.3, height=0.3, style=filled, label=""];
     rankdir=TB;
 
-    main_start [style="", shape=plain, label="main"];
-    hotfix_start [style="", shape=plain, label="hotfixes"];
-    release_start [style="", shape=plain, label="releases"];
-    develop_start [style="", shape=plain, label="develop"];
-    feature01_start [style="", shape=plain, label="feature_01"];
-    feature02_start [style="", shape=plain, label="feature_02"];
+    main_start [style="", shape=plain, label=<<b>main</b>>, fontsize=20];
+    hotfix_start [style="", shape=plain, label="(hotfixes)", fontcolor="#00000080"];
+    release_start [style="", shape=plain, label="releases", fontcolor="#00000080"];
+    develop_start [style="", shape=plain, label=<<b>develop</b>>, fontsize=20];
+    feature01_start [style="", shape=plain, label="feature_01", fontcolor="#00000080"];
+    feature02_start [style="", shape=plain, label="feature_02", fontcolor="#00000080"];
     main_end [fillcolor=blue, label=""];
     hotfix_end [style="", shape=plaintext, label=""];
     release_end [style="", shape=plaintext, label=""];
@@ -16,6 +16,7 @@ digraph ReleaseProcess {
     feature02_end [style="", shape=plaintext, label=""];
 
     main_01 [fillcolor=blue, label="v1.0.0", margin=0.01];
+    main_invisible_01 [ style=invis ];
     main_02 [fillcolor=blue, label="v1.0.1", margin=0.01];
     main_03 [fillcolor=blue, label="v2.0.0", margin=0.01];
 
@@ -33,7 +34,10 @@ digraph ReleaseProcess {
     dev_04 [fillcolor=yellow, label=""];
     dev_05 [fillcolor=yellow, label=""];
     dev_06 [fillcolor=yellow, label=""];
+    dev_invis_01 [ style=invis ];
+    dev_invis_02 [ style=invis ];
     dev_07 [fillcolor=yellow, label=""];
+    dev_invis_03 [ style=invis ];
     dev_08 [fillcolor=yellow, label=""];
     dev_09 [fillcolor=yellow, label=""];
     dev_10 [fillcolor=yellow, label=""];
@@ -50,42 +54,46 @@ digraph ReleaseProcess {
     feature02_03 [fillcolor=pink, label=""];
     feature02_04 [fillcolor=pink, label=""];
 
-    main_start -> main_01 [style=dashed]
-    main_01 -> { main_02, hotfix_01 }
-    main_02 -> main_03
-    main_03 -> main_end
-
     { rank=same; main_start, hotfix_start, release_start, develop_start, feature01_start, feature02_start }
+
+    subgraph main {
+        rankdir=TB;
+        main_start -> main_01;
+        main_01 -> main_invisible_01 [style=invis];
+        main_01 -> main_02 [ constraint=false ];
+        main_invisible_01 -> main_02 [style=invis];
+        main_02 -> main_03 -> main_end;
+    }
 
     subgraph hotfix {
         rankdir=TB;
-        hotfix_start -> hotfix_01 -> hotfix_end;
-        hotfix_01 -> { main_02, dev_05 };
+        hotfix_start -> hotfix_01 [ style=dotted, color="#00000080" ];
+        hotfix_01 -> hotfix_end [ style=dotted, color="#00000080" ];
     }
 
     subgraph releases {
         rankdir=TB;
-        release_start -> release_01 -> release_02 -> release_03 -> release_04 -> release_05 -> release_end;
-        release_02 -> dev_07;
-        // release_03 -> dev_08 [label="bugfixes only", color=grey];
-        // release_04 -> dev_09;
-        // release_05 -> release_end;
+        release_start -> release_01 [style=dotted];
+        release_01 -> release_02 -> release_03 -> release_04 -> release_05;
+        release_05 -> release_end [style=dotted];
     }
 
     subgraph develop {
         rankdir=TB;
-        develop_start -> dev_01 -> dev_02 -> dev_03 -> dev_04 -> dev_05 -> dev_06 -> dev_07 -> dev_08 -> dev_09 -> dev_10 -> develop_end;
-        dev_06 -> release_01;
-        dev_09 -> release_05;
-        // dev_03 -> feature01_01;
-        // dev_07 -> feature01_04;
+        develop_start -> dev_01 -> dev_02 -> dev_03 -> dev_04 -> dev_05 -> dev_06;
+        dev_06 -> dev_invis_01 [ style=invis ];
+        dev_06 -> dev_07 [ constraint=false ];
+        dev_invis_01 -> dev_invis_02 [ style=invis ];
+        dev_invis_02 -> dev_07;
+        dev_07 -> dev_invis_03 [ style=invis ];
+        dev_07 -> dev_08;
+        dev_invis_03 -> dev_08 [ style=invis ];
+        dev_08 -> dev_09 -> dev_10 -> develop_end;
     }
 
     subgraph feature01 {
         rankdir=TB;
         feature01_start -> feature01_01 -> feature01_02 -> feature01_03 -> feature01_04 -> feature01_05 -> feature01_06 -> feature01_end;
-        // feature01_03 -> dev_06;
-        // feature01_06 -> dev_09;
     }
 
     subgraph feature02 {
@@ -93,5 +101,21 @@ digraph ReleaseProcess {
         feature02_start -> feature02_01 -> feature02_02 -> feature02_03 -> feature02_04 -> feature02_end;
     }
 
+    splines=line
+
+    { rank=same; main_invisible_01, hotfix_01 };
+    main_01 -> hotfix_01 [constraint=false, style=solid, color=black];
+    hotfix_01 -> { main_02, dev_05 } [constraint=false, style=solid, color=black];
+
+    { rank=same; release_01, dev_invis_01 }
+    { rank=same; release_02, dev_invis_02 }
+    dev_06 -> release_01 [ constraint=false, style=solid, color=black ];
+    release_02 -> dev_07 [ constraint=false, style=solid, color=black ];
+    release_03 -> dev_invis_03 [ constraint=false, style=dashed, color="#00000080" ]
+    release_04 -> dev_08 [ constraint=false, style=solid, color=black ];
+    dev_09 -> release_05 [ constraint=false, style=solid, color=black ];
+    release_05 -> develop_end [ constraint=false, style=solid, color=black ];
+
     { rank=same; main_end, hotfix_end, release_end, develop_end, feature01_end, feature02_end }
+
 }
