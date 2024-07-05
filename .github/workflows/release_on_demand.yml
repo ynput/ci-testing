@@ -68,7 +68,7 @@ jobs:
     env:
       source_branch: "main"  # move to repo variables
       target_branch: "develop"  # move to repo variables
-      changelog: "Updates Palceholder"
+      changelog: "Updates Placeholder"
 
     steps:
       # TODO dive into the action as reference to implement custom actions
@@ -82,15 +82,11 @@ jobs:
           release_branch: main
           use_api: true
 
-      - name: Show version
-        run: |
-          echo ${{ steps.version.outputs.version }}
-
-      # - name: 🚀 Github Release
-      #   uses: ncipollo/release-action@v1
-      #   with:
-      #     tag: ${{ env.NEXT_VERSION }}
-      #     body: ${{ env.changelog }}
-      #     token: ${{ secrets.YNPUT_BOT_TOKEN }}
+      - name: 🚀 Github Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.version.outputs.version }}
+          body: ${{ env.changelog }}
+          token: ${{ secrets.YNPUT_BOT_TOKEN }}
 
       # TODO test if new releaseversion exists
