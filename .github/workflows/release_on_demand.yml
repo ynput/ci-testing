@@ -9,8 +9,9 @@ jobs:
     env:
       source_branch: "develop"  # move to repo variables
       target_branch: "main"  # move to repo variables
-      bot_name: "ynbot"
       GITHUB_TOKEN: ${{ secrets.YNPUT_BOT_TOKEN }}
+      user_email: ${{ secrets.CI_EMAIL }}
+      user_name: ${{ secrets.CI_USER }}
 
     steps:
       # - name: Merge ${{ env.source_branch }} -> ${{ env.target_branch }}
@@ -27,7 +28,9 @@ jobs:
 
       - name: Set Bot Token
         run: |
-          git remote set-url origin https://${{ env.bot_name }}:${{ env.GITHUB_TOKEN }}@github.com/ynput/ci-testing.git
+          git config --global user.email "${{ env.user_email }}"
+          git config --global user.name "${{ env.user_name }}"
+          git remote set-url origin https://${{ env.user_name }}:${{ env.GITHUB_TOKEN }}@github.com/ynput/ci-testing.git
 
       - name: Merge ${{ env.source_branch }} -> ${{ env.target_branch }}
         run: |
