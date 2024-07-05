@@ -11,9 +11,6 @@ jobs:
       source_branch: "develop"  # move to repo variables
       target_branch: "main"  # move to repo variables
 
-    outputs:
-      next_release: ${{ steps.version.outputs.version }}
-
     steps:
       - name: ⬇️ Checkout ${{ env.target_branch }}
         uses: actions/checkout@v4
@@ -71,16 +68,16 @@ jobs:
     env:
       source_branch: "main"  # move to repo variables
       target_branch: "develop"  # move to repo variables
-      NEXT_VERSION: ${{ needs.merge-to-main.outputs.next_release }}
       changelog: "Updates Palceholder"
-    
+
     steps:
       # TODO dive into the action as reference to impleemnt custom actions
-      - name: Get next version
+      - name: 🔼 Get next version
         uses: reecetech/version-increment@2024.4.4
         id: version
         with:
           scheme: semver
+          pep440: true
           increment: patch
           release_branch: main
           use_api: true
