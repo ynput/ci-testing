@@ -21,16 +21,18 @@ jobs:
       #     source_ref: ${{ env.source_branch }}
       #     target_branch: ${{ env.source_branch }}
       #     commit_message_template: '[Automated] Merged {source_branch} -> {target_branch}'
-      - name: Checkout ${{ env.source_branch }}
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ env.target_branch }}
 
       - name: Set Bot Token
         run: |
           git config --global user.email "${{ env.user_email }}"
           git config --global user.name "${{ env.user_name }}"
-          git remote set-url origin https://${{ env.user_name }}:${{ env.GITHUB_TOKEN }}@github.com/ynput/ci-testing.git
+          git remote add upstream https://${{ env.user_name }}:${{ env.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git
+          git branch --verbose
+
+      - name: Checkout ${{ env.source_branch }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.target_branch }}
 
       - name: Merge ${{ env.source_branch }} -> ${{ env.target_branch }}
         run: |
@@ -39,4 +41,5 @@ jobs:
 
       - name: Push to ${{ env.target_branch }}
         run: |
-          git push origin main
+          git pull --rebase upstream ${{ env.target_branch }}
+          git push upstream main
