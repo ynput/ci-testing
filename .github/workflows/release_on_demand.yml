@@ -11,13 +11,13 @@ jobs:
       target_branch: "main"  # move to repo variables
 
     steps:
-      - name: ⬇️ Checkout ${{ env.source_branch }}
+      - name: ⬇️ Checkout ${{ env.target_branch }}
         uses: actions/checkout@v4
         with:
           ref: ${{ env.target_branch }}
           fetch-depth: 0
 
-      - name: 🔵 Set Bot Token
+      - name: 🔑 Set Bot Authentication
         run: |
           git config --global user.email "${{ secrets.CI_EMAIL }}"
           git config --global user.name "${{ secrets.CI_USER }}"
@@ -34,3 +34,26 @@ jobs:
           branch: ${{ env.target_branch }}
           tags: true
           unprotect_reviews: true
+
+  update-develop:
+    runs-on: ubuntu-latest
+    env:
+      source_branch: "main"  # move to repo variables
+      target_branch: "develop"  # move to repo variables
+
+    steps:
+      - name: ⬇️ Checkout ${{ env.source_branch }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.target_branch }}
+          fetch-depth: 0
+
+      - name: 🔑 Set Bot Authentication
+        run: |
+          git config --global user.email "${{ secrets.CI_EMAIL }}"
+          git config --global user.name "${{ secrets.CI_USER }}"
+
+      - name: 🔁 Merge ${{ env.source_branch }} -> ${{ env.target_branch }}
+        run: |
+          git pull origin ${{ env.source_branch }}
+          git merge --no-ff origin/${{ env.source_branch }} -m "[Automated] Merged ${{ env.source_branch }} -> ${{ env.target_branch }}"
