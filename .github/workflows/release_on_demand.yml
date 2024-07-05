@@ -14,13 +14,13 @@ jobs:
       user_name: ${{ secrets.CI_USER }}
 
     steps:
-      - name: Merge ${{ env.source_branch }} -> ${{ env.target_branch }}
-        uses: romanonthego/branch-merge@2.0.0
-        with:
-          github_token: ${{ env.GITHUB_TOKEN }}
-          source_ref: ${{ env.source_branch }}
-          target_branch: ${{ env.source_branch }}
-          commit_message_template: '[Automated] Merged {source_branch} -> {target_branch}'
+      # - name: Merge ${{ env.source_branch }} -> ${{ env.target_branch }}
+      #   uses: romanonthego/branch-merge@2.0.0
+      #   with:
+      #     github_token: ${{ env.GITHUB_TOKEN }}
+      #     source_ref: ${{ env.source_branch }}
+      #     target_branch: ${{ env.source_branch }}
+      #     commit_message_template: '[Automated] Merged {source_branch} -> {target_branch}'
 
       - name: Checkout ${{ env.source_branch }}
         uses: actions/checkout@v4
