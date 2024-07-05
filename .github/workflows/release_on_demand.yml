@@ -32,7 +32,7 @@ jobs:
       - name: Merge ${{ env.source_branch }} -> ${{ env.target_branch }}
         run: |
           git pull origin ${{ env.source_branch }}
-          git merge ${{ env.source_branch }}
+          git merge origin/${{ env.source_branch }}
           git commit -m "[Automated] Merged ${{ env.source_branch }} -> ${{ env.source_branch }}"
 
       - name: Push to ${{ env.target_branch }}
