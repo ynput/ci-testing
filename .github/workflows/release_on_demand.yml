@@ -13,9 +13,9 @@ jobs:
 
     steps:
       - name: Merge ${{ env.source_branch }} -> ${{ env.target_branch }}
-        uses: safinazward/merge-branches@v1.0.0  # everlytic/branch-merge@1.1.5
+        uses: romanonthego/branch-merge@2.0.0
         with:
           github_token: ${{ env.GITHUB_TOKEN }}
-          source_branch: ${{ env.source_branch }}
+          source_ref: ${{ env.source_branch }}
           target_branch: ${{ env.source_branch }}
-          commit_message: '[Automated] Merged {source_branch} -> {target_branch}'
+          commit_message_template: '[Automated] Merged {source_branch} -> {target_branch}'
