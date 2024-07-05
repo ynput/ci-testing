@@ -1,4 +1,5 @@
 name: Release [demand]
+# TODO research using the github api instead of cloning repo
 on:
   workflow_dispatch:
     # TODO add input for pre-calculated version
@@ -11,7 +12,7 @@ jobs:
       target_branch: "main"  # move to repo variables
 
     outputs:
-      latest_release: ${{ steps.get_latest_release.outputs.LATEST_RELEASE }}
+      next_release: ${{ steps.version.outputs.version }}
 
     steps:
       - name: ⬇️ Checkout ${{ env.target_branch }}
@@ -19,13 +20,6 @@ jobs:
         with:
           ref: ${{ env.target_branch }}
           fetch-depth: 0
-
-      - name: Get Latest Release
-        id: get_latest_release
-        run: |
-          LATEST_RELEASE=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases/latest | jq -r '.tag_name')
-          echo "Latest release version: $LATEST_RELEASE"
-          echo "LATEST_RELEASE=$LATEST_RELEASE" >> $GITHUB_OUTPUT
 
       - name: 🔑 Set Bot Authentication
         run: |
@@ -77,13 +71,21 @@ jobs:
     env:
       source_branch: "main"  # move to repo variables
       target_branch: "develop"  # move to repo variables
-      NEXT_VERSION: ${{ needs.merge-to-main.outputs.latest_release }}
+      NEXT_VERSION: ${{ needs.merge-to-main.outputs.next_release }}
       changelog: "Updates Palceholder"
     
     steps:
-      - name: Show current version
+      - name: Get next version
+        uses: reecetech/version-increment@2024.4.4
+        id: version
+        with:
+          scheme: semver
+          increment: patch
+          release_branch: main
+
+      - name: Show version
         run: |
-          echo ${{ env.NEXT_VERSION }}
+          echo ${{ steps.version }}
 
       # - name: 🚀 Github Release
       #   uses: ncipollo/release-action@v1
@@ -92,3 +94,4 @@ jobs:
       #     body: ${{ env.changelog }}
       #     token: ${{ secrets.YNPUT_BOT_TOKEN }}
 
+      # TODO test if new releaseversion exists
