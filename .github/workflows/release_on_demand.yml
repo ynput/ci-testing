@@ -56,4 +56,4 @@ jobs:
       - name: 🔁 Merge ${{ env.source_branch }} -> ${{ env.target_branch }}
         run: |
           git pull origin ${{ env.source_branch }}
-          git merge --no-ff origin/${{ env.source_branch }} -m "[Automated] Merged ${{ env.source_branch }} -> ${{ env.target_branch }}"
+          git merge origin/${{ env.source_branch }} -m "[Automated] Merged ${{ env.source_branch }} -> ${{ env.target_branch }}"
