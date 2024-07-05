@@ -58,3 +58,5 @@ jobs:
         run: |
           git pull origin ${{ env.source_branch }}
           git merge origin/${{ env.source_branch }} -m "[Automated] Merged ${{ env.source_branch }} -> ${{ env.target_branch }}"
+          git push origin ${{ env.target_branch }}
+
