@@ -4,7 +4,7 @@ on:
     # TODO add input for pre-calculated version
 
 jobs:
-  release-trigger:
+  branch-merge:
     runs-on: ubuntu-latest
     env:
       source_branch: "develop"  # move to repo variables
@@ -26,7 +26,7 @@ jobs:
         run: |
           git config --global user.email "${{ env.user_email }}"
           git config --global user.name "${{ env.user_name }}"
-          git remote add upstream https://${{ env.user_name }}:${{ env.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git
+          git remote add upstream https://${{ env.user_name }}:${{ env.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git branch --verbose
 
       - name: Checkout ${{ env.source_branch }}
