@@ -25,9 +25,8 @@ jobs:
       - name: Define repository reference
         run: |
           token=${{ env.GITHUB_TOKEN }}
-          branch_name=${{ env.target_branch }}
           bot_name=${{ env.user_name }}
-          REPO_REF="https://${bot_name}:${token}@github.com/${GITHUB_REPOSITORY}.git"
+          REPO_REF="https://${bot_name}:${token}@github.com/${{ github.repository}}.git"
 
       - name: Define upstream repo
         run: |
