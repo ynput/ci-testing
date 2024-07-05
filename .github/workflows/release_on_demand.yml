@@ -14,13 +14,13 @@ jobs:
       user_name: ${{ secrets.CI_USER }}
 
     steps:
-      # - name: Merge ${{ env.source_branch }} -> ${{ env.target_branch }}
-      #   uses: romanonthego/branch-merge@2.0.0
-      #   with:
-      #     github_token: ${{ env.GITHUB_TOKEN }}
-      #     source_ref: ${{ env.source_branch }}
-      #     target_branch: ${{ env.source_branch }}
-      #     commit_message_template: '[Automated] Merged {source_branch} -> {target_branch}'
+      - name: Merge ${{ env.source_branch }} -> ${{ env.target_branch }}
+        uses: romanonthego/branch-merge@2.0.0
+        with:
+          github_token: ${{ env.GITHUB_TOKEN }}
+          source_ref: ${{ env.source_branch }}
+          target_branch: ${{ env.source_branch }}
+          commit_message_template: '[Automated] Merged {source_branch} -> {target_branch}'
 
       - name: Checkout ${{ env.source_branch }}
         uses: actions/checkout@v4
@@ -40,7 +40,10 @@ jobs:
           git pull origin ${{ env.source_branch }}
           git merge --no-ff origin/${{ env.source_branch }} -m "[Automated] Merged ${{ env.source_branch }} -> ${{ env.source_branch }}"
 
-      - name: Push to ${{ env.target_branch }}
-        run: |
-          git pull --rebase upstream ${{ env.target_branch }}
-          git push upstream main
+      - name: 🔏 Push to protected main branch
+        uses: CasperWA/push-protected@v2.10.0
+        with:
+          token: ${{ env.GITHUB_TOKEN }}
+          branch: ${{ env.target_branch }}
+          tags: true
+          unprotect_reviews: true
