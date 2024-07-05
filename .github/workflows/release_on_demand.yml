@@ -1,125 +1,21 @@
-name: Release [trigger]
+name: Merge to main Trigger
 on:
   workflow_dispatch:
-    inputs:
-      release-type:
-        type: choice
-        description: What release should be created
-        options:
-          - release
-          - pre-release
-        required: true
+    # TODO add input for pre-calculated version
 
 jobs:
   release-trigger:
     runs-on: ubuntu-latest
-    # TODO get name from variable
     env:
-      # TODO move as many of these as possible to inputs
-      # TODO check action default environement varibales to avoid redundancy
-      # https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables
-      version-py-path: "./openpype/version.py"
-      pyproject_deb: "./pyproject.toml"
-      ci-tools-workdir: /home/runner/work/ci-tools
       source_branch: "develop"  # move to repo variables
       target_branch: "main"  # move to repo variables
       GITHUB_TOKEN: ${{ secrets.YNPUT_BOT_TOKEN }}
-      user_email: ${{ secrets.CI_EMAIL }}
-      user_name: ${{ secrets.CI_USER }}
-      cu_api_key: ${{ secrets.CLICKUP_API_KEY }}
-      cu_team_id: ${{ secrets.CLICKUP_TEAM_ID }}
-      current_version: 3.6.1
-      next_version: 3.6.2
-      changelog: "Test Changelog"
 
     steps:
-      # Pre-Release version number as date/time stamp
-      # Release version as minimal preview but can be overwritten
-
-      # TODO get last commit message
-      # INFO doesn't seem to show merge conflicts 
-      - name: Merge develop -> main
-        # TODO research other merge actions that uses node version 20 instead of 16 (eol)
-        uses: devmasx/merge-branch@1.4.0  # everlytic/branch-merge@1.1.5
+      - name: Merge ${{ env.source_branch }} -> ${{ env.target_branch }}
+        uses: safinazward/merge-branches@v1.0.0  # everlytic/branch-merge@1.1.5
         with:
           github_token: ${{ env.GITHUB_TOKEN }}
-          source_ref: ${{ env.source_branch }}
+          source_branch: ${{ env.source_branch }}
           target_branch: ${{ env.source_branch }}
-          commit_message_template: '[Automated] Merged {source_ref} into {target_branch}'
-
-      - name: Checkout Workspace repo to main
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ env.target_branch }}
-
-      - name: Get next version from tags
-        run: |
-          source ${{ env.ci-tools-workdir }}/.venv/bin/activate
-          NEXT_VERSION=$(python ${{ env.ci-tools-workdir }}/tools/cli.py versioning bump-version --type=release --part=patch)
-          CURRENT_VERSION=$(python ${{ env.ci-tools-workdir }}/tools/cli.py versioning current-version --type=release)
-
-          echo "NEXT_VERSION=${NEXT_VERSION}" >> $GITHUB_ENV
-          echo "CURRENT_VERSION=${CURRENT_VERSION}" >> $GITHUB_ENV
-        shell: bash
-
-      - name: Get latest release version
-        id: latest_release
-        run: |
-          git fetch --tags
-          latest_version=$(git describe --tags `git rev-list --tags --max-count=1`)
-    
-          echo "latest_version=$latest_version >> $GITHUB_ENV"
-          echo "Latest release version: $latest_version"
-
-      - name: Check for Changes
-        id: check_changes
-        run: |
-          if [[ -n "$(git status --porcelain)" ]]; then
-            echo "changelog=true" >> $GITHUB_ENV
-          else
-            echo "changelog=false" >> $GITHUB_ENV
-          fi
-          exit 0
-
-      - name: Test print the change log result
-        run: |
-          echo "current_version: ${{ env.current_version }}"
-          echo "next_version: ${{ env.next_version }}"
-          echo "user.email: ${{ secrets.CI_EMAIL }}"
-          echo "user.name: ${{ secrets.CI_USER }}"
-          echo "updated: ${{ env.changelog }}"
-
-      # - name: 💾 Commit and Tag
-      #   if: ${{ env.changelog }}
-      #   id: gitCommit
-      #   run: |
-      #     git add .
-      #     git commit -m "[Automated] Release"
-      #     tag_name="${{ env.next_version }}"
-      #     git tag -a $tag_name -m "stable release"
-
-      - name: 🔏 Push to protected main branch
-        if: ${{ env.changelog }}
-        uses: CasperWA/push-protected@v2.10.0
-        with:
-          token: ${{ env.GITHUB_TOKEN }}
-          branch: main
-          tags: true
-          unprotect_reviews: true
-
-      - name: 🔁 Merge main -> develop
-        if: ${{ env.changelog }}
-        # TODO research other merge actions that usde node version 20 instead of 16 (eol)
-        uses: everlytic/branch-merge@1.1.5
-        with:
-          github_token: ${{ env.GITHUB_TOKEN }}
-          source_ref: 'main'
-          target_branch: 'develop'
-          commit_message_template: '[Automated] Merged release {source_ref} into {target_branch}'
-
-      - name: 🚀 Github Release
-        uses: ncipollo/release-action@v1
-        with:
-          tag: ${{ env.NEXT_VERSION }}
-          body: ${{ env.changelog }}
-          token: ${{ env.GITHUB_TOKEN }}
+          commit_message: '[Automated] Merged {source_branch} -> {target_branch}'
