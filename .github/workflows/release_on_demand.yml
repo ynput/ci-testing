@@ -82,6 +82,7 @@ jobs:
           scheme: semver
           increment: patch
           release_branch: main
+          use_api: true
 
       - name: Show version
         run: |
