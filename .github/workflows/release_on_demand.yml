@@ -89,11 +89,19 @@ jobs:
           release_branch: main
           use_api: true
 
+      - name: Show Release information
+        run: |
+          echo "Tag: ${{ steps.version.outputs.version }}"
+          echo "Release Message: ${{ env.changelog }}""
+
+      # TODO get rid of `+pre...` in release name
       - name: 🚀 Github Release
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ steps.version.outputs.version }}
+          tag: ${{ steps.version.outputs.major-version }} + ${{ steps.version.outputs.minor-version }} + ${{ steps.version.outputs.patch-version }}
+          commit: ${{ github.action_ref }}
           body: ${{ env.changelog }}
           token: ${{ secrets.YNPUT_BOT_TOKEN }}
+          draft: true
 
       # TODO test if new release version exists
