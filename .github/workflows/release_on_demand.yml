@@ -71,12 +71,12 @@ jobs:
           path: |
             ${{ env.zip_file }}
 
-      # - name: 🔼 Upload tar.gz artifacts
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: ${{ env.tar_artifact }}
-      #     path: |
-      #       artifacts.tar.gz
+      - name: 🔼 Upload tar.gz artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.tar_artifact }}
+          path: |
+            ${{ env.tar_file }}
 
 
   update-develop:
@@ -138,8 +138,9 @@ jobs:
       - name: 🔽 Download artifacts
         uses: actions/download-artifact@v4
         with:
-          name: 
-            ${{ env.zip_artifact }}  # TODO unify artifact naming
+          name:
+            ${{ env.zip_artifact }}
+            ${{ env.tar_artifact }}
 
       - name: 🚀 Github Release
         uses: ncipollo/release-action@v1
@@ -147,7 +148,7 @@ jobs:
           tag: ${{ env.major }}.${{ env.minor }}.${{ env.patch }}
           body: ${{ env.commit_msg }}
           generateReleaseNotes: true
-          artifacts: ${{ env.zip_file }}
+          artifacts: ${{ env.zip_file }}, ${{ env.tar_file }}
           token: ${{ secrets.YNPUT_BOT_TOKEN }}
           draft: true
         env:
