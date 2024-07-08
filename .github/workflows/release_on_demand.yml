@@ -65,12 +65,12 @@ jobs:
           path: |
             artifacts.zip
 
-      - name: 🔼 Upload tar.gz artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.tar_artifact }}
-          path: |
-            artifacts.tar.gz
+      # - name: 🔼 Upload tar.gz artifacts
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: ${{ env.tar_artifact }}
+      #     path: |
+      #       artifacts.tar.gz
 
 
   update-develop:
@@ -144,9 +144,7 @@ jobs:
           tag: ${{ env.major }}.${{ env.minor }}.${{ env.patch }}
           body: ${{ env.commit_msg }}
           generateReleaseNotes: true
-          artifacts: 
-            ${{ env.zip_artifact }}
-            ${{ env.tar_artifact }}
+          artifacts: ${{ env.zip_artifact }}
           token: ${{ secrets.YNPUT_BOT_TOKEN }}
           draft: true
         env:
