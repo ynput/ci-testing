@@ -7,6 +7,8 @@ on:
 jobs:
   merge-to-main:
     runs-on: ubuntu-latest
+    outputs: 
+      commit_message: ${{ steps.get_commit_message.outputs.commit_message }}
     env:
       source_branch: "develop"  # move to repo variables
       target_branch: "main"  # move to repo variables
@@ -17,6 +19,10 @@ jobs:
         with:
           ref: ${{ env.target_branch }}
           fetch-depth: 0
+
+      - name: Get latest commit message
+        id: get_commit_message
+        run: echo "COMMIT_MESSAGE=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
 
       - name: 🔑 Set Bot Authentication
         run: |
@@ -68,7 +74,7 @@ jobs:
     env:
       source_branch: "main"  # move to repo variables
       target_branch: "develop"  # move to repo variables
-      changelog: "Updates Placeholder"
+      changelog: ${{ needs.merge-to-main.outputs.commit_message }}
 
     steps:
       # TODO dive into the action as reference to implement custom actions
@@ -89,4 +95,4 @@ jobs:
           body: ${{ env.changelog }}
           token: ${{ secrets.YNPUT_BOT_TOKEN }}
 
-      # TODO test if new releaseversion exists
+      # TODO test if new release version exists
