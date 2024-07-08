@@ -42,7 +42,9 @@ jobs:
     needs: merge-to-main
     env:
       target_branch: "main"  # move to repo variables
-      artifact: "test-artifact"
+      zip_artifact: "test-zip"
+      tar_artifact: "test-tar"
+
     steps:
       - name: ⬇️ Checkout ${{ env.target_branch }}
         uses: actions/checkout@v4
@@ -56,12 +58,18 @@ jobs:
           zip -r artifacts.zip . -x "*/\.*"
           tar -czvf artifacts.tar.gz --exclude=".*" .
       
-      - name: Upload artifacts
+      - name: Upload zip artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.artifact }}
+          name: ${{ env.zip_artifact }}
           path: |
             artifacts.zip
+
+      - name: Upload tar.gz artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.tar_artifact }}
+          path: |
             artifacts.tar.gz
 
 
@@ -108,7 +116,8 @@ jobs:
     env:
       source_branch: "main"  # move to repo variables
       target_branch: "develop"  # move to repo variables
-      artifact: "test-artifact"
+      zip_artifact: "test-zip"
+      tar_artifact: "test-tar"
       commit_msg: ${{ needs.merge-to-main.outputs.commit_message }}
 
     steps:
@@ -123,9 +132,11 @@ jobs:
           use_api: true
 
       - name: Download candidate artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
-          name: ${{ env.artifact }}
+          name: 
+            ${{ env.zip_artifact }}
+            ${{ env.tar_artifact }}
 
       - name: 🚀 Github Release
         uses: ncipollo/release-action@v1
