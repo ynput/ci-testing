@@ -92,7 +92,7 @@ jobs:
       - name: Show Release information
         run: |
           echo "Tag: ${{ steps.version.outputs.version }}"
-          echo "Release Message: ${{ env.changelog }}""
+          echo "Release Message: ${{ env.changelog }}"
 
       # TODO get rid of `+pre...` in release name
       - name: 🚀 Github Release
