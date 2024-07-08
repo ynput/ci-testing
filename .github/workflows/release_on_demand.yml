@@ -84,7 +84,6 @@ jobs:
         id: version
         with:
           scheme: semver
-          pep440: true
           increment: patch
           release_branch: main
           use_api: true
@@ -94,13 +93,16 @@ jobs:
           echo "Tag: ${{ steps.version.outputs.version }}"
           echo "Release Message: ${{ env.changelog }}"
 
-      # TODO get rid of `+pre...` in release name
       - name: 🚀 Github Release
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ steps.version.outputs.major-version }}.${{ steps.version.outputs.minor-version }}.${{ steps.version.outputs.patch-version }}
+          tag: ${{ env.major }}.${{ env.minor }}.${{ env.patch }}
           body: ${{ env.changelog }}
           token: ${{ secrets.YNPUT_BOT_TOKEN }}
           draft: true
+        env:
+          major: ${{ steps.version.outputs.major-version }}
+          minor: ${{ steps.version.outputs.minor-version }}
+          patch: ${{ steps.version.outputs.patch-version }}
 
       # TODO test if new release version exists
