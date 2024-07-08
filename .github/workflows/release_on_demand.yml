@@ -42,7 +42,7 @@ jobs:
     needs: merge-to-main
     env:
       target_branch: "main"  # move to repo variables
-
+      artifact: "test-artifact"
     steps:
       - name: ⬇️ Checkout ${{ env.target_branch }}
         uses: actions/checkout@v4
@@ -59,7 +59,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: test_artifacts  # TODO move to variable
+          name: ${{ env.artifact }}
           path: |
             artifacts.zip
             artifacts.tar.gz
@@ -108,6 +108,7 @@ jobs:
     env:
       source_branch: "main"  # move to repo variables
       target_branch: "develop"  # move to repo variables
+      artifact: "test-artifact"
       commit_msg: ${{ needs.merge-to-main.outputs.commit_message }}
 
     steps:
@@ -124,7 +125,7 @@ jobs:
       - name: Download candidate artifacts
         uses: actions/download-artifact@v2
         with:
-          name: test_artifacts
+          name: ${{ env.artifact }}
 
       - name: 🚀 Github Release
         uses: ncipollo/release-action@v1
