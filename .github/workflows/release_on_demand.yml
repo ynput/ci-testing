@@ -36,6 +36,35 @@ jobs:
           tags: true
           unprotect_reviews: true
 
+
+  build-from-main:
+    runs-on: ubuntu-latest
+    needs: merge-to-main
+    env:
+      target_branch: "main"  # move to repo variables
+
+    steps:
+      - name: ⬇️ Checkout ${{ env.target_branch }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.target_branch }}
+          fetch-depth: 0
+
+      # INFO placehodler artefact for repo-dependent modification
+      - name: Create artifacts
+        run: |
+          zip -r artifacts.zip . -x "*/\.*"
+          tar -czvf artifacts.tar.gz --exclude=".*" .
+      
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name:   # TODO move to variable
+          path: |
+            artifacts.zip
+            artifacts.tar.gz
+
+
   update-develop:
     runs-on: ubuntu-latest
     needs: merge-to-main
@@ -63,16 +92,19 @@ jobs:
           git config --global user.email "${{ secrets.CI_EMAIL }}"
           git config --global user.name "${{ secrets.CI_USER }}"
 
+      # TODO merge message currently looks like this: Merge branch 'develop' of https://github.com/ynput/ci-testing into develop, which is not intended
       - name: 🔁 Merge ${{ env.source_branch }} -> ${{ env.target_branch }}
         run: |
           git pull origin ${{ env.source_branch }}
-          # TODO merge message currently looks like this: Merge branch 'develop' of https://github.com/ynput/ci-testing into develop, which is not intended
           git merge origin/${{ env.source_branch }} -m "[Automated] Merged ${{ env.source_branch }} -> ${{ env.target_branch }}"
           git push origin ${{ env.target_branch }}
 
+
   create-release:
     runs-on: ubuntu-latest
-    needs: merge-to-main
+    needs: 
+      - merge-to-main
+      - build-from-main
     env:
       source_branch: "main"  # move to repo variables
       target_branch: "develop"  # move to repo variables
@@ -89,12 +121,18 @@ jobs:
           release_branch: main
           use_api: true
 
+      - name: Download candidate artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: test_artifacts
+
       - name: 🚀 Github Release
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ env.major }}.${{ env.minor }}.${{ env.patch }}
           body: ${{ env.commit_msg }}
           generateReleaseNotes: true
+          artifacts: artifacts.zip, artifacts.tar.gz
           token: ${{ secrets.YNPUT_BOT_TOKEN }}
           draft: true
         env:
