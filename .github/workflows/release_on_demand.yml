@@ -136,7 +136,6 @@ jobs:
         with:
           name: 
             ${{ env.zip_artifact }}
-            ${{ env.tar_artifact }}
 
       - name: 🚀 Github Release
         uses: ncipollo/release-action@v1
