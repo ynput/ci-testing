@@ -144,7 +144,7 @@ jobs:
           tag: ${{ env.major }}.${{ env.minor }}.${{ env.patch }}
           body: ${{ env.commit_msg }}
           generateReleaseNotes: true
-          artifacts: artifacts.zip, artifacts.tar.gz
+          artifacts: ${{ env.zip_artifact }}, ${{ env.tar_artifact }}
           token: ${{ secrets.YNPUT_BOT_TOKEN }}
           draft: true
         env:
