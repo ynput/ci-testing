@@ -98,8 +98,7 @@ jobs:
       - name: 🚀 Github Release
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ steps.version.outputs.major-version }} + ${{ steps.version.outputs.minor-version }} + ${{ steps.version.outputs.patch-version }}
-          commit: ${{ github.action_ref }}
+          tag: ${{ steps.version.outputs.major-version }}.${{ steps.version.outputs.minor-version }}.${{ steps.version.outputs.patch-version }}
           body: ${{ env.changelog }}
           token: ${{ secrets.YNPUT_BOT_TOKEN }}
           draft: true
