@@ -35,6 +35,7 @@ body:
       label: Version
       description: What version are you running? Look to OpenPype Tray
       options:
+        - 3.10.14
         - 3.10.14+pre.8c9fa53ae
         - 3.10.14+pre.a0825804f
         - 3.10.13
@@ -59,7 +60,6 @@ body:
         - 3.4.0
         - 3.3.0
         - 3.2.1-nightly.1
-        - 3.2.0
     validations:
       required: true
   - type: dropdown
