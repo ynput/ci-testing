@@ -4,6 +4,12 @@ on:
   workflow_dispatch:
     # TODO add input for pre-calculated version
 
+env:
+  zip_file: artifacts.zip
+  tar_file: artifacts.tar.gz
+  zip_artifact: "test-zip"
+  tar_artifact: "test-tar"
+
 jobs:
   merge-to-main:
     runs-on: ubuntu-latest
@@ -42,8 +48,6 @@ jobs:
     needs: merge-to-main
     env:
       target_branch: "main"  # move to repo variables
-      zip_artifact: "test-zip"
-      tar_artifact: "test-tar"
 
     steps:
       - name: ⬇️ Checkout ${{ env.target_branch }}
@@ -56,8 +60,8 @@ jobs:
       - name: Create artifacts
         # TODO unify artifact naming
         run: |
-          zip -r artifacts.zip . -x "*/\.*"
-          tar -czvf artifacts.tar.gz --exclude=".*" .
+          zip -r ${{ env.zip_file }} . -x "*/\.*"
+          tar -czvf ${{ env.tar_file }} --exclude=".*" .
       
       - name: 🔼 Upload zip artifacts
         # TODO unify artifact naming
@@ -65,7 +69,7 @@ jobs:
         with:
           name: ${{ env.zip_artifact }}
           path: |
-            artifacts.zip
+            ${{ env.zip_file }}
 
       # - name: 🔼 Upload tar.gz artifacts
       #   uses: actions/upload-artifact@v4
@@ -118,8 +122,6 @@ jobs:
     env:
       source_branch: "main"  # move to repo variables
       target_branch: "develop"  # move to repo variables
-      zip_artifact: "test-zip"
-      tar_artifact: "test-tar"
       commit_msg: ${{ needs.merge-to-main.outputs.commit_message }}
 
     steps:
@@ -145,7 +147,7 @@ jobs:
           tag: ${{ env.major }}.${{ env.minor }}.${{ env.patch }}
           body: ${{ env.commit_msg }}
           generateReleaseNotes: true
-          artifacts: artifacts.zip
+          artifacts: ${{ env.zip_file }}
           token: ${{ secrets.YNPUT_BOT_TOKEN }}
           draft: true
         env:
