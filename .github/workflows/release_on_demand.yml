@@ -20,6 +20,7 @@ jobs:
           ref: ${{ env.target_branch }}
           fetch-depth: 0
 
+      # TODO grabs privious release message right now - change to current one
       - name: Get latest commit message
         id: get_commit_message
         run: | 
@@ -66,6 +67,7 @@ jobs:
       - name: 🔁 Merge ${{ env.source_branch }} -> ${{ env.target_branch }}
         run: |
           git pull origin ${{ env.source_branch }}
+          # TODO merge message currently looks like this: Merge branch 'develop' of https://github.com/ynput/ci-testing into develop, which is not intended
           git merge origin/${{ env.source_branch }} -m "[Automated] Merged ${{ env.source_branch }} -> ${{ env.target_branch }}"
           git push origin ${{ env.target_branch }}
 
