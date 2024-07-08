@@ -56,15 +56,13 @@ jobs:
           ref: ${{ env.target_branch }}
           fetch-depth: 0
 
-      # INFO placehodler artefact for repo-dependent modification
+      # INFO placeholder artifact for repo-dependent modification
       - name: Create artifacts
-        # TODO unify artifact naming
         run: |
           zip -r ${{ env.zip_file }} . -x "*/\.*"
           tar -czvf ${{ env.tar_file }} --exclude=".*" .
       
       - name: 🔼 Upload zip artifacts
-        # TODO unify artifact naming
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.zip_artifact }}
