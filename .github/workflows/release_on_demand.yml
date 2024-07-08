@@ -7,8 +7,6 @@ on:
 jobs:
   merge-to-main:
     runs-on: ubuntu-latest
-    outputs: 
-      commit_message: ${{ steps.get_commit_message.outputs.commit_message }}
     env:
       source_branch: "develop"  # move to repo variables
       target_branch: "main"  # move to repo variables
@@ -19,12 +17,6 @@ jobs:
         with:
           ref: ${{ env.target_branch }}
           fetch-depth: 0
-
-      # TODO grabs privious release message right now - change to current one
-      - name: Get latest commit message
-        id: get_commit_message
-        run: | 
-          echo "COMMIT_MESSAGE=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
 
       - name: 🔑 Set Bot Authentication
         run: |
@@ -90,16 +82,11 @@ jobs:
           release_branch: main
           use_api: true
 
-      - name: Show Release information
-        run: |
-          echo "Tag: ${{ steps.version.outputs.version }}"
-          echo "Release Message: ${{ env.changelog }}"
-
       - name: 🚀 Github Release
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ env.major }}.${{ env.minor }}.${{ env.patch }}
-          body: ${{ env.changelog }}
+          generateReleaseNotes: true
           token: ${{ secrets.YNPUT_BOT_TOKEN }}
           draft: true
         env:
