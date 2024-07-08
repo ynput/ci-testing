@@ -135,12 +135,15 @@ jobs:
           release_branch: main
           use_api: true
 
-      - name: 🔽 Download artifacts
+      - name: 🔽 Download zip artifacts
         uses: actions/download-artifact@v4
         with:
-          name:
-            ${{ env.zip_artifact }}
-            ${{ env.tar_artifact }}
+          name: ${{ env.zip_artifact }}
+      
+      - name: 🔽 Download tar artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.tar_artifact }}
 
       - name: 🚀 Github Release
         uses: ncipollo/release-action@v1
