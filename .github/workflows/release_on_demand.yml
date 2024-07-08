@@ -59,7 +59,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name:   # TODO move to variable
+          name: test_artifacts  # TODO move to variable
           path: |
             artifacts.zip
             artifacts.tar.gz
