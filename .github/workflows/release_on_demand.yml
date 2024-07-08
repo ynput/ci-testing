@@ -54,16 +54,18 @@ jobs:
 
       # INFO placehodler artefact for repo-dependent modification
       - name: Create artifacts
+        # TODO unify artifact naming
         run: |
-          zip -r artifacts.zip . -x "*/\.*"  # TODO unify artifact naming
-          tar -czvf artifacts.tar.gz --exclude=".*" .  # TODO unify artifact naming
+          zip -r artifacts.zip . -x "*/\.*"
+          tar -czvf artifacts.tar.gz --exclude=".*" .
       
       - name: 🔼 Upload zip artifacts
+        # TODO unify artifact naming
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.zip_artifact }}
           path: |
-            artifacts.zip  # TODO unify artifact naming
+            artifacts.zip
 
       # - name: 🔼 Upload tar.gz artifacts
       #   uses: actions/upload-artifact@v4
