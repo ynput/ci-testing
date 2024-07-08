@@ -58,14 +58,14 @@ jobs:
           zip -r artifacts.zip . -x "*/\.*"
           tar -czvf artifacts.tar.gz --exclude=".*" .
       
-      - name: Upload zip artifacts
+      - name: 🔼 Upload zip artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.zip_artifact }}
           path: |
             artifacts.zip
 
-      - name: Upload tar.gz artifacts
+      - name: 🔼 Upload tar.gz artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.tar_artifact }}
@@ -131,7 +131,7 @@ jobs:
           release_branch: main
           use_api: true
 
-      - name: Download candidate artifacts
+      - name: 🔽 Download artifacts
         uses: actions/download-artifact@v4
         with:
           name: 
@@ -144,7 +144,9 @@ jobs:
           tag: ${{ env.major }}.${{ env.minor }}.${{ env.patch }}
           body: ${{ env.commit_msg }}
           generateReleaseNotes: true
-          artifacts: ${{ env.zip_artifact }}, ${{ env.tar_artifact }}
+          artifacts: 
+            ${{ env.zip_artifact }}
+            ${{ env.tar_artifact }}
           token: ${{ secrets.YNPUT_BOT_TOKEN }}
           draft: true
         env:
