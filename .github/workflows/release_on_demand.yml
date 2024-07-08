@@ -135,6 +135,7 @@ jobs:
           release_branch: main
           use_api: true
 
+      # TODO figure out how to download multiple artifacts at once
       - name: 🔽 Download zip artifacts
         uses: actions/download-artifact@v4
         with:
