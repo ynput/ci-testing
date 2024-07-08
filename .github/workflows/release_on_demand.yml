@@ -69,7 +69,6 @@ jobs:
     env:
       source_branch: "main"  # move to repo variables
       target_branch: "develop"  # move to repo variables
-      changelog: ${{ needs.merge-to-main.outputs.commit_message }}
 
     steps:
       # TODO dive into the action as reference to implement custom actions
