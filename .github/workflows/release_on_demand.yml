@@ -139,7 +139,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: | 
-            ${{ env.zip_artifact }}
+            ${{ env.zip_artifact }},
             ${{ env.tar_artifact }}
 
       - name: 🚀 Github Release
