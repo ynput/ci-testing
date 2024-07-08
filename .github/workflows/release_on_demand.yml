@@ -55,15 +55,15 @@ jobs:
       # INFO placehodler artefact for repo-dependent modification
       - name: Create artifacts
         run: |
-          zip -r artifacts.zip . -x "*/\.*"
-          tar -czvf artifacts.tar.gz --exclude=".*" .
+          zip -r artifacts.zip . -x "*/\.*"  # TODO unify artifact naming
+          tar -czvf artifacts.tar.gz --exclude=".*" .  # TODO unify artifact naming
       
       - name: 🔼 Upload zip artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.zip_artifact }}
           path: |
-            artifacts.zip
+            artifacts.zip  # TODO unify artifact naming
 
       # - name: 🔼 Upload tar.gz artifacts
       #   uses: actions/upload-artifact@v4
@@ -135,7 +135,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: 
-            ${{ env.zip_artifact }}
+            ${{ env.zip_artifact }}  # TODO unify artifact naming
 
       - name: 🚀 Github Release
         uses: ncipollo/release-action@v1
@@ -143,7 +143,7 @@ jobs:
           tag: ${{ env.major }}.${{ env.minor }}.${{ env.patch }}
           body: ${{ env.commit_msg }}
           generateReleaseNotes: true
-          artifacts: ${{ env.zip_artifact }}
+          artifacts: artifacts.zip
           token: ${{ secrets.YNPUT_BOT_TOKEN }}
           draft: true
         env:
