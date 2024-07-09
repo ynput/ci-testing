@@ -158,7 +158,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           EXPECTED_TAG: ${{ env.release_major }}.${{ env.release_minor }}.${{ env.release_patch }}
         run: |
-          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
           release_info=$(gh release view ${{ env.EXPECTED_TAG }} --json tagName --jq '.tagName' || echo "null")
           
           if [ "$release_info" = "null" ]; then
