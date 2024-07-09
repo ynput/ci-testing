@@ -2,6 +2,11 @@ name: Release [demand]
 # TODO research using the github api instead of cloning repo
 on:
   workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to use'
+        required: true
+        default: 'main'
     # TODO add input for pre-calculated version
 
 env:
@@ -11,6 +16,17 @@ env:
   tar_artifact: "test-tar"
 
 jobs:
+  show_data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Display GitHub Context Variables
+        run: |
+          echo "Event Name: ${{ github.event_name }}"
+          echo "Actor: ${{ github.actor }}"
+          echo "Repository: ${{ github.repository }}"
+          echo "Commit SHA: ${{ github.sha }}"
+          echo "Git Ref: ${{ github.ref }}"
+
   merge-to-main:
     runs-on: ubuntu-latest
     env:
