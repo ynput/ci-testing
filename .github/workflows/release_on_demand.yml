@@ -127,7 +127,7 @@ jobs:
         with:
           name: ${{ env.tar_artifact }}
 
-      - name: 🚀 Github Release
+      - name: 🚀 Create Github Release Draft
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ env.major }}.${{ env.minor }}.${{ env.patch }}
@@ -150,7 +150,7 @@ jobs:
       release_patch: ${{ needs.create-release.outputs.release_patch }}
 
     steps:
-      - name: Assert Release Tag
+      - name: Assert Release Tag from Draft
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           EXPECTED_TAG: ${{ env.release_major }}.${{ env.release_minor }}.${{ env.release_patch }}
