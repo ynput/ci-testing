@@ -150,20 +150,24 @@ jobs:
       release_patch: ${{ needs.create-release.outputs.release_patch }}
 
     steps:
+      # TODO implement this using `gh` tool instead - didn#t work at the time of writing returning error: failed to run git: fatal: not a git repository (or any of the parent directories): .git But cloning shouldn't be necessary here
       - name: Assert Release Tag from Draft
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           EXPECTED_TAG: ${{ env.release_major }}.${{ env.release_minor }}.${{ env.release_patch }}
         run: |
-          release_info=$(gh release view ${{ env.EXPECTED_TAG }} --json tagName --jq '.tagName' || echo "null")
-          
-          if [ "$release_info" = "null" ]; then
+          RELEASES_URL="https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ env.EXPECTED_TAG }}"
+          response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $RELEASES_URL)
+
+          release_tag=$(echo $response | jq -r .tag_name)
+          if [ "$release_tag" == "null" ]; then
             echo "Error: Release with tag ${{ env.EXPECTED_TAG }} not found."
+            echo "Response: $response"
             exit 1
-          elif [ "$release_info" != "${{ env.EXPECTED_TAG }}" ]; then
-            echo "Error: Expected tag ${{ env.EXPECTED_TAG }}, but found $release_info."
+          elif [ "$release_tag" != "${{ env.EXPECTED_TAG }}" ]; then
+            echo "Error: Expected tag ${{ env.EXPECTED_TAG }}, but found $release_tag."
             exit 1
           else
-            echo "Success: Release found with the expected tag $release_info."
+            echo "Success: Release found with the expected tag $release_tag."
           fi
         
