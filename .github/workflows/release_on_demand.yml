@@ -20,7 +20,7 @@ jobs:
           echo "Actor: ${{ github.actor }}"
           echo "Repository: ${{ github.repository }}"
           echo "Commit SHA: ${{ github.sha }}"
-          echo "Git Ref: ${{ github.ref }}"
+          echo "Git Ref Name: ${{ github.ref_name }}"
 
   merge-to-main:
     runs-on: ubuntu-latest
