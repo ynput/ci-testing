@@ -2,11 +2,6 @@ name: Release [demand]
 # TODO research using the github api instead of cloning repo
 on:
   workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Branch to use'
-        required: true
-        default: 'main'
     # TODO add input for pre-calculated version
 
 env:
