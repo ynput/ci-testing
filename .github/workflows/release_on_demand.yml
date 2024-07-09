@@ -121,7 +121,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ env.zip_artifact }}
-      
+
       - name: 🔽 Download tar artifacts
         uses: actions/download-artifact@v4
         with:
@@ -144,6 +144,7 @@ jobs:
   verify-release:
     runs-on: ubuntu-latest
     needs: create-release
+    # TODO fix current errors end re-enable
     if: false
     env:
       release_major: ${{ needs.create-release.outputs.release_major }}
