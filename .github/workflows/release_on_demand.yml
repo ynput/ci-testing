@@ -9,6 +9,7 @@ env:
   tar_file: artifacts.tar.gz
   zip_artifact: "test-zip"
   tar_artifact: "test-tar"
+  main_branch: "main"
 
 jobs:
   show_data:
@@ -24,15 +25,12 @@ jobs:
 
   merge-to-main:
     runs-on: ubuntu-latest
-    env:
-      source_branch: "develop"  # move to repo variables
-      target_branch: "main"  # move to repo variables
 
     steps:
-      - name: ⬇️ Checkout ${{ env.target_branch }}
+      - name: ⬇️ Checkout ${{ env.main_branch }}
         uses: actions/checkout@v4
         with:
-          ref: ${{ env.target_branch }}
+          ref: ${{ env.main_branch }}
           fetch-depth: 0
 
       - name: 🔑 Set Bot Authentication
@@ -40,16 +38,16 @@ jobs:
           git config --global user.email "${{ secrets.CI_EMAIL }}"
           git config --global user.name "${{ secrets.CI_USER }}"
 
-      - name: 🔀 Merge ${{ env.source_branch }} -> ${{ env.target_branch }}
+      - name: 🔀 Merge ${{ github.ref_name }} -> ${{ env.main_branch }}
         run: |
-          git pull origin ${{ env.source_branch }}
-          git merge --no-ff origin/${{ env.source_branch }} -m "[Automated] Merged ${{ env.source_branch }} -> ${{ env.target_branch }}"
+          git pull origin ${{ github.ref_name }}
+          git merge --no-ff origin/${{ github.ref_name }} -m "[Automated] Merged ${{ github.ref_name }} -> ${{ env.main_branch }}"
 
       - name: 🔏 Push to protected main branch
         uses: CasperWA/push-protected@v2.15.0
         with:
           token: ${{ secrets.YNPUT_BOT_TOKEN }}
-          branch: ${{ env.target_branch }}
+          branch: ${{ env.main_branch }}
           tags: true
           unprotect_reviews: true
 
@@ -57,14 +55,12 @@ jobs:
   build-from-main:
     runs-on: ubuntu-latest
     needs: merge-to-main
-    env:
-      target_branch: "main"  # move to repo variables
 
     steps:
-      - name: ⬇️ Checkout ${{ env.target_branch }}
+      - name: ⬇️ Checkout ${{ env.main_branch }}
         uses: actions/checkout@v4
         with:
-          ref: ${{ env.target_branch }}
+          ref: ${{ env.main_branch }}
           fetch-depth: 0
 
       # INFO placeholder artifact for repo-dependent modification
@@ -91,15 +87,12 @@ jobs:
   update-develop:
     runs-on: ubuntu-latest
     needs: merge-to-main
-    env:
-      source_branch: "main"  # move to repo variables
-      target_branch: "develop"  # move to repo variables
 
     steps:
-      - name: ⬇️ Checkout ${{ env.target_branch }}
+      - name: ⬇️ Checkout ${{ github.ref_name }}
         uses: actions/checkout@v4
         with:
-          ref: ${{ env.target_branch }}
+          ref: ${{ github.ref_name }}
           fetch-depth: 0
 
       - name: 🔑 Set Bot Authentication
@@ -108,20 +101,17 @@ jobs:
           git config --global user.email "${{ secrets.CI_EMAIL }}"
           git config --global user.name "${{ secrets.CI_USER }}"
 
-      - name: 🔁 Merge ${{ env.source_branch }} -> ${{ env.target_branch }}
+      - name: 🔁 Merge ${{ env.main_branch }} -> ${{ github.ref_name }}
         run: |
-          git pull origin ${{ env.source_branch }}
-          git merge origin/${{ env.source_branch }} -m "[Automated] Merged ${{ env.source_branch }} -> ${{ env.target_branch }}"
-          git push origin ${{ env.target_branch }}
+          git pull origin ${{ env.main_branch }}
+          git merge origin/${{ env.main_branch }} -m "[Automated] Merged ${{ env.main_branch }} -> ${{ github.ref_name }}"
+          git push origin ${{ github.ref_name }}
 
 
   create-release:
     runs-on: ubuntu-latest
     needs: 
       - build-from-main
-    env:
-      source_branch: "main"  # move to repo variables
-      target_branch: "develop"  # move to repo variables
 
     steps:
       # TODO dive into the action as reference to implement custom actions
