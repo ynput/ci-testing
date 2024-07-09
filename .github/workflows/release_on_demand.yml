@@ -156,18 +156,22 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           EXPECTED_TAG: ${{ env.release_major }}.${{ env.release_minor }}.${{ env.release_patch }}
         run: |
-          RELEASES_URL="https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ env.EXPECTED_TAG }}"
+          RELEASES_URL="https://api.github.com/repos/${{ github.repository }}/releases"
           response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $RELEASES_URL)
 
-          release_tag=$(echo $response | jq -r .tag_name)
-          if [ "$release_tag" == "null" ]; then
+          release_info=$(echo $response | jq -r --arg TAG_NAME "${{ env.EXPECTED_TAG }}" '.[] | select(.tag_name == $TAG_NAME)')
+          
+          if [ -z "$release_info" ]; then
             echo "Error: Release with tag ${{ env.EXPECTED_TAG }} not found."
             echo "Response: $response"
             exit 1
-          elif [ "$release_tag" != "${{ env.EXPECTED_TAG }}" ]; then
-            echo "Error: Expected tag ${{ env.EXPECTED_TAG }}, but found $release_tag."
-            exit 1
           else
-            echo "Success: Release found with the expected tag $release_tag."
+            release_tag=$(echo $release_info | jq -r .tag_name)
+            if [ "$release_tag" != "${{ env.EXPECTED_TAG }}" ]; then
+              echo "Error: Expected tag ${{ env.EXPECTED_TAG }}, but found $release_tag."
+              exit 1
+            else
+              echo "Success: Release found with the expected tag $release_tag."
+            fi
           fi
         
