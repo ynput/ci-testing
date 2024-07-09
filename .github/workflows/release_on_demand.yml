@@ -102,7 +102,9 @@ jobs:
     needs: 
       - build-from-main
     outputs:
-      release_tag: ${{ steps.version.outputs }}
+      release_major: ${{ steps.version.outputs.major-version }}
+      release_minor: ${{ steps.version.outputs.minor-version }}
+      release_patch: ${{ steps.version.outputs.patch-version }}
 
     steps:
       # TODO dive into the action as reference to implement custom actions
@@ -143,7 +145,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: create-release
     env:
-      version_tag: ${{ needs.create-release.outputs.release_tag }}
+      release_major: ${{ needs.create-release.outputs.release_major }}
+      release_minor: ${{ needs.create-release.outputs.release_minor }}
+      release_patch: ${{ needs.create-release.outputs.release_patch }}
 
     steps:
       - name: Install GitHub CLI
@@ -152,14 +156,18 @@ jobs:
       - name: Assert Release Tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          EXPECTED_TAG: ${{ env.version_tag.major }}.${{ env.version_tag.minor }}.${{ env.version_tag.patch }}
+          EXPECTED_TAG: ${{ env.release_major }}.${{ env.release_minor }}.${{ env.release_patch }}
         run: |
           gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
-          release_id=$(gh release view ${{ env.EXPECTED_TAG }} --json id --jq '.id')
-          if [ -z "$release_id" ]; then
-            echo "Release not found or the tag does not match."
+          release_info=$(gh release view ${{ env.EXPECTED_TAG }} --json tagName --jq '.tagName' || echo "null")
+          
+          if [ "$release_info" = "null" ]; then
+            echo "Error: Release with tag ${{ env.EXPECTED_TAG }} not found."
+            exit 1
+          elif [ "$release_info" != "${{ env.EXPECTED_TAG }}" ]; then
+            echo "Error: Expected tag ${{ env.EXPECTED_TAG }}, but found $release_info."
             exit 1
           else
-            echo "Release found with ID: $release_id"
+            echo "Success: Release found with the expected tag $release_info."
           fi
         
