@@ -186,3 +186,4 @@ jobs:
             echo "Success: Release found with the expected tag $release_tag."
           fi
         
+# TODO get version bump proposal from labels (bug -> bump patch, ehancement -> bump minor, feature -> bump major)
