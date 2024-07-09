@@ -150,9 +150,6 @@ jobs:
       release_patch: ${{ needs.create-release.outputs.release_patch }}
 
     steps:
-      - name: Install GitHub CLI
-        run: sudo apt-get install gh
-
       - name: Assert Release Tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
