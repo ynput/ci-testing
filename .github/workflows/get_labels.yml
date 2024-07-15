@@ -11,7 +11,7 @@ jobs:
       - name: Get the last release date
         id: last_release_date
         run: |
-          last_release=$(gh release list -R ynput/ayon-core --limit 1 | awk '{print $4 " " $5 " " $6}')
+          last_release=$(gh release list -R ${{ github.repository }} --limit 1 | awk '{print $4 " " $5 " " $6}')
           echo "last_release=$last_release" >> $GITHUB_OUTPUT
 
       - name: Get merged PRs since last release
@@ -19,8 +19,7 @@ jobs:
         env:
           release_date: ${{ steps.last_release_date.outputs.last_release_date }}
         run: |
-          json_data_pr_labels=$(gh pr list --state merged --search "merged:>=${{ env.release_date }}" --json labels
-          pr_label_list=$(echo "$json_data_pr_labels" | jq -r '.[].labels[].name' | sort | uniq)
+          json_data_pr_labels=$(gh pr list --state merged --search "merged:>=${{ env.release_date }}" --json labels pr_label_list=$(echo "$json_data_pr_labels" | jq -r '.[].labels[].name' | sort | uniq)
           echo "label_list=$pr_label_list" >> $GITHUB_OUTPUT
 
       - name: Output PRs and labels
