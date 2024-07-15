@@ -11,27 +11,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: ⬇️ Checkout ${{ github.ref_name }}
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref_name }}
-          fetch-depth: 1
-
-      - name: Get the last release date
+      - name: 📅 Get the last release date
         id: last_release_date
         run: |
-          last_release=$(gh release list -R ${{ github.repository }} --limit 1 | awk '{print $4 " " $5 " " $6}')
+          last_release=$(gh release list --repo ${{ github.repository }} --limit 1 | awk '{print $4 " " $5 " " $6}')
           echo "last_release=$last_release" >> $GITHUB_OUTPUT
 
-      - name: Get merged labels of merged PRs since last release
+      - name: 🏷️ Get merged labels of merged PRs since last release
         id: merged_prs
         env:
           release_date: ${{ steps.last_release_date.outputs.last_release_date }}
         run: |
-          json_data_pr_labels=$(gh pr list --state merged --search "merged:>=${{ steps.last_release_date.outputs.last_release }}" --json labels)
+          json_data_pr_labels=$(gh pr list --state merged --search "merged:>=${{ steps.last_release_date.outputs.last_release }}" --json labels --repo ${{ github.repository }})
           pr_label_list=$(echo "$json_data_pr_labels" | jq -r '.[].labels[].name' | sort | uniq)
           echo "label_list=$pr_label_list" >> $GITHUB_OUTPUT
 
-      - name: Output PRs and labels
+      - name: 🖨️ Output PRs and labels
         run: |
           echo "PR labels since last release: ${{ steps.merged_prs.outputs.label_list }}"
