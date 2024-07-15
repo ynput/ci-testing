@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  GH_TOKEN: ${{ github.token }}
+  GH_TOKEN: ${{ secrets.YNPUT_BOT_TOKEN }}
 
 jobs:
   calculate-next-version:
@@ -22,7 +22,7 @@ jobs:
         env:
           release_date: ${{ steps.last_release_date.outputs.last_release_date }}
         run: |
-          json_data_pr_labels=$(gh pr list --state merged --search "merged:>=${{ env.release_date }}" --json labels)
+          json_data_pr_labels=$(gh pr list --state merged --search "merged:>=${{ steps.last_release_date.outputs.last_release }}" --json labels)
           pr_label_list=$(echo "$json_data_pr_labels" | jq -r '.[].labels[].name' | sort | uniq)
           echo "label_list=$pr_label_list" >> $GITHUB_OUTPUT
 
