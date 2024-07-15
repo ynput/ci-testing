@@ -46,8 +46,8 @@ jobs:
           minor_patterns=${{ env.MINOR_LABEL }}
           minor_patch=${{ env.PATCH_LABEL }}
 
+          echo ${{ env.LABEL_LIST }}
           echo ${minor_patterns[*]}
-          echo ${label_list[*]}
           echo ${patch_patterns[*]}
 
           for label in ${minor_patterns[@]}; do
