@@ -42,13 +42,13 @@ jobs:
           MINOR_LABEL: ${{ vars.MINOR_BUMP_LABEL }}
           PATCH_LABEL: ${{ vars.PATCH_BUMP_LABEL }}
         run: |
-          echo ${{ env.LABEL_LIST }}
-          label_list=${{ env.LABEL_LIST }}
-          echo ${label_list[*]}
+          label_list=$(echo ${{ env.LABEL_LIST }} | tr ' ' '\n')
+          minor_patterns=$(echo ${{ env.MINOR_LABEL }} | tr ' ' '\n')
+          minor_patch=$(echo ${{ env.PATCH_LABEL }} | tr ' ' '\n')
 
-          echo ${{ env.MINOR_LABEL }}
-          minor_patterns=${{ env.MINOR_LABEL }}
           echo ${minor_patterns[*]}
+          echo ${label_list[*]}
+          echo ${patch_patterns[*]}
 
           for label in ${minor_patterns[@]}; do
             if echo "${label_list[*]}" | grep -iqFe "$label"; then
