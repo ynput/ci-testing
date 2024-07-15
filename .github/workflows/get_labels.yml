@@ -3,6 +3,9 @@ name: Calculate Version Tag
 on:
   workflow_dispatch:
 
+env:
+  GH_TOKEN: ${{ github.token }}
+
 jobs:
   calculate-next-version:
     runs-on: ubuntu-latest
