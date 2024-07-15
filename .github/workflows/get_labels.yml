@@ -42,7 +42,7 @@ jobs:
           MINOR_LABEL: ${{ vars.MINOR_BUMP_LABEL }}
           PATCH_LABEL: ${{ vars.PATCH_BUMP_LABEL }}
         run: |
-          label_list=${{ env.LABEL_LIST }}
+          label_list=$(echo ${{ env.LABEL_LIST }} | tr " " "\n")
           minor_patterns=${{ env.MINOR_LABEL }}
           minor_patch=${{ env.PATCH_LABEL }}
 
