@@ -25,7 +25,7 @@ jobs:
         env:
           release_date: ${{ steps.last_release_date.outputs.last_release_date }}
         run: |
-          json_data_pr_labels=$(gh pr list --state merged --search "merged:>=${{ steps.last_release_date.outputs.last_release }}" --json labels --repo ${{ github.repository }})
+          json_data_pr_labels=$(gh pr list --state merged --search "merged:>=${{ steps.last_release_date.outputs.last_release }}" --json labels --repo ${{ github.repository }} )
           pr_label_list=$(echo "$json_data_pr_labels" | jq -r '.[].labels[].name' | sort | uniq | tr '\n' ${{ env.label_delimiter }})
           echo "label_list=$pr_label_list" >> $GITHUB_OUTPUT
   
