@@ -42,22 +42,28 @@ jobs:
           MINOR_LABEL: ${{ vars.MINOR_BUMP_LABEL }}
           PATCH_LABEL: ${{ vars.PATCH_BUMP_LABEL }}
         run: |
-          MINOR_BUMP_PATTERNS=$(echo "${{ env.MINOR_LABEL }}" | tr ',' '\n' | tr '[:upper:]' '[:lower:]')
-          PATCH_BUMP_PATTERNS=$(echo "${{ env.PATCH_LABEL }}" | tr ',' '\n' | tr '[:upper:]' '[:lower:]')
-
           echo ${{ env.LABEL_LIST }}
-          echo $MINOR_BUMP_PATTERNS
-          echo $PATCH_BUMP_PATTERNS
+          label_list=${{ env.LABEL_LIST }}
+          echo ${label_list[*]}
 
-          if echo "${{ env.LABEL_LIST }}" | grep -q -F -x "$MINOR_BUMP_PATTERNS"; then
-            echo "minor version"
-          else
+          echo ${{ env.MINOR_LABEL }}
+          minor_patterns=${{ env.MINOR_LABEL }}
+          echo ${minor_patterns[*]}
 
-            if echo "$LABEL_LIST" | grep -q -F -x "$PATCH_BUMP_PATTERNS"; then
-              echo "patch version"
-
-            else
-              echo "no version bump required"
+          for label in ${minor_patterns[@]}; do
+            if echo "${label_list[*]}" | grep -iqFe "$label"; then
+              echo "minor version"
+              exit 0
             fi
-          fi
+          done
+
+          for label in ${patch_patterns[@]}; do
+            if echo "${label_list[*]}" | grep -iqFe "$label"; then
+              echo "patch version"
+              exit 0
+            fi
+          done
+
+          echo "No version realted labels found"
+          exit 1
 
