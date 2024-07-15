@@ -25,10 +25,8 @@ jobs:
           release_date: ${{ steps.last_release_date.outputs.last_release_date }}
         run: |
           json_data_pr_labels=$(gh pr list --state merged --search "merged:>=${{ steps.last_release_date.outputs.last_release }}" --json labels --repo ${{ github.repository }} )
-
-          pr_label_list=$(echo "$json_data_pr_labels" | jq -r '.[].labels[].name' | sort | uniq | tr '\n' ',')
-          label_list_out=${pr_label_list%,}
-          echo "label_list=$label_list_out" >> $GITHUB_OUTPUT
+          pr_label_list=$(echo "$json_data_pr_labels" | jq -r '.[].labels[].name' | sort | uniq)
+          echo "label_list=$pr_label_list" >> $GITHUB_OUTPUT
 
   calculate-min-release-bump:
     runs-on: ubuntu-latest
@@ -43,7 +41,7 @@ jobs:
           MINOR_LABEL: ${{ vars.MINOR_BUMP_LABEL }}
           PATCH_LABEL: ${{ vars.PATCH_BUMP_LABEL }}
         run: |
-          label_list=$(echo ${{ env.LABEL_LIST }} | tr "," "\n")
+          label_list=$(echo ${{ env.LABEL_LIST }} | tr " " "\n")
           minor_patterns=${{ env.MINOR_LABEL }}
           minor_patch=${{ env.PATCH_LABEL }}
 
