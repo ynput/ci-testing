@@ -28,7 +28,9 @@ jobs:
         run: |
           json_data_pr_labels=$(gh pr list --state merged --search "merged:>=${{ steps.last_release_date.outputs.last_release }}" --json labels --repo ${{ github.repository }} )
           pr_label_list=$(echo "$json_data_pr_labels" | jq -r '.[].labels[].name' | sort | uniq | tr '\n' '${{ env.LABEL_DELIMITTER }}')
+          echo $pr_label_list
           label_list=${pr_label_list%,}
+          echo $label_list
           echo "label_list=$label_list" >> $GITHUB_OUTPUT
   
   calculate-min-release-bump:
