@@ -70,7 +70,6 @@ jobs:
 
       - name: ❗ Validate labels
         run: |
-
           echo "version increment ${{ steps.valid_version_label.outputs.version_increment }}"
 
           if [ -z "${{ steps.valid_version_label.outputs.version_increment }}" ]; then
