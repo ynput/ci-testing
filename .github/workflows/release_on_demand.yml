@@ -237,7 +237,7 @@ jobs:
 
         run: |
           if [ "${{ env.expected_release_draft }}" == "${{ env.current_release_draft }}" ]; then
-            echo "Success: Release found with the expected tag $release_tag."
+            echo "Success: Release found with the expected name ${{ env.expected_release_draft }}."
             exit 0
           fi
 
