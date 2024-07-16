@@ -11,6 +11,7 @@ env:
   tar_artifact: "test-tar"
   main_branch: "main"
   LABEL_DELIMITTER: ", "
+  GH_TOKEN: ${{ secrets.YNPUT_BOT_TOKEN }}
 
 jobs:
   merge-to-main:
