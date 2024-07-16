@@ -242,5 +242,5 @@ jobs:
             exit 0
           fi
 
-          echo "Error: Expected tag ${{ env.expected_release_draft }}, but found ${{ env.current_release_draft }}."
+          echo "::error:: Expected tag ${{ env.expected_release_draft }}, but found ${{ env.current_release_draft }}."
           exit 1
