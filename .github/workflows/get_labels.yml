@@ -52,6 +52,8 @@ jobs:
           IFS='${{ env.LABEL_DELIMITTER }}' read -r -a patch_patterns <<< "${{ env.PATCH_LABEL }}"
           minor_patch=${{ env.PATCH_LABEL }}
 
+          echo "pr_labels=${label_list[*]}" >> $GITHUB_OUTPUT
+
           for label in ${minor_patterns[@]}; do
             if echo "${label_list[*]}" | grep -iqFe "$label"; then
               echo "version_increment=minor" >> $GITHUB_OUTPUT
@@ -69,7 +71,7 @@ jobs:
       - name: ❗ Validate labels
         run: |
           if [ -z "${{ steps.valid_version_label.outputs.version_increment }}" ]; then
-            echo "Error: No valid versioning labels found in PRs.\nOnly found these labels: ${label_list[*]}"
+            echo "Error: No valid versioning labels found in PRs.\nOnly found these labels: ${{ steps.valid_version_label.outputs.pr_labels }}"
             exit 1
           fi
           
