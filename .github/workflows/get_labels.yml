@@ -44,10 +44,11 @@ jobs:
           MINOR_LABEL: ${{ vars.MINOR_BUMP_LABEL }}
           PATCH_LABEL: ${{ vars.PATCH_BUMP_LABEL }}
         run: |
-          # INFO convert csv string to bash arrays 
-          IFS=',' read -r -a "$label_list" <<< "${{ env.LABEL_LIST }}"
-          IFS='${{ env.LABEL_DELIMITTER }}' read -r -a "$minor_patterns" <<< "${{ env.MINOR_LABEL }}"
-          IFS='${{ env.LABEL_DELIMITTER }}' read -r -a "$patch_patterns" <<< "${{ env.PATCH_LABEL }}"
+          # INFO convert csv string to bash arrays
+          # TODO fix up first line so they can be handled in a streamilned way
+          IFS=',' read -r -a label_list <<< "${{ env.LABEL_LIST }}"
+          IFS='${{ env.LABEL_DELIMITTER }}' read -r -a minor_patterns <<< "${{ env.MINOR_LABEL }}"
+          IFS='${{ env.LABEL_DELIMITTER }}' read -r -a patch_patterns <<< "${{ env.PATCH_LABEL }}"
           minor_patch=${{ env.PATCH_LABEL }}
 
           echo ${label_list[*]}
