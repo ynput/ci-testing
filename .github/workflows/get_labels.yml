@@ -73,8 +73,7 @@ jobs:
           echo "version increment ${{ steps.valid_version_label.outputs.version_increment }}"
 
           if [ -z "${{ steps.valid_version_label.outputs.version_increment }}" ]; then
-            printf "::error::No valid versioning labels found in PRs.\nOnly found these labels: ${{ steps.valid_version_label.outputs.pr_labels }}\nAre you sure you want to create a new release?"
+            annotation_msg="No valid versioning labels found in PRs.\nOnly found these labels: ${{ steps.valid_version_label.outputs.pr_labels }}\nAre you sure you want to create a new release?"
+            echo "::error:: $annotation_msg"
             exit 1
           fi
-          
-
