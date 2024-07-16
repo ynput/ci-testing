@@ -29,4 +29,5 @@
 * Research [how to test github workflows](https://dev.to/cicirello/how-to-test-a-github-action-with-github-actions-2hag#integration-test)
 * Test common use-cases
 * Test faulty labels
-* test release creation if release already exists
+* Test release creation if release already exists
+* [Another guidline](https://github.com/Azure/actions/blob/main/docs/Testing-docs/Testing-GitHub-Actions.md)
