@@ -27,11 +27,8 @@ jobs:
         # INFO last line conversion is required since $GITHUB_OUPUT doesn't except multi-line strings
         run: |
           json_data_pr_labels=$(gh pr list --state merged --search "merged:>=${{ steps.last_release_date.outputs.last_release }}" --json labels --repo ${{ github.repository }} )
-          echo $json_data_pr_labels
           pr_label_list=$(echo "$json_data_pr_labels" | jq -r '.[].labels[].name' | sort | uniq | tr '\n' '${{ env.LABEL_DELIMITTER }}')
-          echo $pr_label_list
           label_list=${pr_label_list%,}
-          echo $label_list
           echo "label_list=$label_list" >> $GITHUB_OUTPUT
   
   calculate-min-release-bump:
@@ -48,7 +45,7 @@ jobs:
           PATCH_LABEL: ${{ vars.PATCH_BUMP_LABEL }}
         run: |
           # INFO convert csv string to bash arrays 
-          IFS='${{ env.LABEL_DELIMITTER }}' read -r -a "$label_list" <<< "${{ env.LABEL_LIST }}"
+          IFS=',' read -r -a "$label_list" <<< "${{ env.LABEL_LIST }}"
           IFS='${{ env.LABEL_DELIMITTER }}' read -r -a "$minor_patterns" <<< "${{ env.MINOR_LABEL }}"
           IFS='${{ env.LABEL_DELIMITTER }}' read -r -a "$patch_patterns" <<< "${{ env.PATCH_LABEL }}"
           minor_patch=${{ env.PATCH_LABEL }}
