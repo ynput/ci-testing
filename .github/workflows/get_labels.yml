@@ -61,12 +61,12 @@ jobs:
             fi
           done
 
-          # for label in ${patch_patterns[@]}; do
-          #   if echo "${label_list[*]}" | grep -iqFe "$label"; then
-          #     echo "version_increment=patch" >> $GITHUB_OUTPUT
-          #     exit 0
-          #   fi
-          # done
+          for label in ${patch_patterns[@]}; do
+            if echo "${label_list[*]}" | grep -iqFe "$label"; then
+              echo "version_increment=patch" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+          done
 
       - name: ❗ Validate labels
         run: |
