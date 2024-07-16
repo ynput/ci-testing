@@ -38,7 +38,8 @@ jobs:
       next_version_proposal:
 
     steps:
-      - name: Check if specific label is present
+      - name: 🔍 Check for valid labels
+        id: valid_version_label
         env:
           LABEL_LIST: ${{ needs.get-pr-labels.outputs.label_list }}
           MINOR_LABEL: ${{ vars.MINOR_BUMP_LABEL }}
@@ -51,24 +52,25 @@ jobs:
           IFS='${{ env.LABEL_DELIMITTER }}' read -r -a patch_patterns <<< "${{ env.PATCH_LABEL }}"
           minor_patch=${{ env.PATCH_LABEL }}
 
-          echo ${label_list[*]}
-          echo ${minor_patterns[*]}
-          echo ${patch_patterns[*]}
-
           for label in ${minor_patterns[@]}; do
             if echo "${label_list[*]}" | grep -iqFe "$label"; then
-              echo "minor version"
+              echo "version_increment=minor" >> $GITHUB_OUTPUT
               exit 0
             fi
           done
 
-          for label in ${patch_patterns[@]}; do
-            if echo "${label_list[*]}" | grep -iqFe "$label"; then
-              echo "patch version"
-              exit 0
-            fi
-          done
+          # for label in ${patch_patterns[@]}; do
+          #   if echo "${label_list[*]}" | grep -iqFe "$label"; then
+          #     echo "version_increment=patch" >> $GITHUB_OUTPUT
+          #     exit 0
+          #   fi
+          # done
 
-          echo "No version realted labels found"
-          exit 1
+      - name: ❗ Validate labels
+        run: |
+          if [ -z "${{ steps.valid_version_label.outputs.version_increment }}" ]; then
+            echo "Error: No valid versioning labels found in PRs.\nOnly found these labels: ${label_list[*]}"
+            exit 1
+          fi
+          
 
