@@ -31,3 +31,4 @@
 * Test faulty labels
 * Test release creation if release already exists
 * [Another guidline](https://github.com/Azure/actions/blob/main/docs/Testing-docs/Testing-GitHub-Actions.md)
+* [test summary](https://github.blog/2022-05-09-supercharging-github-actions-with-job-summaries/)
