@@ -3,7 +3,7 @@ name: Release [demand]
 on:
   workflow_dispatch:
     # TODO add input for pre-calculated version
-
+    # TODO add trigger branch (develop) to gh comamnds
 env:
   zip_file: artifacts.zip
   tar_file: artifacts.tar.gz
@@ -52,7 +52,7 @@ jobs:
         id: last_release_date
         run: |
           last_release=$(gh release list --repo ${{ github.repository }} --limit 1 | awk '{print $4 " " $5 " " $6}')
-          echo "last_release=$last_release" >> $GITHUB_OUTPUT
+          echo "last_release_date=$last_release" >> $GITHUB_OUTPUT
 
       - name: 🏷️ Get labels of merged PRs since last release
         id: merged_pr_labels
@@ -104,8 +104,6 @@ jobs:
 
       - name: ❗ Validate labels
         run: |
-          echo "version increment ${{ steps.valid_version_label.outputs.version_increment }}"
-
           if [ -z "${{ steps.valid_version_label.outputs.version_increment }}" ]; then
             # TODO Format using line breaks - not supported by annotations
             echo "::error:: No valid versioning labels found in PRs. Only found these labels: ${{ steps.valid_version_label.outputs.pr_labels }}. Are you sure you want to create a new release?"
