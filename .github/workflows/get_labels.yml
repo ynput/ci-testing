@@ -70,6 +70,9 @@ jobs:
 
       - name: ❗ Validate labels
         run: |
+
+          echo "version increment ${{ steps.valid_version_label.outputs.version_increment }}"
+
           if [ -z "${{ steps.valid_version_label.outputs.version_increment }}" ]; then
             echo "Error: No valid versioning labels found in PRs.\nOnly found these labels: ${{ steps.valid_version_label.outputs.pr_labels }}"
             exit 1
