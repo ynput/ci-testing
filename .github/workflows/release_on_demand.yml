@@ -51,7 +51,7 @@ jobs:
       - name: 📅 Get the last release date
         id: last_release_date
         run: |
-          last_release=$(gh release list --repo ${{ github.repository }} --limit 1 | awk '{print $4 " " $5 " " $6}')
+          last_release=$(gh api repos/${{ github.repository }}/releases --jq '.[] | select(.draft == false) | [.published_at] | @tsv' | awk -F '\t' '{print $1 " " $2 " " $3}' | head -n 1)
           echo "last_release_date=$last_release" >> $GITHUB_OUTPUT
 
       - name: 🏷️ Get labels of merged PRs since last release
