@@ -31,7 +31,7 @@ jobs:
           label_list=${pr_label_list%,}
           echo "label_list=$label_list" >> $GITHUB_OUTPUT
   
-  calculate-min-release-bump:
+  calculate-version-bump:
     runs-on: ubuntu-latest
     needs: get-pr-labels
     outputs:

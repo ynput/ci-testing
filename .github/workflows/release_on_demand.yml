@@ -10,6 +10,7 @@ env:
   zip_artifact: "test-zip"
   tar_artifact: "test-tar"
   main_branch: "main"
+  LABEL_DELIMITTER: ", "
 
 jobs:
   merge-to-main:
@@ -40,10 +41,81 @@ jobs:
           tags: true
           unprotect_reviews: true
 
+  get-pr-labels:
+    runs-on: ubuntu-latest
+    outputs:
+      label_list: ${{ steps.merged_pr_labels.outputs.label_list }}
+
+    steps:
+      - name: 📅 Get the last release date
+        id: last_release_date
+        run: |
+          last_release=$(gh release list --repo ${{ github.repository }} --limit 1 | awk '{print $4 " " $5 " " $6}')
+          echo "last_release=$last_release" >> $GITHUB_OUTPUT
+
+      - name: 🏷️ Get labels of merged PRs since last release
+        id: merged_pr_labels
+        env:
+          release_date: ${{ steps.last_release_date.outputs.last_release_date }}
+        # INFO last line conversion is required since $GITHUB_OUPUT doesn't except multi-line strings
+        run: |
+          json_data_pr_labels=$(gh pr list --state merged --search "merged:>=${{ steps.last_release_date.outputs.last_release }}" --json labels --repo ${{ github.repository }} )
+          pr_label_list=$(echo "$json_data_pr_labels" | jq -r '.[].labels[].name' | sort | uniq | tr '\n' '${{ env.LABEL_DELIMITTER }}')
+          label_list=${pr_label_list%,}
+          echo "label_list=$label_list" >> $GITHUB_OUTPUT
+  
+  calculate-version-bump:
+    runs-on: ubuntu-latest
+    needs: get-pr-labels
+    outputs:
+      next_version_proposal:
+
+    steps:
+      - name: 🔍 Check for valid labels
+        id: valid_version_label
+        env:
+          LABEL_LIST: ${{ needs.get-pr-labels.outputs.label_list }}
+          MINOR_LABEL: ${{ vars.MINOR_BUMP_LABEL }}
+          PATCH_LABEL: ${{ vars.PATCH_BUMP_LABEL }}
+        run: |
+          # INFO convert csv string to bash arrays
+          # TODO fix up first line so they can be handled in a streamilned way
+          IFS=',' read -r -a label_list <<< "${{ env.LABEL_LIST }}"
+          IFS='${{ env.LABEL_DELIMITTER }}' read -r -a minor_patterns <<< "${{ env.MINOR_LABEL }}"
+          IFS='${{ env.LABEL_DELIMITTER }}' read -r -a patch_patterns <<< "${{ env.PATCH_LABEL }}"
+          minor_patch=${{ env.PATCH_LABEL }}
+
+          echo "pr_labels=${label_list[*]}" >> $GITHUB_OUTPUT
+
+          for label in ${minor_patterns[@]}; do
+            if echo "${label_list[*]}" | grep -iqFe "$label"; then
+              echo "version_increment=minor" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+          done
+
+          for label in ${patch_patterns[@]}; do
+            if echo "${label_list[*]}" | grep -iqFe "$label"; then
+              echo "version_increment=patch" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+          done
+
+      - name: ❗ Validate labels
+        run: |
+          echo "version increment ${{ steps.valid_version_label.outputs.version_increment }}"
+
+          if [ -z "${{ steps.valid_version_label.outputs.version_increment }}" ]; then
+            # TODO Format using line breaks - not supported by annotations
+            echo "::error:: No valid versioning labels found in PRs. Only found these labels: ${{ steps.valid_version_label.outputs.pr_labels }}. Are you sure you want to create a new release?"
+            exit 1
+          fi
 
   build-from-main:
     runs-on: ubuntu-latest
-    needs: merge-to-main
+    needs: 
+      - merge-to-main
+      - calculate-version-bump
 
     steps:
       - name: ⬇️ Checkout ${{ env.main_branch }}
@@ -101,6 +173,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: 
       - build-from-main
+      - calculate-version-bump
     outputs:
       release_major: ${{ steps.version.outputs.major-version }}
       release_minor: ${{ steps.version.outputs.minor-version }}
@@ -113,7 +186,7 @@ jobs:
         id: version
         with:
           scheme: semver
-          increment: patch
+          increment: ${{ needs.calculate-version-bump.outputs.next_version_proposal }}
           release_branch: main
           use_api: true
 
