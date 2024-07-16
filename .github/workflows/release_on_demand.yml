@@ -227,7 +227,7 @@ jobs:
       - name: Fetch Current Release Draft
         id: fetch-current-release-draft
         run: |
-          current_release_name=$(gh api repos/octocat/Hello-World/releases --jq '.[] | select(.draft == true) | .name')
+          current_release_name=$(gh api repos/${{ github.repository }}/releases --jq '.[] | select(.draft == true) | .name')
           echo "current_release_name=$current_release_name" >> GITHUB_OUTPUT
 
       - name: 🔍 Check Release-Draft Name
