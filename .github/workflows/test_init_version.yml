@@ -18,9 +18,9 @@ jobs:
       - name: Get latest Release
         id: dummy_version
         run: |
-          echo "version_major=1" >> $GITHUB_OUTPUT 
-          echo "version_minor=5" >> $GITHUB_OUTPUT
-          echo "version_patch=3" >> $GITHUB_OUTPUT
+          # echo "version_major=1" >> $GITHUB_OUTPUT 
+          # echo "version_minor=5" >> $GITHUB_OUTPUT
+          # echo "version_patch=3" >> $GITHUB_OUTPUT
 
       - name: Set start version tag
         run: |
