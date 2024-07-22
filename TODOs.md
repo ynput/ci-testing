@@ -1,3 +1,11 @@
+# Release Trigger development
+* Move inital release creation to its own job
+* Test creation of inital version
+* Add inputs for external data source (milestones, github projects, ...)
+* Handle already existing release-draft-tag
+* Create PR templates
+* fetch data from PRs (accordign to templates) to create release changelog
+
 # Build local test environment
 * Running every test run on github runners task lots of time
 * Local testing using [act](https://nektosact.com/)

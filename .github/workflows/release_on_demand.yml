@@ -240,7 +240,7 @@ jobs:
       - create-release
     env:
      expected_version_tag: ${{ needs.init-version-tag.outputs.version_tag }}
-
+    # INFO this will casue an error if a release draft with the same tag already exists
     steps:
       - name: Fetch Current Release Draft
         id: fetch-current-release-draft
