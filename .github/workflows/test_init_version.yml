@@ -27,5 +27,5 @@ jobs:
           echo "Version Tag: ${{ env.major }}.${{ env.minor }}.${{ env.patch }}"
         env:
           major: ${{ steps.dummy_version.outputs.version_major || vars.INIT_MAJOR || 0 }}
-          minor: ${{ steps.dummy_version.outputs.version_minor || vars.INIT_MINOR || 1 }}
+          minor: ${{ steps.dummy_version.outputs.version_minor || vars.INIT_MINOR || 5 }}
           patch: ${{ steps.dummy_version.outputs.version_patch || vars.INIT_PATCH || 0}}
