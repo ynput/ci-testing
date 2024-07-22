@@ -1,0 +1,62 @@
+name: "Pull Request Template"
+description: "Please fill out the following details when submitting a pull request."
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Pull Request Checklist
+        Please ensure that your PR meets the following requirements:
+
+  - type: input
+    id: title
+    attributes:
+      label: "Title"
+      description: "Provide a short and descriptive title for the pull request."
+      placeholder: "Enter the title"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "Description"
+      description: "Describe the changes made in this pull request."
+      placeholder: "Enter a detailed description"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: "Type of Change"
+      description: "Select the type of change made in this PR."
+      options:
+        - "Bug fix"
+        - "Feature"
+        - "Documentation"
+        - "Chore"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "Checklist"
+      description: "Ensure you have completed the following tasks."
+      options:
+        - label: "I have read the [contributing guidelines](CONTRIBUTING.md)."
+          required: true
+        - label: "I have run tests to ensure the code is working as expected."
+          required: true
+        - label: "I have added/updated necessary documentation (if applicable)."
+          required: false
+
+  - type: textarea
+    id: additional_notes
+    attributes:
+      label: "Additional Notes"
+      description: "Any additional notes or comments about this pull request."
+      placeholder: "Enter any additional notes"
+    validations:
+      required: false
