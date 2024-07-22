@@ -117,7 +117,7 @@ jobs:
     env:
       VERSION_INCREMENT: ${{needs.get-version-increment.outputs.version-increment}}
     outputs:
-      version_tag: "${{ steps.combined_tag.outputs.major }}.${{ steps.combined_tag.outputs.minor }}.${{ steps.combined_tag.outputs.patch }}"
+      version_tag: "${{ steps.set_tag.outputs.major }}.${{ steps.set_tag.outputs.minor }}.${{ steps.set_tag.outputs.patch }}"
 
     steps:
       - name: Assign inital Version Tag
@@ -139,12 +139,12 @@ jobs:
           release_branch: main
           use_api: true
 
-      - name: Combine Version Tag
-        id: combined_tag
+      - name: Set Version Tag
+        id: set_tag
         run: |
-          major: ${{ steps.calculated_version_tag.outputs.major-version || steps.default_version_tag.outputs.major }}
-          minor: ${{ steps.calculated_version_tag.outputs.minor-version || steps.default_version_tag.outputs.minor }}
-          minor: ${{ steps.calculated_version_tag.outputs.patch-version || steps.default_version_tag.outputs.patch }}
+          echo "major: ${{ steps.calculated_version_tag.outputs.major-version || steps.default_version_tag.outputs.major }}" >> $GITHUB_OUTPUT
+          echo "minor: ${{ steps.calculated_version_tag.outputs.minor-version || steps.default_version_tag.outputs.minor }}" >> $GITHUB_OUTPUT
+          echo "minor: ${{ steps.calculated_version_tag.outputs.patch-version || steps.default_version_tag.outputs.patch }}" >> $GITHUB_OUTPUT
 
 
   update-develop:
