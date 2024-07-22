@@ -2,6 +2,7 @@
 * Move inital release creation to its own job
 * Test creation of inital version
 * Implement develop-to-main-merge using gh command
+* Speed up merge-to-main (slowest job right now with 25s)
 * Add inputs for external data source (milestones, github projects, ...)
 * Handle already existing release-draft-tag
 * Create PR templates
