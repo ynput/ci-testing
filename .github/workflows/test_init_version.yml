@@ -28,4 +28,4 @@ jobs:
         env:
           major: ${{ steps.dummy_version.outputs.version_major || vars.INIT_MAJOR || 0 }}
           minor: ${{ steps.dummy_version.outputs.version_minor || vars.INIT_MINOR || 1 }}
-          patch: ${{ steps.dummy_version.outputs.version_major || vars.INIT_PATCH || 0}}
+          patch: ${{ steps.dummy_version.outputs.version_patch || vars.INIT_PATCH || 0}}
