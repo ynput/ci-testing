@@ -142,9 +142,9 @@ jobs:
       - name: Set Version Tag
         id: set_tag
         run: |
-          echo "major: ${{ steps.calculated_version_tag.outputs.major-version || steps.default_version_tag.outputs.major }}" >> $GITHUB_OUTPUT
-          echo "minor: ${{ steps.calculated_version_tag.outputs.minor-version || steps.default_version_tag.outputs.minor }}" >> $GITHUB_OUTPUT
-          echo "minor: ${{ steps.calculated_version_tag.outputs.patch-version || steps.default_version_tag.outputs.patch }}" >> $GITHUB_OUTPUT
+          echo "major=${{ steps.calculated_version_tag.outputs.major-version || steps.default_version_tag.outputs.major }}" >> $GITHUB_OUTPUT
+          echo "minor=${{ steps.calculated_version_tag.outputs.minor-version || steps.default_version_tag.outputs.minor }}" >> $GITHUB_OUTPUT
+          echo "minor=${{ steps.calculated_version_tag.outputs.patch-version || steps.default_version_tag.outputs.patch }}" >> $GITHUB_OUTPUT
 
 
   update-develop:
