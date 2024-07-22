@@ -42,10 +42,11 @@ jobs:
           tags: true
           unprotect_reviews: true
 
-  get-pr-labels:
+
+  get-version-increment:
     runs-on: ubuntu-latest
     outputs:
-      label_list: ${{ steps.merged_pr_labels.outputs.label_list }}
+      version-increment: ${{ steps.valid_version_label.outputs.version_increment }}
 
     steps:
       - name: 📅 Get the latest release date
@@ -66,19 +67,11 @@ jobs:
           label_list=${pr_label_list%,}
           echo "$label_list"
           echo "label_list=$label_list" >> $GITHUB_OUTPUT
-  
-  get-version-increment:
-    runs-on: ubuntu-latest
-    needs: get-pr-labels
-    if: ${{ needs.get-pr-labels.outputs.label_list }}
-    outputs:
-      version-increment: ${{ steps.valid_version_label.outputs.version_increment }}
 
-    steps:
       - name: 🔍 Check for valid labels
         id: valid_version_label
         env:
-          LABEL_LIST: ${{ needs.get-pr-labels.outputs.label_list }}
+          LABEL_LIST: ${{ steps.merged_pr_labels.outputs.label_list }}
           MINOR_LABEL: ${{ vars.MINOR_BUMP_LABEL }}
           PATCH_LABEL: ${{ vars.PATCH_BUMP_LABEL }}
         run: |
@@ -105,13 +98,18 @@ jobs:
             fi
           done
 
+          echo "version_increment=''" >> $GITHUB_OUTPUT
+          exit 0
+
       - name: ❗ Validate labels
+        if: ${{ steps.last_release_date.outputs.last_release_date }}
         run: |
           if [ -z "${{ steps.valid_version_label.outputs.version_increment }}" ]; then
             # TODO Format using line breaks - not supported by annotations
             echo "::error:: No valid versioning labels found in PRs. Only found these labels: ${{ steps.valid_version_label.outputs.pr_labels }}. Are you sure you want to create a new release?"
             exit 1
           fi
+
 
   init-version-tag:
     runs-on: ubuntu-latest
@@ -148,11 +146,35 @@ jobs:
           minor: ${{ steps.calculated_version_tag.outputs.minor-version || steps.default_version_tag.outputs.minor }}
           minor: ${{ steps.calculated_version_tag.outputs.patch-version || steps.default_version_tag.outputs.patch }}
 
+
+  update-develop:
+    runs-on: ubuntu-latest
+    needs: merge-to-main
+
+    steps:
+      - name: ⬇️ Checkout ${{ github.ref_name }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: 🔑 Set Bot Authentication
+        run: |
+          # INFO might also require bit token first
+          git config --global user.email "${{ secrets.CI_EMAIL }}"
+          git config --global user.name "${{ secrets.CI_USER }}"
+
+      - name: 🔁 Merge ${{ env.main_branch }} -> ${{ github.ref_name }}
+        run: |
+          git pull origin ${{ env.main_branch }}
+          git merge origin/${{ env.main_branch }} -m "[Automated] Merged ${{ env.main_branch }} -> ${{ github.ref_name }}"
+          git push origin ${{ github.ref_name }}
+
+
   build-from-main:
     runs-on: ubuntu-latest
     needs: 
       - merge-to-main
-      - get-version-increment
 
     steps:
       - name: ⬇️ Checkout ${{ env.main_branch }}
@@ -181,36 +203,14 @@ jobs:
           path: |
             ${{ env.tar_file }}
 
-  update-develop:
-    runs-on: ubuntu-latest
-    needs: merge-to-main
-
-    steps:
-      - name: ⬇️ Checkout ${{ github.ref_name }}
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref_name }}
-          fetch-depth: 0
-
-      - name: 🔑 Set Bot Authentication
-        run: |
-          # INFO might also require bit token first
-          git config --global user.email "${{ secrets.CI_EMAIL }}"
-          git config --global user.name "${{ secrets.CI_USER }}"
-
-      - name: 🔁 Merge ${{ env.main_branch }} -> ${{ github.ref_name }}
-        run: |
-          git pull origin ${{ env.main_branch }}
-          git merge origin/${{ env.main_branch }} -m "[Automated] Merged ${{ env.main_branch }} -> ${{ github.ref_name }}"
-          git push origin ${{ github.ref_name }}
 
   create-release:
     runs-on: ubuntu-latest
     needs: 
       - build-from-main
-      -  init-version-tag
+      - init-version-tag
     env:
-      release_tag: ${{ needs. init-version-tag.outputs.version_tag }}
+      release_tag: ${{ needs.init-version-tag.outputs.version_tag }}
 
     steps:
       - name: 🔽 Download zip artifacts
@@ -232,9 +232,12 @@ jobs:
           token: ${{ secrets.YNPUT_BOT_TOKEN }}
           draft: true
 
+
   verify-release:
     runs-on: ubuntu-latest
-    needs: init-version-tag
+    needs:
+      - init-version-tag
+      - create-release
     env:
      expected_version_tag: ${{ needs.init-version-tag.outputs.version_tag }}
 
