@@ -210,9 +210,9 @@ jobs:
           token: ${{ secrets.YNPUT_BOT_TOKEN }}
           draft: true
         env:
-          major: ${{ steps.version.outputs.major-version }}
-          minor: ${{ steps.version.outputs.minor-version }}
-          patch: ${{ steps.version.outputs.patch-version }}
+          major: ${{ steps.version.outputs.major-version || 0 }}
+          minor: ${{ steps.version.outputs.minor-version || 1 }}
+          patch: ${{ steps.version.outputs.patch-version || 0 }}
 
 
   verify-release:

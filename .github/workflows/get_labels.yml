@@ -24,6 +24,7 @@ jobs:
         id: merged_pr_labels
         env:
           release_date: ${{ steps.last_release_date.outputs.last_release_date }}
+        if: ${{ env.release_date }}
         # INFO last line conversion is required since $GITHUB_OUPUT doesn't except multi-line strings
         run: |
           json_data_pr_labels=$(gh pr list --state merged --search "merged:>=${{ env.release_date }}" --json labels --repo ${{ github.repository }} )
@@ -35,7 +36,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: get-pr-labels
     outputs:
-      next_version_proposal:
+      version_proposal: ${{ steps.valid_version_label.outputs.version_increment }}
+    if: ${{ needs.get-pr-labels.outputs.label_list }}
 
     steps:
       - name: 🔍 Check for valid labels

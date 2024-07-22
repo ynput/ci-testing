@@ -1,0 +1,31 @@
+name: Set init release
+
+on:
+  workflow_dispatch:
+
+env:
+  GH_TOKEN: ${{ secrets.YNPUT_BOT_TOKEN }}
+
+jobs:
+  set-dummy-version:
+    runs-on: ubuntu-latest
+    outputs:
+      major: ${{ steps.dummy_version.outputs.version_major }}
+      minor: ${{ steps.dummy_version.outputs.version_minor }}
+      patch: ${{ steps.dummy_version.outputs.version_patch }}
+    
+    steps:
+      - name: Get latest Release
+        id: dummy_version
+        run: |
+          echo "version_major=1" >> $GITHUB_OUTPUT 
+          echo "version_minor=5" >> $GITHUB_OUTPUT
+          echo "version_patch=3" >> $GITHUB_OUTPUT
+
+      - name: Set start version tag
+        run: |
+          echo "Version Tag: ${{ env.major }}.${{ env.minor }}.${{ env.patch }}"
+        env:
+          major: ${{ steps.dummy_version.outputs.version_major || vars.INIT_MAJOR || 0 }}
+          minor: ${{ steps.dummy_version.outputs.version_minor || vars.INIT_MINOR || 1 }}
+          patch: ${{ steps.dummy_version.outputs.version_major || vars.INIT_PATCH || 0}}
