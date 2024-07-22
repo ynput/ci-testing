@@ -67,11 +67,12 @@ jobs:
           echo "$label_list"
           echo "label_list=$label_list" >> $GITHUB_OUTPUT
   
-  calculate-version-bump:
+  get-version-increment:
     runs-on: ubuntu-latest
     needs: get-pr-labels
+    if: ${{ needs.get-pr-labels.outputs.label_list }}
     outputs:
-      next_version_proposal:
+      version-increment: ${{ steps.valid_version_label.outputs.version_increment }}
 
     steps:
       - name: 🔍 Check for valid labels
@@ -112,11 +113,46 @@ jobs:
             exit 1
           fi
 
+  init-version-tag:
+    runs-on: ubuntu-latest
+    needs: get-version-increment
+    env:
+      VERSION_INCREMENT: ${{needs.get-version-increment.outputs.version-increment}}
+    outputs:
+      version_tag: "${{ steps.combined_tag.outputs.major }}.${{ steps.combined_tag.outputs.minor }}.${{ steps.combined_tag.outputs.patch }}"
+
+    steps:
+      - name: Assign inital Version Tag
+        if: ${{ ! env.VERSION_INCREMENT }}
+        id: default_version_tag
+        run: |
+          echo "major=${{ vars.INIT_MAJOR || 0 }}" >> $GITHUB_OUTPUT 
+          echo "minor=${{ vars.INIT_MINOR || 1 }}" >> $GITHUB_OUTPUT
+          echo "patch=${{ vars.INIT_PATCH || 0 }}" >> $GITHUB_OUTPUT
+
+      # TODO dive into the action as reference to implement custom actions
+      - name: 🔼 Get next Version Tag
+        uses: reecetech/version-increment@2024.4.4
+        id: calculated_version_tag
+        if:  ${{ env.VERSION_INCREMENT }}
+        with:
+          scheme: semver
+          increment: ${{ env.VERSION_INCREMENT }}
+          release_branch: main
+          use_api: true
+
+      - name: Combine Version Tag
+        id: combined_tag
+        run: |
+          major: ${{ steps.calculated_version_tag.outputs.major-version || steps.default_version_tag.outputs.major }}
+          minor: ${{ steps.calculated_version_tag.outputs.minor-version || steps.default_version_tag.outputs.minor }}
+          minor: ${{ steps.calculated_version_tag.outputs.patch-version || steps.default_version_tag.outputs.patch }}
+
   build-from-main:
     runs-on: ubuntu-latest
     needs: 
       - merge-to-main
-      - calculate-version-bump
+      - get-version-increment
 
     steps:
       - name: ⬇️ Checkout ${{ env.main_branch }}
@@ -145,7 +181,6 @@ jobs:
           path: |
             ${{ env.tar_file }}
 
-
   update-develop:
     runs-on: ubuntu-latest
     needs: merge-to-main
@@ -169,28 +204,15 @@ jobs:
           git merge origin/${{ env.main_branch }} -m "[Automated] Merged ${{ env.main_branch }} -> ${{ github.ref_name }}"
           git push origin ${{ github.ref_name }}
 
-
   create-release:
     runs-on: ubuntu-latest
     needs: 
       - build-from-main
-      - calculate-version-bump
-    outputs:
-      release_major: ${{ steps.version.outputs.major-version }}
-      release_minor: ${{ steps.version.outputs.minor-version }}
-      release_patch: ${{ steps.version.outputs.patch-version }}
+      -  init-version-tag
+    env:
+      release_tag: ${{ needs. init-version-tag.outputs.version_tag }}
 
     steps:
-      # TODO dive into the action as reference to implement custom actions
-      - name: 🔼 Get next version
-        uses: reecetech/version-increment@2024.4.4
-        id: version
-        with:
-          scheme: semver
-          increment: ${{ needs.calculate-version-bump.outputs.next_version_proposal }}
-          release_branch: main
-          use_api: true
-
       - name: 🔽 Download zip artifacts
         uses: actions/download-artifact@v4
         with:
@@ -204,24 +226,17 @@ jobs:
       - name: 🚀 Create Github Release Draft
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ env.major }}.${{ env.minor }}.${{ env.patch }}
+          tag: ${{ env.release_tag }}
           generateReleaseNotes: true
           artifacts: ${{ env.zip_file }}, ${{ env.tar_file }}
           token: ${{ secrets.YNPUT_BOT_TOKEN }}
           draft: true
-        env:
-          major: ${{ steps.version.outputs.major-version || 0 }}
-          minor: ${{ steps.version.outputs.minor-version || 1 }}
-          patch: ${{ steps.version.outputs.patch-version || 0 }}
-
 
   verify-release:
     runs-on: ubuntu-latest
-    needs: create-release
+    needs: init-version-tag
     env:
-      release_major: ${{ needs.create-release.outputs.release_major }}
-      release_minor: ${{ needs.create-release.outputs.release_minor }}
-      release_patch: ${{ needs.create-release.outputs.release_patch }}
+     expected_version_tag: ${{ needs.init-version-tag.outputs.version_tag }}
 
     steps:
       - name: Fetch Current Release Draft
@@ -234,14 +249,13 @@ jobs:
       - name: 🔍 Check Release-Draft Name
         id: check-release-tag
         env:
-          expected_release_draft: "${{ env.release_major }}.${{ env.release_minor}}.${{ env.release_patch}}"
           current_release_draft: ${{ steps.fetch-current-release-draft.outputs.current_release_name }}
 
         run: |
-          if [ "${{ env.expected_release_draft }}" == "${{ env.current_release_draft }}" ]; then
-            echo "Success: Release found with the expected name ${{ env.expected_release_draft }}."
+          if [ "${{ env.expected_version_tag }}" == "${{ env.current_release_draft }}" ]; then
+            echo "Success: Release found with the expected name ${{ env.expected_version_tag }}."
             exit 0
           fi
 
-          echo "::error:: Expected tag ${{ env.expected_release_draft }}, but found ${{ env.current_release_draft }}."
+          echo "::error:: Expected tag ${{ env.expected_version_tag }}, but found ${{ env.current_release_draft }}."
           exit 1
