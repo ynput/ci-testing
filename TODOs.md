@@ -10,6 +10,10 @@
 * fetch data from PRs (accordign to templates) to create release changelog
 * talk to addon devs about their current release workflow
 
+# Implement release branches
+* Fully controlled by actions anyway
+* Whenever pralalel workign is required it can be done without any hassle
+
 # Build local test environment
 * Running every test run on github runners task lots of time
 * Local testing using [act](https://nektosact.com/)
