@@ -10,8 +10,23 @@ env:
   GH_TOKEN: ${{ secrets.YNPUT_BOT_TOKEN }}
 
 jobs:
+  get-existing-releases:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check for existing releases
+        run: |
+          rel_list=$(gh release list --repo ynput/ayon-zbrush)
+          if [ -z $rel_list ]; then
+            echo "::error::No releases found for ${{ github.repository }}. Pls use the `initial release trigger` instead."
+            exit 1
+          fi
+
+          exit 0
+
   merge-to-main:
     runs-on: ubuntu-latest
+    needs: get-existing-releases
 
     steps:
       - name: ⬇️ Checkout ${{ vars.MAIN_BRANCH }}
@@ -41,6 +56,7 @@ jobs:
 
   get-version-increment:
     runs-on: ubuntu-latest
+    needs: get-existing-releases
     outputs:
       version-increment: ${{ steps.valid_version_label.outputs.version_increment }}
 
