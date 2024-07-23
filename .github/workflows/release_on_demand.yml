@@ -17,7 +17,7 @@ jobs:
       - name: Check for existing releases
         run: |
           # INFO Check for existing releases
-          rel_list=$(gh release list --repo ${{ github.repository }})
+          rel_list="$(gh release list --limit 1 --repo ${{ github.repository }})"
           if [ -z $rel_list ]; then
             echo "::error::No releases found for ${{ github.repository }}. Pls use the `initial release trigger` instead."
             exit 1
@@ -250,23 +250,22 @@ jobs:
      expected_version_tag: ${{ needs.init-version-tag.outputs.version_tag }}
     # INFO this will casue an error if a release draft with the same tag already exists
     steps:
-      - name: Fetch Current Release Draft
-        id: fetch-current-release-draft
+      - name: Fetch Latest Release Draft
+        id: fetch-latest-release-draft
         run: |
-          current_release_name="$(gh api repos/${{ github.repository }}/releases --jq '.[] | select(.draft == true) | .name')"
-          current_release_name=$(echo "$current_release_name" | tr -d '\n')
+          current_release_name="$(gh release list --repo ynput/ci-testing --json isDraft,name,createdAt --jq '.[] | select(.isDraft == true) | sort_by(.createdAt) | reverse | .[0] | .name')
           echo "current_release_name=$current_release_name" >> $GITHUB_OUTPUT
 
       - name: 🔍 Check Release-Draft Name
         id: check-release-tag
         env:
-          current_release_draft: ${{ steps.fetch-current-release-draft.outputs.current_release_name }}
+          latest_release_draft: ${{ steps.fetch-latest-release-draft.outputs.current_release_name }}
 
         run: |
-          if [ "${{ env.expected_version_tag }}" == "${{ env.current_release_draft }}" ]; then
-            echo "Success: Release found with the expected name ${{ env.expected_version_tag }}."
+          if [ "${{ env.expected_version_tag }}" == "${{ env.latest_release_draft }}" ]; then
+            echo "::notice::Success, release found with the expected name ${{ env.expected_version_tag }}."
             exit 0
           fi
 
-          echo "::error:: Expected tag ${{ env.expected_version_tag }}, but found ${{ env.current_release_draft }}."
+          echo "::error::Expected tag ${{ env.expected_version_tag }}, but found ${{ env.latest_release_draft }}."
           exit 1
