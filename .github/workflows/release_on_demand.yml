@@ -16,10 +16,18 @@ jobs:
     steps:
       - name: Check for existing releases
         run: |
-          rel_list=$(gh release list --repo ynput/ayon-zbrush)
+          # INFO Check for existing releases
+          rel_list=$(gh release list --repo ${{ github.repository }})
           if [ -z $rel_list ]; then
             echo "::error::No releases found for ${{ github.repository }}. Pls use the `initial release trigger` instead."
             exit 1
+          fi
+
+          # INFO Check for existing release drafts
+          draft_list=$(gh release list --json isDraft,name --jq '.[] | select(.isDraft == true) | .name')
+          if [ -z "$draft_list" ]; then
+            echo "::warning::Release draft already present: $draft_list"
+            exit 0
           fi
 
           exit 0
