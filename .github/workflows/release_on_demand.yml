@@ -24,7 +24,7 @@ jobs:
           fi
 
           # INFO Check for existing release drafts
-          draft_list=$(gh release list --json isDraft,name --jq '.[] | select(.isDraft == true) | .name')
+          draft_list=$(gh release list --repo ${{ github.repository }} --json isDraft,name --jq '.[] | select(.isDraft == true) | .name')
           if [ -z "$draft_list" ]; then
             echo "::warning::Release draft already present: $draft_list"
             exit 0
