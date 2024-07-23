@@ -1,6 +1,7 @@
 # Release Trigger development
 * Move inital release creation to its own job
 * Test creation of inital version
+* Check for releases
 * Implement develop-to-main-merge using gh command
 * Speed up merge-to-main (slowest job right now with 25s)
 * Add inputs for external data source (milestones, github projects, ...)
@@ -8,7 +9,6 @@
 * Create PR templates
 * fetch data from PRs (accordign to templates) to create release changelog
 * talk to addon devs about their current release workflow
-* check release workflow of server team - make file
 
 # Build local test environment
 * Running every test run on github runners task lots of time
