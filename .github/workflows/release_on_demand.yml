@@ -6,9 +6,7 @@ on:
     # TODO add trigger branch (develop) to gh comamnds
 env:
   zip_file: artifacts.zip
-  tar_file: artifacts.tar.gz
   zip_artifact: "test-zip"
-  tar_artifact: "test-tar"
   main_branch: "main"
   LABEL_DELIMITTER: ", "
   GH_TOKEN: ${{ secrets.YNPUT_BOT_TOKEN }}
@@ -188,7 +186,6 @@ jobs:
       - name: Create artifacts
         run: |
           zip -r ${{ env.zip_file }} . -x "*/\.*"
-          tar -czvf ${{ env.tar_file }} --exclude=".*" .
       
       - name: 🔼 Upload zip artifacts
         uses: actions/upload-artifact@v4
@@ -196,13 +193,6 @@ jobs:
           name: ${{ env.zip_artifact }}
           path: |
             ${{ env.zip_file }}
-
-      - name: 🔼 Upload tar.gz artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.tar_artifact }}
-          path: |
-            ${{ env.tar_file }}
 
 
   create-release:
@@ -219,17 +209,12 @@ jobs:
         with:
           name: ${{ env.zip_artifact }}
 
-      - name: 🔽 Download tar artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ env.tar_artifact }}
-
       - name: 🚀 Create Github Release Draft
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ env.release_tag }}
           generateReleaseNotes: true
-          artifacts: ${{ env.zip_file }}, ${{ env.tar_file }}
+          artifacts: ${{ env.zip_file }}
           token: ${{ secrets.YNPUT_BOT_TOKEN }}
           draft: true
 
