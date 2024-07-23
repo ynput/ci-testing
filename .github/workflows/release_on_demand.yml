@@ -253,7 +253,7 @@ jobs:
       - name: Fetch Latest Release Draft
         id: fetch-latest-release-draft
         run: |
-          current_release_name="$(gh release list --repo ynput/ci-testing --json isDraft,name,createdAt --jq '.[] | select(.isDraft == true) | sort_by(.createdAt) | reverse | .[0] | .name')
+          current_release_name="$(gh release list --repo ynput/ci-testing --json isDraft,name,createdAt --jq '.[] | select(.isDraft == true) | sort_by(.createdAt) | reverse | .[0] | .name')"
           echo "current_release_name=$current_release_name" >> $GITHUB_OUTPUT
 
       - name: 🔍 Check Release-Draft Name
