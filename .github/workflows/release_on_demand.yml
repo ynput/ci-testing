@@ -184,7 +184,7 @@ jobs:
       - name: Create artifacts
         run: |
           zip -r ${{ vars.ARTIFACT_FILE_NAME }} . -x "*/\.*"
-      
+
       - name: 🔼 Upload zip artifacts
         uses: actions/upload-artifact@v4
         with:
