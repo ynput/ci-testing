@@ -7,6 +7,8 @@
 * Handle already existing release-draft-tag
 * Create PR templates
 * fetch data from PRs (accordign to templates) to create release changelog
+* talk to addon devs about their current release workflow
+* check release workflow of server team - make file
 
 # Build local test environment
 * Running every test run on github runners task lots of time
