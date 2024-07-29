@@ -1,4 +1,4 @@
-# Release Trigegr Roadmap
+# Release Trigger Roadmap
 
 ##  Current Features
 * Merge to protected main-branch
@@ -16,7 +16,7 @@
 * implement core features as standalone actions
 * Throw error for no existing latest release 
 
-## Gather feedback
+## Gather Feedback
 * Change requests?
 * Logic improvements?
 * Feature enhancements?
