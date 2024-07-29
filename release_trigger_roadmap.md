@@ -28,6 +28,11 @@
 * How to gather changelog information?
 * Create pre-releases automatically?
 
+## Research
+* Strategy for bugfixes on older releases
+* LTS versions
+* Cherry-pick chnanges to merge upstream
+
 ## Release Branches
 * Create when features are implemnted
 * Only merge bugfixes
