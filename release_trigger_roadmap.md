@@ -3,10 +3,10 @@
 ##  Current Features
 * Merge to protected main-branch
 * Update develop-branch
-* next version tag based on latest release + PR labels
-* "build" from main - just zips the repo for now
-* create release draft
-* verify release draft
+* Next version tag based on latest release + PR labels
+* "Build" from main - just zips the repo for now
+* Create release draft
+* Verify release draft
 * Detailed information in workflow annotations
 
 ## Planned Features
@@ -15,8 +15,6 @@
 * Enhance feedback through workflow annotations
 * implement core features as standalone actions
 * Throw error for no existing latest release 
-* Implement dedicated workflow for inital release
-* Implement automated testing setup
 
 ## Gather feedback
 * Change requests?
@@ -29,9 +27,11 @@
 * Create pre-releases automatically?
 
 ## Research
+* Implement dedicated workflow for inital release
+* Implement automated testing setup
 * Strategy for bugfixes on older releases
 * LTS versions
-* Cherry-pick chnanges to merge upstream
+* Cherry-pick changes to merge upstream
 
 ## Release Branches
 * Create when features are implemnted
