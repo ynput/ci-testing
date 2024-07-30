@@ -48,7 +48,7 @@ jobs:
 
       - name: Adjust readme
         run: |
-          cd "$(basename '${{ env.TARGET_REPO }}')"
+          echo $(pwd)
 
           # Add text to the beginning of README.md
           echo "Adding introductory text to README.md"
