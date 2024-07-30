@@ -29,9 +29,24 @@ jobs:
         if: steps.repo-check.outputs.repo_present
         run: |
           echo "::notice:: Deleting repository `${{ env.TARGET_REPO }}`"
-          gh repo delete "${{ env.TARGET_REPO }}" --confirm
+          gh repo delete "${{ env.TARGET_REPO }}" --yes
 
       - name: Create new Repo `${{ env.TARGET_REPO }}` from template `${{ env.TEMPLATE_REPO }}`
         run: |
           gh repo create ${{ env.TARGET_REPO }} --template ${{ env.TEMPLATE_REPO }} --public
           echo "::notice::Recreated repository `${{ env.TARGET_REPO }}` from template `${{ env.TEMPLATE_REPO }}`"
+
+      - name: Adjust readme
+        run: |
+          echo "Adding text to README..."
+          # Clone the repository
+          git clone "https://github.com/${{ env.TARGET_REPO }}.git"
+          cd "$(basename "${{ env.TARGET_REPO }}" .git)"
+
+          # Add text to the beginning of README.md
+          echo "Adding introductory text to README.md"
+          echo -e "# Not intended for Development\nThis is a testing repository for github actions.\nChanges in this repository are likely to be reset by automanted testing procedures.\nDon't use this repository for any development - use ayon/ci-tools instead." > README.md
+
+          # Commit and push changes
+          git commit -m "Add warning information to readme."
+          git push origin development
