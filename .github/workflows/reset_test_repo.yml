@@ -1,4 +1,4 @@
-name: Create Repo from template
+name: Reset test repo
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ env:
   TEMPLATE_REPO: "ynput/ayon-addon-template"
 
 jobs:
-  create-new-repo-from-template:
+  reset-test-repo:
     runs-on: ubuntu-latest
 
     steps:
