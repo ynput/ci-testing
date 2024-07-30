@@ -33,16 +33,22 @@ jobs:
 
       - name: Create new Repo `${{ env.TARGET_REPO }}` from template `${{ env.TEMPLATE_REPO }}`
         run: |
-          gh repo create ${{ env.TARGET_REPO }} --template ${{ env.TEMPLATE_REPO }} --public
+          gh repo create ${{ env.TARGET_REPO }} --template ${{ env.TEMPLATE_REPO }} --public --include-all-branches
           echo "::notice::Recreated repository `${{ env.TARGET_REPO }}` from template `${{ env.TEMPLATE_REPO }}`"
+
+      - name: Show branches
+        run: |
+          echo $(gh api repos/${{ env.TARGET_REPO }}/branches --jq '.[].name')
+
+      - name: Checkout CI Tools repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.TARGET_REPO }}
+          ref: develop
+          path: "$(basename '${{ env.TARGET_REPO }}' .git)"
 
       - name: Adjust readme
         run: |
-          echo "Adding text to README..."
-          # Clone the repository
-          git clone "https://github.com/${{ env.TARGET_REPO }}.git"
-          cd "$(basename "${{ env.TARGET_REPO }}" .git)"
-
           # Add text to the beginning of README.md
           echo "Adding introductory text to README.md"
           echo -e "# Not intended for Development\nThis is a testing repository for github actions.\nChanges in this repository are likely to be reset by automanted testing procedures.\nDon't use this repository for any development - use ayon/ci-tools instead." > README.md
