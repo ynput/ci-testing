@@ -17,7 +17,7 @@ jobs:
         id: repo-check
         run: |
           if gh repo view "${{ env.TARGET_REPO }}" > /dev/null 2>&1; then
-            echo "::error::Repository already exists - aborting creation."
+            echo "::error::Repository '${{ env.TARGET_REPO }}' already exists - aborting creation."
             exit 1
           fi
 
