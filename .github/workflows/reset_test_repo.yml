@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  GH_TOKEN: ${{ secrets.YNPUT_BOT_TOKEN }}
+  GH_TOKEN: ${{ secrets.TESTING_REPO_RESET }}
   TARGET_REPO: "ynput/ayon-addon-action-testing"
   TEMPLATE_REPO: "ynput/ayon-addon-template"
 
