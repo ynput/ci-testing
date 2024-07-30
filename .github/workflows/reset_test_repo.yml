@@ -7,7 +7,6 @@ env:
   GH_TOKEN: ${{ secrets.TESTING_REPO_RESET }}
   TARGET_REPO: "ynput/ayon-addon-action-testing"
   TEMPLATE_REPO: "ynput/ayon-addon-template"
-  BOT_NAME: "ynbot"
 
 jobs:
   reset-test-repo:
@@ -54,7 +53,7 @@ jobs:
 
       - name: Add ${{ env.BOT_NAME }} as repo collaborator
         run: |
-          gh repo add-collaborator ${{ env.TARGET_REPO }} ${{ env.BOT_NAME }} --permission write
+          gh repo add-collaborator ${{ env.TARGET_REPO }} ${{ secrets.CI_USER }} --permission write
 
       - name: Adjust readme
         run: |
