@@ -63,4 +63,4 @@ jobs:
 
           # Commit and push changes
           git commit -m "Add warning information to readme."
-          git push https://x-access-token:${{ secrets.YNPUT_BOT_TOKEN }}@github.com/${{ env.TARGET_REPO }}.git develop
+          git push https://x-access-token:${{ secrets.TESTING_REPO_RESET }}@github.com/${{ env.TARGET_REPO }}.git develop
