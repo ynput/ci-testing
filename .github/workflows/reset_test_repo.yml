@@ -47,6 +47,9 @@ jobs:
           echo "Adding introductory text to README.md"
           echo -e "# Not intended for Development\nThis is a testing repository for github actions.\nChanges in this repository are likely to be reset by automanted testing procedures.\nDon't use this repository for any development - use ayon/ci-tools instead." > README.md
 
+          git config user.name "${{ secrets.CI_USER }}"
+          git config user.email "${{ secrets.CI_EMAIL }}"
+
           # Commit and push changes
           git commit -m "Add warning information to readme."
           git push origin development
