@@ -49,6 +49,7 @@ jobs:
 
           git config user.name "${{ secrets.CI_USER }}"
           git config user.email "${{ secrets.CI_EMAIL }}"
+          git add README.md
 
           # Commit and push changes
           git commit -m "Add warning information to readme."
