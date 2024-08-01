@@ -42,8 +42,7 @@ jobs:
 
       - name: Add ${{ secrets.CI_USER }} as repo collaborator
         run: |
-          gh api -X PUT repos/:{{ env.TARGET_REPO }}/collaborators/${{ secrets.CI_USER }}
-          # gh repo add-collaborator ${{ env.TARGET_REPO }} ${{ secrets.CI_USER }} --permission write
+          gh api -X PUT repos/{{ env.TARGET_REPO }}/collaborators/${{ secrets.CI_USER }}
 
   prepare-readme:
     runs-on: ubuntu-latest
