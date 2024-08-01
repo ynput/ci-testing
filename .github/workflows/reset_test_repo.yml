@@ -47,6 +47,7 @@ jobs:
   prepare-readme:
     runs-on: ubuntu-latest
     needs: reset-test-repo
+    if: false
 
     steps:
       - name: Checkout ${{ env.TARGET_REPO }} repo
