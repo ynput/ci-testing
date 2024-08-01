@@ -5,7 +5,6 @@ on:
     # TODO add input for pre-calculated version
     # TODO add trigger branch (develop) to gh comamnds
 env:
-  zip_artifact: "test-zip"
   LABEL_DELIMITTER: ", "
   GH_TOKEN: ${{ secrets.YNPUT_BOT_TOKEN }}
 
@@ -193,7 +192,7 @@ jobs:
 
   build-from-main:
     runs-on: ubuntu-latest
-    needs: 
+    needs:
       - merge-to-main
       - init-version-tag
 
@@ -204,17 +203,27 @@ jobs:
           ref: ${{ vars.MAIN_BRANCH }}
           fetch-depth: 0
 
-      # INFO placeholder artifact for repo-dependent modification
+      - name: Get artifact name
+        id: artifact
+        run: |
+          name=$(grep -oP '^version\s*=\s*"\K[^"]+' package.py)
+          version=$(grep -oP '^version\s*=\s*"\K[^"]+' package.py)
+
+          echo "name=$name" >> $GITHUB_OUTPUT
+          echo "version=$version" >> $GITHUB_OUTPUT
+
       - name: Create artifacts
         run: |
-          zip -r ${{ vars.ARTIFACT_FILE_NAME }} . -x "*/\.*"
+          python package.py --output_dir artifact
 
       - name: 🔼 Upload zip artifacts
+        env:
+          FILE: ${{ steps.artifact.outputs.name }}-${{ steps.artifact.outputs.version }}
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.zip_artifact }}
           path: |
-            ${{ vars.ARTIFACT_FILE_NAME }}
+            artifact/${{ env.FILE }}
 
 
   create-release:
