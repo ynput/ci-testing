@@ -4,6 +4,8 @@ on:
   workflow_dispatch:
     # TODO add input for pre-calculated version
     # TODO add trigger branch (develop) to gh comamnds
+  workflow_call:
+
 env:
   LABEL_DELIMITTER: ", "
   GH_TOKEN: ${{ secrets.YNPUT_BOT_TOKEN }}
