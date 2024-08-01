@@ -61,7 +61,6 @@ jobs:
           echo $(ls -la)
 
       - name: Adjust readme
-        if: false
         run: |
           # Add text to the beginning of README.md
           echo "Adding warning to README.md"
