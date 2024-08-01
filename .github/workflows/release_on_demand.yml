@@ -24,7 +24,7 @@ jobs:
           # INFO Check for existing releases
           rel_list=$(gh release list --limit 1 --repo ${{ github.repository }})
           if [ -z "$rel_list" ]; then
-            echo "::error::No releases found for ${{ github.repository }}. Pls use the `initial release trigger` instead."
+            echo "::error::No releases found for ${{ github.repository }}. Pls use the \`initial release trigger\` instead."
             exit 1
           fi
 
