@@ -5,10 +5,16 @@ on:
     # TODO add input for pre-calculated version
     # TODO add trigger branch (develop) to gh comamnds
   workflow_call:
+    inputs:
+      gh_token:
+        type: string
+        required: true
+      
+
 
 env:
   LABEL_DELIMITTER: ", "
-  GH_TOKEN: ${{ secrets.YNPUT_BOT_TOKEN }}
+  GH_TOKEN: ${{ secrets.YNPUT_BOT_TOKEN || inputs.gh_token }}
 
 jobs:
   get-existing-releases:
