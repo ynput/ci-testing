@@ -42,7 +42,7 @@ jobs:
 
       - name: Add ${{ secrets.CI_USER }} as repo collaborator
         run: |
-          gh api -X PUT repos/{{ env.TARGET_REPO }}/collaborators/${{ secrets.CI_USER }}
+          gh api -X PUT repos/${{ env.TARGET_REPO }}/collaborators/${{ secrets.CI_USER }}
 
   prepare-readme:
     runs-on: ubuntu-latest
