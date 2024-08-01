@@ -40,6 +40,10 @@ jobs:
         run: |
           gh api repos/${{ env.TARGET_REPO }}/branches --jq '.[].name' 
 
+  prepare-readme:
+    runs-on: ubuntu-latest
+      
+    steps:
       - name: Checkout ${{ env.TARGET_REPO }} repo
         uses: actions/checkout@v4
         with:
@@ -51,11 +55,12 @@ jobs:
           echo $(pwd)
           echo $(ls -la)
 
-      - name: Add ${{ env.BOT_NAME }} as repo collaborator
+      - name: Add ${{ secrets.CI_USER }} as repo collaborator
         run: |
           gh repo add-collaborator ${{ env.TARGET_REPO }} ${{ secrets.CI_USER }} --permission write
 
       - name: Adjust readme
+        if: false
         run: |
           # Add text to the beginning of README.md
           echo "Adding warning to README.md"
