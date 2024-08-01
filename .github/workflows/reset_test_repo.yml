@@ -38,7 +38,12 @@ jobs:
 
       - name: Show branches
         run: |
-          gh api repos/${{ env.TARGET_REPO }}/branches --jq '.[].name' 
+          gh api repos/${{ env.TARGET_REPO }}/branches --jq '.[].name'
+
+      - name: Add ${{ secrets.CI_USER }} as repo collaborator
+        run: |
+          gh api -X PUT repos/:{{ env.TARGET_REPO }}/collaborators/${{ secrets.CI_USER }}
+          # gh repo add-collaborator ${{ env.TARGET_REPO }} ${{ secrets.CI_USER }} --permission write
 
   prepare-readme:
     runs-on: ubuntu-latest
@@ -54,10 +59,6 @@ jobs:
         run: |
           echo $(pwd)
           echo $(ls -la)
-
-      - name: Add ${{ secrets.CI_USER }} as repo collaborator
-        run: |
-          gh repo add-collaborator ${{ env.TARGET_REPO }} ${{ secrets.CI_USER }} --permission write
 
       - name: Adjust readme
         if: false
