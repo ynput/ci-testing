@@ -24,7 +24,7 @@ env:
   LABEL_DELIMITTER: ", "
   # get token from secrets or input
   GH_TOKEN: ${{ secrets.YNPUT_BOT_TOKEN || secrets.token }}
-  GH_USER: ${{ secrets.CI_USER || secrets.token }}
+  GH_USER: ${{ secrets.CI_USER || secrets.user }}
   GH_EMAIL: ${{ secrets.CI_EMAIL || secrets.email }}
   MAJOR: ${{ vars.MAJOR || inputs.major || 0 }}
   MINOR: ${{ vars.MINOR || inputs.minor || 1 }}
