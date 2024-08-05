@@ -74,12 +74,12 @@ jobs:
         run: |
           git pull origin ${{ github.ref_name }}
           git merge --no-ff origin/${{ github.ref_name }} -m "[Automated] Merged ${{ github.ref_name }} -> ${{ vars.MAIN_BRANCH }}"
-      
+
       # TODO implement this using gh command
       - name: 🔏 Push to protected main branch
         uses: CasperWA/push-protected@v2.15.0
         with:
-          token: ${{ secrets.YNPUT_BOT_TOKEN }}
+          token: ${{ secrets.GH_TOKEN }}
           branch: ${{ vars.MAIN_BRANCH }}
           tags: true
           unprotect_reviews: true
