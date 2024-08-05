@@ -83,7 +83,7 @@ jobs:
     needs: get-latest-releases
     # TODO research if empty string or no assignment works better
     outputs:
-      version-increment: ${{ steps.valid_version_label.outputs.version_increment || null }}
+      version-increment: ${{ steps.valid_version_label.outputs.version_increment || false }}
 
     steps:
       - name: 📅 Get the latest release date
@@ -134,7 +134,12 @@ jobs:
               exit 0
             fi
           done
-          
+        
+          if -z label_list: then
+            echo "::warning::No labels found."
+            exit 0
+          fi
+
           exit 0
 
       - name: ❗ Validate labels
@@ -157,13 +162,8 @@ jobs:
       version_tag: "${{ steps.set_tag.outputs.major }}.${{ steps.set_tag.outputs.minor }}.${{ steps.set_tag.outputs.patch }}"
 
     steps:
-      - name: Show increment value
-        run: |
-          echo ${{ env.VERSION_INCREMENT }}
-
       # TODO dive into the action as reference to implement custom actions
       - name: 🔼 Get next Version Tag
-        if: ${{ env.VERSION_INCREMENT }}
         uses: reecetech/version-increment@2024.4.4
         id: calculated_version_tag
         with:
@@ -174,11 +174,10 @@ jobs:
 
       - name: Set Version Tag
         id: set_tag
-        # TODO remove logical OR option if not neccesary anymore
         run: |
-          echo "MAJOR=${{ steps.calculated_version_tag.outputs.major-version || env.MAJOR }}" >> $GITHUB_ENV
-          echo "MINOR=${{ steps.calculated_version_tag.outputs.minor-version || env.MINOR }}" >> $GITHUB_ENV
-          echo "PATCH=${{ steps.calculated_version_tag.outputs.patch-version || env.PATCH }}" >> $GITHUB_ENV
+          echo "MAJOR=${{ steps.calculated_version_tag.outputs.major-version }}" >> $GITHUB_ENV
+          echo "MINOR=${{ steps.calculated_version_tag.outputs.minor-version }}" >> $GITHUB_ENV
+          echo "PATCH=${{ steps.calculated_version_tag.outputs.patch-version }}" >> $GITHUB_ENV
 
 
   build-from-main:
