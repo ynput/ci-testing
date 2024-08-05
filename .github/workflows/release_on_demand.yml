@@ -139,7 +139,7 @@ jobs:
           exit 0
 
       - name: ❗ Validate labels
-        if: ${{ steps.last_release_date.outputs.last_release_date }}
+        if: ${{ steps.last_release_date.outputs.last_release_date }} != ""
         run: |
           if [ -z "${{ steps.valid_version_label.outputs.version_increment }}" && "${{ steps.last_release_date.outputs.last_release_date }}"]; then
             # TODO Format using line breaks - not supported by annotations
@@ -151,7 +151,7 @@ jobs:
   update-version-tag:
     runs-on: ubuntu-latest
     needs: get-version-increment
-    if: "${{ needs.get-version-increment.outputs.version-increment }}"
+    if: ${{ needs.get-version-increment.outputs.version-increment }} != ""
     env:
       VERSION_INCREMENT: ${{needs.get-version-increment.outputs.version-increment}}
     outputs:
@@ -170,6 +170,7 @@ jobs:
 
       - name: Set Version Tag
         id: set_tag
+        # TODO remove logical OR option if not neccesary anymore
         run: |
           echo "MAJOR=${{ steps.calculated_version_tag.outputs.major-version || env.MAJOR }}" >> $GITHUB_ENV
           echo "MINOR=${{ steps.calculated_version_tag.outputs.minor-version || env.MINOR }}" >> $GITHUB_ENV
