@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # TODO implement early return to check aginst list of testing repos
       - name: Check for existing repo
         id: repo-check
         run: |
