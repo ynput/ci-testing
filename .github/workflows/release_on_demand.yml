@@ -133,7 +133,8 @@ jobs:
               exit 0
             fi
           done
-
+          
+          # TODO research if empty string or no assignment works better 
           echo "version_increment=''" >> $GITHUB_OUTPUT
           exit 0
 
@@ -150,7 +151,7 @@ jobs:
   update-version-tag:
     runs-on: ubuntu-latest
     needs: get-version-increment
-    if: ${{needs.get-version-increment.outputs.version-increment}}
+    if: "${{ needs.get-version-increment.outputs.version-increment }}"
     env:
       VERSION_INCREMENT: ${{needs.get-version-increment.outputs.version-increment}}
     outputs:
