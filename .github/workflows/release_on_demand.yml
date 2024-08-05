@@ -158,6 +158,10 @@ jobs:
       version_tag: "${{ steps.set_tag.outputs.major }}.${{ steps.set_tag.outputs.minor }}.${{ steps.set_tag.outputs.patch }}"
 
     steps:
+      - name: Show increment value
+        run: |
+          echo "${{ env.VERSION_INCREMENT }}"
+
       # TODO dive into the action as reference to implement custom actions
       - name: 🔼 Get next Version Tag
         uses: reecetech/version-increment@2024.4.4
