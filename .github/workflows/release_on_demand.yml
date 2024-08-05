@@ -142,7 +142,7 @@ jobs:
             fi
           done
         
-          if -z label_list: then
+          if -z label_list; then
             echo "::warning::No labels found."
             exit 0
           fi
