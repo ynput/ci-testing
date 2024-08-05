@@ -90,7 +90,7 @@ jobs:
     needs: get-latest-releases
     # TODO research if empty string or no assignment works better
     outputs:
-      version-increment: ${{ steps.valid_version_label.outputs.version_increment || false }}
+      version-increment: ${{ steps.valid_version_label.outputs.version_increment || null }}
 
     steps:
       - name: 📅 Get the latest release date
