@@ -164,6 +164,7 @@ jobs:
 
       # TODO dive into the action as reference to implement custom actions
       - name: 🔼 Get next Version Tag
+        if: ${{ env.VERSION_INCREMENT != '' }}
         uses: reecetech/version-increment@2024.4.4
         id: calculated_version_tag
         with:
