@@ -25,32 +25,64 @@ env:
   GH_TOKEN: ${{ secrets.token || secrets.YNPUT_BOT_TOKEN}}
   GH_USER: ${{ secrets.user || secrets.CI_USER }}
   GH_EMAIL: ${{ secrets.email || secrets.CI_EMAIL }}
-  MAJOR: ${{ vars.MAJOR || inputs.major || 0 }}
-  MINOR: ${{ vars.MINOR || inputs.minor || 1 }}
-  PATCH: ${{ vars.PATCH || inputs.patch || 0 }}
-  ARTIFACT_NAME: "addon-package"
+  MAJOR: ${{ inputs.major || vars.MAJOR || 0 }}
+  MINOR: ${{ inputs.minor || vars.MINOR || 1 }}
+  PATCH: ${{ inputs.patch || vars.PATCH || 0 }}
+  ARTIFACT_NAME: "$(basename '${{ github.repository }}')-package"
 
 jobs:
   get-latest-releases:
     runs-on: ubuntu-latest
+    outputs:
+      name: ${{ steps.latest-release.outputs.name }}
+      tag: ${{ steps.latest-release.outputs.tag }}
+      date: ${{ steps.latest-release.outputs.date }}
+      draft: ${{ steps.latest-release.outputs.draft }}
+      latest: ${{ steps.latest-release.outputs.latest }}
 
     steps:
-      - name: Get existing releases
+      - name: Get latest release
+        id: latest-release
+        # TODO test what happens if no release is present
         run: |
-          # INFO Check for existing releases
-          rel_list=$(gh release list --limit 1 --repo ${{ github.repository }})
-          if [ -z "$rel_list" ]; then
+          release_data=$(gh release list --limit 1 --repo ynput/ayon-addon-action-testing --json createdAt,isDraft,isLatest,isPrerelease,name,publishedAt,tagName)
+          echo "release_data=$release_data" >> $GITHUB_OUTPUT
+
+      - name: Unpack release data
+        env:
+          release_data: ${{ steps.latest-release.outputs.release_data }}
+        run: |
+          date=$(echo "$release_data" | jq .publishedAt)
+          tag=$(echo "$release_data" | jq .tagName)
+          name=$(echo "$release_data" | jq .name)
+          draft=$(echo "$release_data" | jq .isDraft)
+          latest=$(echo "$release_data" | jq .isLatest)
+
+          echo "date=$date" >> GITHUB_OUTPUT
+          echo "tag=$tag" >> GITHUB_OUTPUT
+          echo "name=$name" >> GITHUB_OUTPUT
+          echo "draft=$draft" >> GITHUB_OUTPUT
+          echo "latest=$latest" >> GITHUB_OUTPUT
+
+
+      - name: Test existing release
+        run: |
+          if [ -z "${{ steps.latest-release.outputs.date }}" ]; then
             echo "::warning::No releases found for ${{ github.repository }}. Setting default version '${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}'"
             exit 0
           fi
 
-      - name: Get release drafts
+      - name: Test release drafts
         run: |
-          draft_list=$(gh release list --repo ${{ github.repository }} --json isDraft,name --jq '.[] | select(.isDraft == true) | .name')
-          if [ -n "$draft_list" ]; then
+          if [ -n "${{ steps.latest-release.outputs.draft}}" ]; then
             echo "::warning::Release draft already present: $draft_list"
             exit 0
           fi
+
+      - name: Fail Succesfully
+        run: |
+          echo "Failed Successfully"
+          exit 1
 
   merge-to-main:
     runs-on: ubuntu-latest
@@ -224,6 +256,11 @@ jobs:
           echo "file_name=${{ steps.artifact.outputs.name }}-${{ steps.artifact.outputs.version }}.zip" >> $GITHUB_OUTPUT
 
       # TODO update version number in package.py
+      - name: Update package.py version to ${{ next_version }}
+        # TODO figure out next version before this
+
+        # TODO update version in package.py
+        
 
       - name: 🔼 Upload zip artifacts
         uses: actions/upload-artifact@v4
