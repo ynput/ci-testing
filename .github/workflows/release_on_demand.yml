@@ -23,9 +23,9 @@ on:
 env:
   LABEL_DELIMITTER: ", "
   # get token from secrets or input
-  GH_TOKEN: ${{ secrets.YNPUT_BOT_TOKEN || secrets.token }}
-  GH_USER: ${{ secrets.CI_USER || secrets.user }}
-  GH_EMAIL: ${{ secrets.CI_EMAIL || secrets.email }}
+  GH_TOKEN: ${{ secrets.token || secrets.YNPUT_BOT_TOKEN}}
+  GH_USER: ${{ secrets.user || secrets.CI_USER }}
+  GH_EMAIL: ${{ secrets.email || secrets.CI_EMAIL }}
   MAJOR: ${{ vars.MAJOR || inputs.major || 0 }}
   MINOR: ${{ vars.MINOR || inputs.minor || 1 }}
   PATCH: ${{ vars.PATCH || inputs.patch || 0 }}
@@ -269,7 +269,7 @@ jobs:
           tag: "${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}"
           generateReleaseNotes: true
           artifacts: ${{ vars.ARTIFACT_FILE_NAME }}
-          token: ${{ secrets.YNPUT_BOT_TOKEN }}
+          token: ${{ env.GH_TOKEN }}
           draft: true
 
 
@@ -278,7 +278,7 @@ jobs:
     needs:
       - create-release
       - update-version-tag
-    # INFO this will casue an error if a release draft with the same tag already exists
+    # INFO this will cause an error if a release draft with the same tag already exists
     steps:
       - name: Fetch Latest Release Draft
         id: fetch-latest-release-draft
