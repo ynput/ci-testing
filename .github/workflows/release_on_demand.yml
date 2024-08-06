@@ -49,9 +49,9 @@ jobs:
           echo "release_data=$release_data" >> $GITHUB_OUTPUT
 
       - name: Unpack release data
-        env:
-          release_data: ${{ steps.latest-release.outputs.release_data }}
         run: |
+          release_data=${{ steps.latest-release.outputs.release_data }}
+
           date=$(echo "$release_data" | jq .publishedAt)
           tag=$(echo "$release_data" | jq .tagName)
           name=$(echo "$release_data" | jq .name)
