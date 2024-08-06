@@ -68,7 +68,7 @@ jobs:
 
       - name: Test release drafts
         run: |
-          if [ -n "${{ steps.unpack-release.outputs.draft}}" ]; then
+          if [ -n "${{ steps.unpack-release.outputs.draft }}" ]; then
             echo "::warning::Release draft already present: $draft_list"
             exit 0
           fi
