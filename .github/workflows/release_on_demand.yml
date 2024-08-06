@@ -152,7 +152,7 @@ jobs:
       - name: ❗ Validate labels
         if: ${{ steps.last_release_date.outputs.last_release_date }}
         run: |
-          if [ -z "${{ steps.valid_version_label.outputs.version_increment }}" && "${{ steps.last_release_date.outputs.last_release_date }}"]; then
+          if [ -z "${{ steps.valid_version_label.outputs.version_increment }}" ] && [ -n "${{ steps.last_release_date.outputs.last_release_date }}" ]; then
             # TODO Format using line breaks - not supported by annotations
             echo "::error:: No valid versioning labels found in PRs. Only found these labels: ${{ steps.valid_version_label.outputs.pr_labels }}. Are you sure you want to create a new release?"
             exit 1
