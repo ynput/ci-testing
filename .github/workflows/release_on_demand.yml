@@ -213,7 +213,7 @@ jobs:
         id: create-artifact
         run: |
           python package.py --output_dir artifact
-          echo "file_name=${{ steps.artifact.outputs.name }}-${{ steps.artifact.outputs.version }}.zip" >> GITHUB_OUTPUT
+          echo "file_name=${{ steps.artifact.outputs.name }}-${{ steps.artifact.outputs.version }}.zip" >> $GITHUB_OUTPUT
 
       # TODO update version number in package.py
 
