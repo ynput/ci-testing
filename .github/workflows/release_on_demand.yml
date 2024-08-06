@@ -152,12 +152,12 @@ jobs:
         env:
           LABEL_LIST: ${{ steps.merged_pr_labels.outputs.label_list }}
         run: |
-          if -z "${{ env.LABEL_LIST }}"; then
+          if [ -z "${{ env.LABEL_LIST }}" ]; then
             echo "::error:: No PR labels found. Can't create a new release."
             exit 1
           fi
 
-          if -z "${{ steps.valid_version_label.outputs.version_increment }}"; then
+          if [ -z "${{ steps.valid_version_label.outputs.version_increment }}" ]; then
             # TODO Format using line breaks - not supported by annotations
             echo "::error:: No valid versioning labels found in PRs. Only found these labels: ${{ steps.valid_version_label.outputs.pr_labels }}. Are you sure you want to create a new release?"
             exit 1
