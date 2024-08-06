@@ -50,7 +50,7 @@ jobs:
 
       - name: Unpack release data
         run: |
-          release_data=${{ steps.latest-release.outputs.release_data }}
+          release_data=echo "${{ steps.latest-release.outputs.release_data }}" | jq
 
           date=$(echo "$release_data" | jq .publishedAt)
           tag=$(echo "$release_data" | jq .tagName)
@@ -63,7 +63,6 @@ jobs:
           echo "name=$name" >> GITHUB_OUTPUT
           echo "draft=$draft" >> GITHUB_OUTPUT
           echo "latest=$latest" >> GITHUB_OUTPUT
-
 
       - name: Test existing release
         run: |
