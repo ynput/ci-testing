@@ -190,6 +190,8 @@ jobs:
     needs:
       - merge-to-main
       - update-version-tag
+    outputs:
+      artifact_file: ${{ steps.create-artifact.outputs.file_name }}
 
     steps:
       - name: ⬇️ Checkout ${{ vars.MAIN_BRANCH }}
@@ -208,17 +210,19 @@ jobs:
           echo "version=$version" >> $GITHUB_OUTPUT
 
       - name: Create artifacts
-        run: |
-          python package.py --output_dir artifact
-
-      - name: 🔼 Upload zip artifacts
+        id: create-artifact
         env:
           FILE: ${{ steps.artifact.outputs.name }}-${{ steps.artifact.outputs.version }}
+        run: |
+          python package.py --output_dir artifact
+          echo "file_name=${{ env.FILE }}.zip" >> GITHUB_OUTPUT
+
+      - name: 🔼 Upload zip artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: |
-            artifact/${{ env.FILE }}
+            artifact/${{ steps.create-artifact.outputs.file_name }}
 
 
   update-develop:
