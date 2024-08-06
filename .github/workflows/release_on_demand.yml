@@ -160,6 +160,7 @@ jobs:
 
 
   update-version-tag:
+    # TODO ctreamline this execution to not require empty runs
     runs-on: ubuntu-latest
     needs: get-version-increment
     env:
