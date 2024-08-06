@@ -212,10 +212,10 @@ jobs:
       - name: Create artifacts
         id: create-artifact
         env:
-          FILE: ${{ steps.artifact.outputs.name }}-${{ steps.artifact.outputs.version }}
+          FILE: "${{ steps.artifact.outputs.name }}-${{ steps.artifact.outputs.version }}.zip"
         run: |
           python package.py --output_dir artifact
-          echo "file_name=${{ env.FILE }}.zip" >> GITHUB_OUTPUT
+          echo "file_name=${{ env.FILE }}" >> GITHUB_OUTPUT
 
       - name: 🔼 Upload zip artifacts
         uses: actions/upload-artifact@v4
