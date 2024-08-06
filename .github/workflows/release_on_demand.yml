@@ -45,7 +45,7 @@ jobs:
         id: latest-release
         # TODO test what happens if no release is present
         run: |
-          release_data=$(gh release list --limit 1 --repo ynput/ayon-addon-action-testing --json createdAt,isDraft,isLatest,isPrerelease,name,publishedAt,tagName | jq ".[0]")
+          release_data=$(gh release list --limit 1 --repo ynput/ayon-addon-action-testing --json createdAt,isDraft,isLatest,isPrerelease,name,publishedAt,tagName | jq -c ".[0]")
           echo "release_data=$release_data" >> $GITHUB_OUTPUT
 
       - name: Unpack release data
@@ -81,7 +81,7 @@ jobs:
 
       - name: Fail Succesfully
         run: |
-          echo "Failed Successfully"
+          echo "::error::Failed Successfully"
           exit 1
 
   merge-to-main:
