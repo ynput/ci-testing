@@ -53,11 +53,11 @@ jobs:
         run: |
           release_data=echo "${{ steps.latest-release.outputs.release_data }}" | jq
 
-          echo "$(echo "$release_data" | jq .publishedAt)" >> GITHUB_OUTPUT
-          echo "$(echo "$release_data" | jq .tagName)" >> GITHUB_OUTPUT
-          echo "$(echo "$release_data" | jq .name)" >> GITHUB_OUTPUT
-          echo "$(echo "$release_data" | jq .isDraft)" >> GITHUB_OUTPUT
-          echo "$(echo "$release_data" | jq .isLatest)" >> GITHUB_OUTPUT
+          echo "date=$(echo "$release_data" | jq .publishedAt)" >> GITHUB_OUTPUT
+          echo "tag=$(echo "$release_data" | jq .tagName)" >> GITHUB_OUTPUT
+          echo "name=$(echo "$release_data" | jq .name)" >> GITHUB_OUTPUT
+          echo "draft=$(echo "$release_data" | jq .isDraft)" >> GITHUB_OUTPUT
+          echo "latest=$(echo "$release_data" | jq .isLatest)" >> GITHUB_OUTPUT
 
       - name: Test existing release
         run: |
