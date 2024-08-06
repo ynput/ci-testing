@@ -256,7 +256,7 @@ jobs:
           echo "file_name=${{ steps.artifact.outputs.name }}-${{ steps.artifact.outputs.version }}.zip" >> $GITHUB_OUTPUT
 
       # TODO update version number in package.py
-      - name: Update package.py version to ${{ next_version }}
+      # - name: Update package.py version to ${{ next_version }}
         # TODO figure out next version before this
 
         # TODO update version in package.py
