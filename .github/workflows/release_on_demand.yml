@@ -34,11 +34,11 @@ jobs:
   get-latest-releases:
     runs-on: ubuntu-latest
     outputs:
-      name: ${{ steps.latest-release.outputs.name }}
-      tag: ${{ steps.latest-release.outputs.tag }}
-      date: ${{ steps.latest-release.outputs.date }}
-      draft: ${{ steps.latest-release.outputs.draft }}
-      latest: ${{ steps.latest-release.outputs.latest }}
+      name: ${{ steps.unpack-release.outputs.name }}
+      tag: ${{ steps.unpack-release.outputs.tag }}
+      date: ${{ steps.unpack-release.outputs.date }}
+      draft: ${{ steps.unpack-release.outputs.draft }}
+      latest: ${{ steps.unpack-release.outputs.latest }}
 
     steps:
       - name: Get latest release
@@ -49,24 +49,19 @@ jobs:
           echo "release_data=$release_data" >> $GITHUB_OUTPUT
 
       - name: Unpack release data
+        id: unpack-release
         run: |
           release_data=echo "${{ steps.latest-release.outputs.release_data }}" | jq
 
-          date=$(echo "$release_data" | jq .publishedAt)
-          tag=$(echo "$release_data" | jq .tagName)
-          name=$(echo "$release_data" | jq .name)
-          draft=$(echo "$release_data" | jq .isDraft)
-          latest=$(echo "$release_data" | jq .isLatest)
-
-          echo "date=$date" >> GITHUB_OUTPUT
-          echo "tag=$tag" >> GITHUB_OUTPUT
-          echo "name=$name" >> GITHUB_OUTPUT
-          echo "draft=$draft" >> GITHUB_OUTPUT
-          echo "latest=$latest" >> GITHUB_OUTPUT
+          echo "$(echo "$release_data" | jq .publishedAt)" >> GITHUB_OUTPUT
+          echo "$(echo "$release_data" | jq .tagName)" >> GITHUB_OUTPUT
+          echo "$(echo "$release_data" | jq .name)" >> GITHUB_OUTPUT
+          echo "$(echo "$release_data" | jq .isDraft)" >> GITHUB_OUTPUT
+          echo "$(echo "$release_data" | jq .isLatest)" >> GITHUB_OUTPUT
 
       - name: Test existing release
         run: |
-          if [ -z "${{ steps.latest-release.outputs.date }}" ]; then
+          if [ -z "${{ steps.latest-release.outputs.release_data }}" ]; then
             echo "::warning::No releases found for ${{ github.repository }}. Setting default version '${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}'"
             exit 0
           fi
