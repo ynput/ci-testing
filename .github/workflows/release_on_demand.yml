@@ -201,7 +201,7 @@ jobs:
       - name: Get artifact name
         id: artifact
         run: |
-          name=$(grep -oP '^version\s*=\s*"\K[^"]+' package.py)
+          name=$(grep -oP '^name\s*=\s*"\K[^"]+' package.py)
           version=$(grep -oP '^version\s*=\s*"\K[^"]+' package.py)
 
           echo "name=$name" >> $GITHUB_OUTPUT
