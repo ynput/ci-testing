@@ -187,6 +187,8 @@ jobs:
 
   build-from-main:
     runs-on: ubuntu-latest
+    env:
+      OUTPUT_DIR: "artifact"
     needs:
       - merge-to-main
       - update-version-tag
@@ -212,7 +214,7 @@ jobs:
       - name: Create artifacts
         id: create-artifact
         run: |
-          python package.py --output_dir artifact
+          python create_package.py --output ${{ env.OUTPUT_DIR }}
           echo "file_name=${{ steps.artifact.outputs.name }}-${{ steps.artifact.outputs.version }}.zip" >> $GITHUB_OUTPUT
 
       # TODO update version number in package.py
@@ -222,7 +224,7 @@ jobs:
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: |
-            artifact/${{ steps.create-artifact.outputs.file_name }}
+            ${{ env.OUTPUT_DIR }}/${{ steps.create-artifact.outputs.file_name }}
 
 
   update-develop:
