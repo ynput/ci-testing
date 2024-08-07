@@ -66,6 +66,7 @@ jobs:
 
       - name: Show extracted values
         run: |
+          echo "release: ${{ steps.latest-release.outputs.release }}"
           echo "id: ${{ steps.unpack-release.outputs.id }}"
           echo "date: ${{ steps.unpack-release.outputs.publishedAt }}"
           echo "tag: ${{ steps.unpack-release.outputs.tagName }}"
