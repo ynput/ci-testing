@@ -60,7 +60,7 @@ jobs:
 
           key_list=$(IFS=,; echo "${!release_option_map[*]}")
           echo "$key_list"
-          release=$(gh release view --repo ${{ github.repository }} --json $key_list 2>/dev/null || true)
+          release=$(gh release view --repo ${{ github.repository }} --json $key_list)  # 2>/dev/null || true
 
           echo "release: $release"
 
