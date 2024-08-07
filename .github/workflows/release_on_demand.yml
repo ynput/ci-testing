@@ -48,35 +48,27 @@ jobs:
       - name: Get latest release
         id: latest-release
         run: |
+          # TODO implement fields as mapping
           release=$(gh release view --repo ${{ github.repository }} --json id,createdAt,isDraft,isPrerelease,name,publishedAt,tagName 2>/dev/null || true)
-          echo "release: $release"
-          echo "date=$(echo $release | jq .publishedAt)"
-          echo "release=$release" >> $GITHUB_OUTPUT
 
-      - name: Unpack release data
-        id: unpack-release
-        run: |
-          release=${{ steps.latest-release.outputs.release }} | jq
-
-          # echo "id=$(echo '$release' | jq -r .id)" >> $GITHUB_OUTPUT
-          echo "date=$(echo $release | jq .publishedAt)" >> $GITHUB_OUTPUT
-          # echo "tag=$(echo '$release' | jq -r .tagName)" >> $GITHUB_OUTPUT
-          # echo "name=$(echo '$release' | jq -r .name)" >> $GITHUB_OUTPUT
-          # echo "draft=$(echo '$release' | jq -r .isDraft)" >> $GITHUB_OUTPUT
-          # echo "pre_release=$(echo '$release' | jq -r .isPrerelease)" >> $GITHUB_OUTPUT
+          echo "id=$(echo '$release' | jq -r .id)" >> $GITHUB_OUTPUT
+          echo "date=$(echo $release | jq -r .publishedAt)" >> $GITHUB_OUTPUT
+          echo "tag=$(echo '$release' | jq -r .tagName)" >> $GITHUB_OUTPUT
+          echo "name=$(echo '$release' | jq -r .name)" >> $GITHUB_OUTPUT
+          echo "draft=$(echo '$release' | jq -r .isDraft)" >> $GITHUB_OUTPUT
+          echo "pre_release=$(echo '$release' | jq -r .isPrerelease)" >> $GITHUB_OUTPUT
 
       - name: Show extracted values
         run: |
-          # echo "release: ${{ steps.latest-release.outputs.release }}"
-          # echo "id: ${{ steps.unpack-release.outputs.id }}"
-          echo "date: ${{ steps.unpack-release.outputs.publishedAt }}"
-          # echo "tag: ${{ steps.unpack-release.outputs.tagName }}"
-          # echo "name: ${{ steps.unpack-release.outputs.name }}"
-          # echo "draft: ${{ steps.unpack-release.outputs.isDraft }}"
-          # echo "pre_release: ${{ steps.unpack-release.outputs.pre_release }}"
+          echo "id: ${{ steps.latest-release.outputs.id }}"
+          echo "date: ${{ steps.latest-release.outputs.publishedAt }}"
+          echo "tag: ${{ steps.latest-release.outputs.tagName }}"
+          echo "name: ${{ steps.latest-release.outputs.name }}"
+          echo "draft: ${{ steps.latest-release.outputs.isDraft }}"
+          echo "pre_release: ${{ steps.latest-release.outputs.pre_release }}"
 
       - name: Test existing release
-        if: ${{ ! steps.latest-release.outputs.release }}
+        if: ${{ ! steps.latest-release.outputs.date }}
         run: |
           echo "::warning::No releases found for ${{ github.repository }}. Setting default version '${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}'"
           exit 0
