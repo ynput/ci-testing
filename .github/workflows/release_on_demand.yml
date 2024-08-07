@@ -31,7 +31,7 @@ env:
   ARTIFACT_NAME: "$(basename '${{ github.repository }}')-package"
 
 jobs:
-  get-latest-releases:
+  get-latest-release:
     runs-on: ubuntu-latest
     outputs:
       name: ${{ steps.unpack-release.outputs.name }}
@@ -43,11 +43,10 @@ jobs:
     steps:
       - name: Get latest release
         id: latest-release
-        # TODO test what happens if no release is present
         run: |
           release=$(gh release view --repo ${{ github.repository }} 2>/dev/null || true)
           release_data=$(gh release list --limit 1 --repo ${{ github.repository }} --json createdAt,isDraft,isLatest,isPrerelease,name,publishedAt,tagName | jq -c ".[0]")
-          
+
           echo "release=$release" >> $GITHUB_OUTPUT
           echo "release_data=$release_data" >> $GITHUB_OUTPUT
 
@@ -74,14 +73,9 @@ jobs:
           echo "::warning::Release draft already present: ${{ steps.unpack-release.outputs.name }}"
           exit 0
 
-      - name: Fail Succesfully
-        run: |
-          echo "::error::Failed Successfully"
-          exit 1
 
   merge-to-main:
     runs-on: ubuntu-latest
-    needs: get-latest-releases
 
     steps:
       - name: ⬇️ Checkout ${{ vars.MAIN_BRANCH }}
@@ -112,22 +106,15 @@ jobs:
 
   get-version-increment:
     runs-on: ubuntu-latest
-    needs: get-latest-releases
-    # TODO research if empty string or no assignment works better
+    needs: get-latest-release
     outputs:
       version-increment: ${{ steps.valid_version_label.outputs.version_increment || null }}
 
     steps:
-      - name: 📅 Get the latest release date
-        id: last_release_date
-        run: |
-          last_release=$(gh api repos/${{ github.repository }}/releases --jq '.[] | select(.draft == false) | [.published_at] | @tsv' | awk -F '\t' '{print $1 " " $2 " " $3}' | head -n 1)
-          echo "last_release_date=$last_release" >> $GITHUB_OUTPUT
-
       - name: 🏷️ Get labels of merged PRs since last release
         id: merged_pr_labels
         env:
-          release_date: ${{ steps.last_release_date.outputs.last_release_date }}
+          release_date: ${{ needs.get-latest-release.outputs.date }}
         # INFO last line conversion is required since $GITHUB_OUPUT doesn't except multi-line strings
         run: |
           json_data_pr_labels=$(gh pr list --state merged --search "merged:>=${{ env.release_date }}" --json labels --repo ${{ github.repository }})
@@ -145,7 +132,7 @@ jobs:
           PATCH_LABEL: ${{ vars.PATCH_BUMP_LABEL }}
         run: |
           # INFO convert csv string to bash arrays
-          # TODO fix up first line so they can be handled in a streamilned way
+          # TODO fix up first line so they can be handled in a streamlined way
           IFS=',' read -r -a label_list <<< "${{ env.LABEL_LIST }}"
           IFS='${{ env.LABEL_DELIMITTER }}' read -r -a minor_patterns <<< "${{ env.MINOR_LABEL }}"
           IFS='${{ env.LABEL_DELIMITTER }}' read -r -a patch_patterns <<< "${{ env.PATCH_LABEL }}"
@@ -175,7 +162,7 @@ jobs:
           exit 0
 
       - name: ❗ Validate labels
-        if: ${{ steps.last_release_date.outputs.last_release_date }}
+        if: ${{ needs.get-latest-release.outputs.date}}
         env:
           LABEL_LIST: ${{ steps.merged_pr_labels.outputs.label_list }}
         run: |
