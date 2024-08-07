@@ -3,7 +3,7 @@
 * Test full workflow to block releases > 0.1.0 when no PR labels where found
 * implement PR templates
 * research and implement PR data fetching logic
-* Create filtering method to assign data to releases
+* Create filtering method to [assign data to releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases)
 * Move inital release creation to its own job
 * Test creation of inital version
 * Implement develop-to-main-merge using gh command
