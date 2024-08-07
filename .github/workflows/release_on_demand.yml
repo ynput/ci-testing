@@ -61,14 +61,14 @@ jobs:
 
       - name: Test existing release
         run: |
-          if [ -z "${{ steps.latest-release.outputs.release_data }}" ]; then
+          if [ -z ${{ steps.latest-release.outputs.release_data }} ]; then
             echo "::warning::No releases found for ${{ github.repository }}. Setting default version '${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}'"
             exit 0
           fi
 
       - name: Test release drafts
         run: |
-          if [ -n "${{ steps.unpack-release.outputs.draft }}" ]; then
+          if [ -n ${{ steps.unpack-release.outputs.draft }} ]; then
             echo "::warning::Release draft already present: ${{ steps.unpack-release.outputs.name }}"
             exit 0
           fi
