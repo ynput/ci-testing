@@ -45,14 +45,13 @@ jobs:
         id: latest-release
         # TODO test what happens if no release is present
         run: |
-          release_data=$(gh release list --limit 1 --repo ynput/ayon-addon-action-testing --json createdAt,isDraft,isLatest,isPrerelease,name,publishedAt,tagName | jq -c ".[0]")
+          release_data=$(gh release list --limit 1 --repo ${{ github.repository }} --json createdAt,isDraft,isLatest,isPrerelease,name,publishedAt,tagName | jq -c ".[0]")
           echo "release_data=$release_data" >> $GITHUB_OUTPUT
 
       - name: Unpack release data
         id: unpack-release
         run: |
-          release=$(gh release view --repo ynput/ayon-addon-action-testing)
-        
+          release=$(gh release view --repo ${{ github.repository }} 2>/dev/null)
           release_data=${{ steps.latest-release.outputs.release_data }}
 
           echo "date=$(echo "$release_data" | jq .publishedAt)" >> $GITHUB_OUTPUT
