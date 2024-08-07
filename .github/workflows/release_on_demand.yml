@@ -45,13 +45,15 @@ jobs:
         id: latest-release
         # TODO test what happens if no release is present
         run: |
+          release=$(gh release view --repo ${{ github.repository }} 2>/dev/null)
           release_data=$(gh release list --limit 1 --repo ${{ github.repository }} --json createdAt,isDraft,isLatest,isPrerelease,name,publishedAt,tagName | jq -c ".[0]")
+          
+          echo "release=$release" >> $GITHUB_OUTPUT
           echo "release_data=$release_data" >> $GITHUB_OUTPUT
 
       - name: Unpack release data
         id: unpack-release
         run: |
-          release=$(gh release view --repo ${{ github.repository }} 2>/dev/null)
           release_data=${{ steps.latest-release.outputs.release_data }}
 
           echo "date=$(echo "$release_data" | jq .publishedAt)" >> $GITHUB_OUTPUT
@@ -61,18 +63,16 @@ jobs:
           echo "latest=$(echo "$release_data" | jq .isLatest)" >> $GITHUB_OUTPUT
 
       - name: Test existing release
+        if: ! steps.latest-release.outputs.release
         run: |
-          if [ -z ${{ steps.latest-release.outputs.release }} ]; then
-            echo "::warning::No releases found for ${{ github.repository }}. Setting default version '${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}'"
-            exit 0
-          fi
+          echo "::warning::No releases found for ${{ github.repository }}. Setting default version '${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}'"
+          exit 0
 
       - name: Test release drafts
+        if: steps.unpack-release.outputs.draft != null
         run: |
-          if [ ${{ steps.unpack-release.outputs.draft }} != null ]; then
-            echo "::warning::Release draft already present: ${{ steps.unpack-release.outputs.name }}"
-            exit 0
-          fi
+          echo "::warning::Release draft already present: ${{ steps.unpack-release.outputs.name }}"
+          exit 0
 
       - name: Fail Succesfully
         run: |
