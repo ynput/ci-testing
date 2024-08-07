@@ -34,32 +34,34 @@ jobs:
   get-latest-release:
     runs-on: ubuntu-latest
     outputs:
+      id: ${{ steps.unpack-release.outputs.id }}
       name: ${{ steps.unpack-release.outputs.name }}
       tag: ${{ steps.unpack-release.outputs.tag }}
       date: ${{ steps.unpack-release.outputs.date }}
       draft: ${{ steps.unpack-release.outputs.draft }}
-      latest: ${{ steps.unpack-release.outputs.latest }}
+      pre_release: ${{ steps.unpack-release.outputs.pre_release}}
 
     steps:
       - name: Get latest release
         id: latest-release
         run: |
-          release=$(gh release view --repo ${{ github.repository }} 2>/dev/null || true)
-          release_data=$(gh release list --limit 1 --repo ${{ github.repository }} --json createdAt,isDraft,isLatest,isPrerelease,name,publishedAt,tagName | jq -c ".[0]")
+          release=$(gh release view --repo ${{ github.repository }} --json id,createdAt,isDraft,isPrerelease,name,publishedAt,tagName 2>/dev/null || true)
+          # release_data=$(gh release list --limit 1 --repo ${{ github.repository }} --json createdAt,isDraft,isLatest,isPrerelease,name,publishedAt,tagName | jq -c ".[0]")
 
           echo "release=$release" >> $GITHUB_OUTPUT
-          echo "release_data=$release_data" >> $GITHUB_OUTPUT
+          # echo "release_data=$release_data" >> $GITHUB_OUTPUT
 
       - name: Unpack release data
         id: unpack-release
         run: |
-          release_data=${{ steps.latest-release.outputs.release_data }}
+          release=${{ steps.latest-release.outputs.release }}
 
-          echo "date=$(echo "$release_data" | jq .publishedAt)" >> $GITHUB_OUTPUT
-          echo "tag=$(echo "$release_data" | jq .tagName)" >> $GITHUB_OUTPUT
-          echo "name=$(echo "$release_data" | jq .name)" >> $GITHUB_OUTPUT
-          echo "draft=$(echo "$release_data" | jq .isDraft)" >> $GITHUB_OUTPUT
-          echo "latest=$(echo "$release_data" | jq .isLatest)" >> $GITHUB_OUTPUT
+          echo "id=$(echo "$release" | jq .id)" >> $GITHUB_OUTPUT
+          echo "date=$(echo "$release" | jq .publishedAt)" >> $GITHUB_OUTPUT
+          echo "tag=$(echo "$release" | jq .tagName)" >> $GITHUB_OUTPUT
+          echo "name=$(echo "$release" | jq .name)" >> $GITHUB_OUTPUT
+          echo "draft=$(echo "$release" | jq .isDraft)" >> $GITHUB_OUTPUT
+          echo "pre_release=$(echo "$release" | jq .isPrerelease)" >> $GITHUB_OUTPUT
 
       - name: Test existing release
         if: ${{ ! steps.latest-release.outputs.release }}
@@ -68,7 +70,7 @@ jobs:
           exit 0
 
       - name: Test release drafts
-        if: ${{ steps.unpack-release.outputs.draft != 'null' }}
+        if: ${{ steps.unpack-release.outputs.draft }}
         run: |
           echo "::warning::Release draft already present: ${{ steps.unpack-release.outputs.name }}"
           exit 0
@@ -162,7 +164,7 @@ jobs:
           exit 0
 
       - name: ❗ Validate labels
-        if: ${{ needs.get-latest-release.outputs.date}}
+        if: ${{ needs.get-latest-release.outputs.date }}
         env:
           LABEL_LIST: ${{ steps.merged_pr_labels.outputs.label_list }}
         run: |
