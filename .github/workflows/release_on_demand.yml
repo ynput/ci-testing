@@ -49,7 +49,7 @@ jobs:
         id: latest-release
         run: |
           release=$(gh release view --repo ${{ github.repository }} --json id,createdAt,isDraft,isPrerelease,name,publishedAt,tagName 2>/dev/null || true)
-
+          echo "release: $release"
           echo "release=$release" >> $GITHUB_OUTPUT
 
       - name: Unpack release data
