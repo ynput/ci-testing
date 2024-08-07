@@ -63,7 +63,7 @@ jobs:
           echo "latest=$(echo "$release_data" | jq .isLatest)" >> $GITHUB_OUTPUT
 
       - name: Test existing release
-        if: ! steps.latest-release.outputs.release
+        if: ${{ ! steps.latest-release.outputs.release }}
         run: |
           echo "::warning::No releases found for ${{ github.repository }}. Setting default version '${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}'"
           exit 0
