@@ -51,6 +51,8 @@ jobs:
       - name: Unpack release data
         id: unpack-release
         run: |
+          release=$(gh release view --repo ynput/ayon-addon-action-testing)
+        
           release_data=${{ steps.latest-release.outputs.release_data }}
 
           echo "date=$(echo "$release_data" | jq .publishedAt)" >> $GITHUB_OUTPUT
@@ -61,14 +63,14 @@ jobs:
 
       - name: Test existing release
         run: |
-          if [ -z ${{ steps.latest-release.outputs.release_data }} ]; then
+          if [ -z ${{ steps.latest-release.outputs.release }} ]; then
             echo "::warning::No releases found for ${{ github.repository }}. Setting default version '${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}'"
             exit 0
           fi
 
       - name: Test release drafts
         run: |
-          if [ -n ${{ steps.unpack-release.outputs.draft }} ]; then
+          if [ ${{ steps.unpack-release.outputs.draft }} != null ]; then
             echo "::warning::Release draft already present: ${{ steps.unpack-release.outputs.name }}"
             exit 0
           fi
