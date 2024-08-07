@@ -56,7 +56,7 @@ jobs:
       - name: Unpack release data
         id: unpack-release
         run: |
-          release=${{ steps.latest-release.outputs.release }}
+          release=${{ steps.latest-release.outputs.release }} | jq
 
           # echo "id=$(echo '$release' | jq -r .id)" >> $GITHUB_OUTPUT
           echo "date=$(echo $release | jq .publishedAt)" >> $GITHUB_OUTPUT
