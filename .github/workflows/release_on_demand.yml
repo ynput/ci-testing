@@ -46,10 +46,8 @@ jobs:
         id: latest-release
         run: |
           release=$(gh release view --repo ${{ github.repository }} --json id,createdAt,isDraft,isPrerelease,name,publishedAt,tagName 2>/dev/null || true)
-          # release_data=$(gh release list --limit 1 --repo ${{ github.repository }} --json createdAt,isDraft,isLatest,isPrerelease,name,publishedAt,tagName | jq -c ".[0]")
 
           echo "release=$release" >> $GITHUB_OUTPUT
-          # echo "release_data=$release_data" >> $GITHUB_OUTPUT
 
       - name: Unpack release data
         id: unpack-release
