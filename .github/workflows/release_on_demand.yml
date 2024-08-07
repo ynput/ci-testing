@@ -48,15 +48,23 @@ jobs:
       - name: Get latest release
         id: latest-release
         run: |
-          # TODO implement fields as mapping
-          release=$(gh release view --repo ${{ github.repository }} --json id,createdAt,isDraft,isPrerelease,name,publishedAt,tagName 2>/dev/null || true)
+          declare -A release_option_map=(
+            ["id"]="id"
+            ["createdAt"]="creation_date"
+            ["publishedAt"]="publish_date"
+            ["tagName"]="tag"
+            ["name"]="name"
+            ["isDraft"]="draft"
+            ["isPrerlease"]="pre_release"
+          )
 
-          echo "id=$(echo $release | jq -r .id)" >> $GITHUB_OUTPUT
-          echo "date=$(echo $release | jq -r .publishedAt)" >> $GITHUB_OUTPUT
-          echo "tag=$(echo $release | jq -r .tagName)" >> $GITHUB_OUTPUT
-          echo "name=$(echo $release | jq -r .name)" >> $GITHUB_OUTPUT
-          echo "draft=$(echo $release | jq -r .isDraft)" >> $GITHUB_OUTPUT
-          echo "pre_release=$(echo $release | jq -r .isPrerelease)" >> $GITHUB_OUTPUT
+          key_list=$(IFS=,; echo "${!release_option_map[*]}")
+          release=$(gh release view --repo ${{ github.repository }} --json $key_list 2>/dev/null || true)
+
+          for key in "${!release_option_map[@]}"; do
+            value=$(echo "$release" | jq -r ".$key")
+            echo "${release_option_map[$key]}=$value" >> $GITHUB_OUTPUT
+          done
 
       - name: Show extracted values
         run: |
