@@ -55,7 +55,7 @@ jobs:
             ["tagName"]="tag"
             ["name"]="name"
             ["isDraft"]="draft"
-            ["isPrerlease"]="pre_release"
+            ["isPrerelease"]="pre_release"
           )
 
           key_list=$(IFS=,; echo "${!release_option_map[*]}")
