@@ -57,12 +57,12 @@ jobs:
         run: |
           release=${{ steps.latest-release.outputs.release }}
 
-          echo "id=$(echo "$release" | jq .id)" >> $GITHUB_OUTPUT
-          echo "date=$(echo "$release" | jq .publishedAt)" >> $GITHUB_OUTPUT
-          echo "tag=$(echo "$release" | jq .tagName)" >> $GITHUB_OUTPUT
-          echo "name=$(echo "$release" | jq .name)" >> $GITHUB_OUTPUT
-          echo "draft=$(echo "$release" | jq .isDraft)" >> $GITHUB_OUTPUT
-          echo "pre_release=$(echo "$release" | jq .isPrerelease)" >> $GITHUB_OUTPUT
+          echo "id=$(echo '$release' | jq .id)" >> $GITHUB_OUTPUT
+          echo "date=$(echo '$release' | jq .publishedAt)" >> $GITHUB_OUTPUT
+          echo "tag=$(echo '$release' | jq .tagName)" >> $GITHUB_OUTPUT
+          echo "name=$(echo '$release' | jq .name)" >> $GITHUB_OUTPUT
+          echo "draft=$(echo '$release' | jq .isDraft)" >> $GITHUB_OUTPUT
+          echo "pre_release=$(echo '$release' | jq .isPrerelease)" >> $GITHUB_OUTPUT
 
       - name: Show extracted values
         run: |
