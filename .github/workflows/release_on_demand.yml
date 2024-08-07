@@ -45,7 +45,7 @@ jobs:
         id: latest-release
         # TODO test what happens if no release is present
         run: |
-          release=$(gh release view --repo ${{ github.repository }} 2>/dev/null)
+          release=$(gh release view --repo ${{ github.repository }} 2>/dev/null || true)
           release_data=$(gh release list --limit 1 --repo ${{ github.repository }} --json createdAt,isDraft,isLatest,isPrerelease,name,publishedAt,tagName | jq -c ".[0]")
           
           echo "release=$release" >> $GITHUB_OUTPUT
