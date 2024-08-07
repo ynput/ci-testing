@@ -37,12 +37,12 @@ jobs:
   get-latest-release:
     runs-on: ubuntu-latest
     outputs:
-      # id: ${{ steps.unpack-release.outputs.id }}
-      # name: ${{ steps.unpack-release.outputs.name }}
-      # tag: ${{ steps.unpack-release.outputs.tag }}
-      date: ${{ steps.unpack-release.outputs.date }}
-      # draft: ${{ steps.unpack-release.outputs.draft }}
-      # pre_release: ${{ steps.unpack-release.outputs.pre_release}}
+      id: ${{ steps.latest-release.outputs.id }}
+      name: ${{ steps.latest-release.outputs.name }}
+      tag: ${{ steps.latest-release.outputs.tag }}
+      date: ${{ steps.latest-release.outputs.date }}
+      draft: ${{ steps.latest-release.outputs.draft }}
+      pre_release: ${{ steps.latest-release.outputs.pre_release}}
 
     steps:
       - name: Get latest release
@@ -51,12 +51,12 @@ jobs:
           # TODO implement fields as mapping
           release=$(gh release view --repo ${{ github.repository }} --json id,createdAt,isDraft,isPrerelease,name,publishedAt,tagName 2>/dev/null || true)
 
-          echo "id=$(echo '$release' | jq -r .id)" >> $GITHUB_OUTPUT
+          echo "id=$(echo $release | jq -r .id)" >> $GITHUB_OUTPUT
           echo "date=$(echo $release | jq -r .publishedAt)" >> $GITHUB_OUTPUT
-          echo "tag=$(echo '$release' | jq -r .tagName)" >> $GITHUB_OUTPUT
-          echo "name=$(echo '$release' | jq -r .name)" >> $GITHUB_OUTPUT
-          echo "draft=$(echo '$release' | jq -r .isDraft)" >> $GITHUB_OUTPUT
-          echo "pre_release=$(echo '$release' | jq -r .isPrerelease)" >> $GITHUB_OUTPUT
+          echo "tag=$(echo $release | jq -r .tagName)" >> $GITHUB_OUTPUT
+          echo "name=$(echo $release | jq -r .name)" >> $GITHUB_OUTPUT
+          echo "draft=$(echo $release | jq -r .isDraft)" >> $GITHUB_OUTPUT
+          echo "pre_release=$(echo $release | jq -r .isPrerelease)" >> $GITHUB_OUTPUT
 
       - name: Show extracted values
         run: |
