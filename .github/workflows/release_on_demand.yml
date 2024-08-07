@@ -6,10 +6,12 @@ on:
   workflow_call:
     inputs:
       major:
-        type: string
+        type: number
       minor:
-        type: string
+        type: number
       patch:
+        type: number
+      name:
         type: string
 
     secrets:
@@ -28,6 +30,7 @@ env:
   MAJOR: ${{ inputs.major || vars.MAJOR || 0 }}
   MINOR: ${{ inputs.minor || vars.MINOR || 1 }}
   PATCH: ${{ inputs.patch || vars.PATCH || 0 }}
+  release_name: ${{ inputs.name || '' }}
   ARTIFACT_NAME: "${{ github.repository.name }}-package"
 
 jobs:
@@ -109,12 +112,12 @@ jobs:
     needs: get-latest-release
     outputs:
       version-increment: ${{ steps.valid_version_label.outputs.version_increment || null }}
+    env:
+      release_date: ${{ needs.get-latest-release.outputs.date }}
 
     steps:
       - name: 🏷️ Get labels of merged PRs since last release
         id: merged_pr_labels
-        env:
-          release_date: ${{ needs.get-latest-release.outputs.date }}
         # INFO last line conversion is required since $GITHUB_OUPUT doesn't except multi-line strings
         run: |
           json_data_pr_labels=$(gh pr list --state merged --search "merged:>=${{ env.release_date }}" --json labels --repo ${{ github.repository }})
@@ -162,7 +165,7 @@ jobs:
           exit 0
 
       - name: ❗ Validate labels
-        if: ${{ needs.get-latest-release.outputs.date }}
+        if: ${{ env.release_date }}
         env:
           LABEL_LIST: ${{ steps.merged_pr_labels.outputs.label_list }}
         run: |
