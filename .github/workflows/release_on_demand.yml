@@ -59,7 +59,7 @@ jobs:
           )
 
           key_list=$(IFS=,; echo "${!release_option_map[*]}")
-          release=$(gh release view --repo ${{ github.repository }} --json $key_list)  # 2>/dev/null || true
+          release=$(gh release view --repo ${{ github.repository }} --json $key_list || true)
 
           for key in "${!release_option_map[@]}"; do
             value=$(echo "$release" | jq -r ".$key")
