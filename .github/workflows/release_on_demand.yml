@@ -59,10 +59,12 @@ jobs:
           )
 
           key_list=$(IFS=,; echo "${!release_option_map[*]}")
+          echo "$key_list"
           release=$(gh release view --repo ${{ github.repository }} --json $key_list 2>/dev/null || true)
 
           for key in "${!release_option_map[@]}"; do
             value=$(echo "$release" | jq -r ".$key")
+            echo "value= $value"
             echo "${release_option_map[$key]}=$value" >> $GITHUB_OUTPUT
           done
 
@@ -82,9 +84,9 @@ jobs:
           exit 0
 
       - name: Test release drafts
-        if: ${{ steps.unpack-release.outputs.draft }}
+        if: ${{ steps.latest-release.outputs.draft }}
         run: |
-          echo "::warning::Release draft already present: ${{ steps.unpack-release.outputs.name }}"
+          echo "::warning::Release draft already present: ${{ steps.latest-release.outputs.name }}"
           exit 0
 
       - name: Failed Succesfully
