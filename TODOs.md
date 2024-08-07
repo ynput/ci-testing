@@ -1,14 +1,16 @@
 # Release Trigger development
+* Fix input value issues in testing repo
+* Test full workflow to block releases > 0.1.0 when no PR labels where found
+* implement PR templates
+* research and implement PR data fetching logic
+* Create filtering method to assign data to releases
 * Move inital release creation to its own job
 * Test creation of inital version
-* Re-use fetched release data
 * Implement develop-to-main-merge using gh command
 * Speed up merge-to-main (slowest job right now taking 25s)
-* Add inputs for external data source (milestones, github projects, ...)
-* Handle already existing release-draft-tags
 * Create PR templates
 * fetch data from PRs (accordign to templates) to create release changelog
-* talk to addon devs about their current release workflow
+* according to [chart](https://miro.com/welcomeonboard/aE5aMU04QWFJcUJZeE1YRzVkeGFMT01rMTZhYk9DU2VsdWRVV05qVzlhU1pGQTJ1c2pGYkN6NnVCNHp1N044QXwzNDU4NzY0NTIzMjczNzc1NTY2fDI=?share_link_id=167155028336)
 
 # Implement release branches
 * Fully controlled by actions anyway
