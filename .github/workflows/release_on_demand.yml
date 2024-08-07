@@ -30,7 +30,7 @@ env:
   MAJOR: ${{ inputs.major || vars.MAJOR || 0 }}
   MINOR: ${{ inputs.minor || vars.MINOR || 1 }}
   PATCH: ${{ inputs.patch || vars.PATCH || 0 }}
-  release_name: ${{ inputs.name || '' }}
+  RELEASE_NAME: ${{ inputs.name || '' }}
   ARTIFACT_NAME: "${{ github.repository.name }}-package"
 
 jobs:
@@ -66,15 +66,6 @@ jobs:
             echo "${release_option_map[$key]}=$value" >> $GITHUB_OUTPUT
           done
 
-      - name: Show extracted values
-        run: |
-          echo "id: ${{ steps.latest-release.outputs.id }}"
-          echo "date: ${{ steps.latest-release.outputs.date }}"
-          echo "tag: ${{ steps.latest-release.outputs.tag }}"
-          echo "name: ${{ steps.latest-release.outputs.name }}"
-          echo "draft: ${{ steps.latest-release.outputs.draft }}"
-          echo "pre_release: ${{ steps.latest-release.outputs.pre_release }}"
-
       - name: Test existing release
         if: ${{ ! steps.latest-release.outputs.date }}
         run: |
@@ -86,10 +77,6 @@ jobs:
         run: |
           echo "::warning::Release draft already present: ${{ steps.latest-release.outputs.name }}"
           exit 0
-
-      - name: Failed Succesfully
-        run: |
-          exit 1
 
   merge-to-main:
     runs-on: ubuntu-latest
