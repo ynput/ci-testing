@@ -61,10 +61,10 @@ jobs:
       - name: Show extracted values
         run: |
           echo "id: ${{ steps.latest-release.outputs.id }}"
-          echo "date: ${{ steps.latest-release.outputs.publishedAt }}"
-          echo "tag: ${{ steps.latest-release.outputs.tagName }}"
+          echo "date: ${{ steps.latest-release.outputs.date }}"
+          echo "tag: ${{ steps.latest-release.outputs.tag }}"
           echo "name: ${{ steps.latest-release.outputs.name }}"
-          echo "draft: ${{ steps.latest-release.outputs.isDraft }}"
+          echo "draft: ${{ steps.latest-release.outputs.draft }}"
           echo "pre_release: ${{ steps.latest-release.outputs.pre_release }}"
 
       - name: Test existing release
