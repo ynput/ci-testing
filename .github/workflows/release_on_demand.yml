@@ -165,6 +165,7 @@ jobs:
 
           exit 0
 
+        # INFO first release is locked to default version anyway
       - name: ❗ Validate labels
         if: ${{ env.release_date }}
         env:
