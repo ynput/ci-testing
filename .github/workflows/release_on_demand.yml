@@ -28,7 +28,7 @@ env:
   MAJOR: ${{ inputs.major || vars.MAJOR || 0 }}
   MINOR: ${{ inputs.minor || vars.MINOR || 1 }}
   PATCH: ${{ inputs.patch || vars.PATCH || 0 }}
-  ARTIFACT_NAME: "$(basename '${{ github.repository }}')-package"
+  ARTIFACT_NAME: "ayon-addon-package"
 
 jobs:
   get-latest-release:
@@ -232,6 +232,7 @@ jobs:
 
           echo "name=$name" >> $GITHUB_OUTPUT
           echo "version=$version" >> $GITHUB_OUTPUT
+          echo "ARTIFACT_NAME="$(basename '${{ github.repository }}')-package" >> $GITHUB_ENV
 
       - name: Create artifacts
         id: create-artifact
