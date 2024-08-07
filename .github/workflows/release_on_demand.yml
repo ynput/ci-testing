@@ -37,12 +37,12 @@ jobs:
   get-latest-release:
     runs-on: ubuntu-latest
     outputs:
-      id: ${{ steps.unpack-release.outputs.id }}
-      name: ${{ steps.unpack-release.outputs.name }}
-      tag: ${{ steps.unpack-release.outputs.tag }}
+      # id: ${{ steps.unpack-release.outputs.id }}
+      # name: ${{ steps.unpack-release.outputs.name }}
+      # tag: ${{ steps.unpack-release.outputs.tag }}
       date: ${{ steps.unpack-release.outputs.date }}
-      draft: ${{ steps.unpack-release.outputs.draft }}
-      pre_release: ${{ steps.unpack-release.outputs.pre_release}}
+      # draft: ${{ steps.unpack-release.outputs.draft }}
+      # pre_release: ${{ steps.unpack-release.outputs.pre_release}}
 
     steps:
       - name: Get latest release
@@ -57,22 +57,22 @@ jobs:
         run: |
           release=${{ steps.latest-release.outputs.release }}
 
-          echo "id=$(echo '$release' | jq -r .id)" >> $GITHUB_OUTPUT
-          echo "date=$(echo '$release' | jq -r .publishedAt)" >> $GITHUB_OUTPUT
-          echo "tag=$(echo '$release' | jq -r .tagName)" >> $GITHUB_OUTPUT
-          echo "name=$(echo '$release' | jq -r .name)" >> $GITHUB_OUTPUT
-          echo "draft=$(echo '$release' | jq -r .isDraft)" >> $GITHUB_OUTPUT
-          echo "pre_release=$(echo '$release' | jq -r .isPrerelease)" >> $GITHUB_OUTPUT
+          # echo "id=$(echo '$release' | jq -r .id)" >> $GITHUB_OUTPUT
+          echo "date=$(echo $release | jq .publishedAt)" >> $GITHUB_OUTPUT
+          # echo "tag=$(echo '$release' | jq -r .tagName)" >> $GITHUB_OUTPUT
+          # echo "name=$(echo '$release' | jq -r .name)" >> $GITHUB_OUTPUT
+          # echo "draft=$(echo '$release' | jq -r .isDraft)" >> $GITHUB_OUTPUT
+          # echo "pre_release=$(echo '$release' | jq -r .isPrerelease)" >> $GITHUB_OUTPUT
 
       - name: Show extracted values
         run: |
-          echo "release: ${{ steps.latest-release.outputs.release }}"
-          echo "id: ${{ steps.unpack-release.outputs.id }}"
+          # echo "release: ${{ steps.latest-release.outputs.release }}"
+          # echo "id: ${{ steps.unpack-release.outputs.id }}"
           echo "date: ${{ steps.unpack-release.outputs.publishedAt }}"
-          echo "tag: ${{ steps.unpack-release.outputs.tagName }}"
-          echo "name: ${{ steps.unpack-release.outputs.name }}"
-          echo "draft: ${{ steps.unpack-release.outputs.isDraft }}"
-          echo "pre_release: ${{ steps.unpack-release.outputs.pre_release }}"
+          # echo "tag: ${{ steps.unpack-release.outputs.tagName }}"
+          # echo "name: ${{ steps.unpack-release.outputs.name }}"
+          # echo "draft: ${{ steps.unpack-release.outputs.isDraft }}"
+          # echo "pre_release: ${{ steps.unpack-release.outputs.pre_release }}"
 
       - name: Test existing release
         if: ${{ ! steps.latest-release.outputs.release }}
